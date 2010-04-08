@@ -18,7 +18,7 @@ package com.isencia.properties;
  * Exception class, used to indicate problems during loading a hierarchical
  * properties definition.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class PropertiesLoadingException extends Exception {
     /**

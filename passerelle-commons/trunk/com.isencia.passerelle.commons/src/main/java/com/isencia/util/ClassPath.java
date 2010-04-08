@@ -118,7 +118,7 @@ public class ClassPath {
      * Supports filtering files based on matching their
      * names versus a regular expression
      * 
-     * @author erwin.de.ley@isencia.be
+     * @author erwin dl
      */
     private class RegexpNameFilter implements FileFilter {
     	private Pattern fileNamePattern = null;

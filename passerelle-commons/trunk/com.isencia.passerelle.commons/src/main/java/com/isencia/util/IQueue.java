@@ -20,7 +20,7 @@ package com.isencia.util;
  * 
  * Interface contracts for queues
  * 
- * @author dirk.jacobs@isencia.be
+ * @author dirk j
  */
 public interface IQueue {
 	

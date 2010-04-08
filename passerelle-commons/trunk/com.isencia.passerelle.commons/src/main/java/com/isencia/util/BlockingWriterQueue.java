@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * 
  * A bounded queue, with blocking writes as long as it is full.
  * 
- * @author erwin.de.ley@isencia.be
- * @author dirk.jacobs@isencia.be
+ * @author erwin dl
+ * @author dirk j
  * 
  */
 public class BlockingWriterQueue extends BlockingQueue {

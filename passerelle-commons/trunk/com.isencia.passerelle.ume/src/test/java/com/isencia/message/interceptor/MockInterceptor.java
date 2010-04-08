@@ -21,7 +21,7 @@ import com.isencia.message.interceptor.IMessageInterceptor;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class MockInterceptor implements IMessageInterceptor {
 

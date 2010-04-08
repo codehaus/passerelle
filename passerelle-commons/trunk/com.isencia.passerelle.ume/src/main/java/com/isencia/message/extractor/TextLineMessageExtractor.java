@@ -31,7 +31,7 @@ import com.isencia.message.EndOfDataException;
  * An extractor that chops messages at each line feed, corresponding
  * to the platform default line feed sequence.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class TextLineMessageExtractor implements IMessageExtractor {
 

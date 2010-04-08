@@ -28,7 +28,7 @@ import com.isencia.message.EndOfDataException;
  * An extractor that chops messages after receiving a specific character.
  * By default it uses 0x1C, the file separator (FS) ASCII char.
  *
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class EndOfMsgCharMsgExtractor  implements IMessageExtractor {
 

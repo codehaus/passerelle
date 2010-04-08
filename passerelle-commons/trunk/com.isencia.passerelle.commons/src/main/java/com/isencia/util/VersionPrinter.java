@@ -20,7 +20,7 @@ package com.isencia.util;
  * Prints the version of the project on stdout.
  * </p>
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class VersionPrinter {
     public static final String VERSION_MAJOR = "@version.major@";

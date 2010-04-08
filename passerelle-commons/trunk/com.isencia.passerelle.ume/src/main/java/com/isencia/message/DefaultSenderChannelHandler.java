@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * 
  * Channel handlers are used in combination with sender channels in pull mode.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class DefaultSenderChannelHandler implements ISenderChannelHandler {
 	private final static Logger logger = LoggerFactory.getLogger(DefaultSenderChannelHandler.class);

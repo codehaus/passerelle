@@ -19,7 +19,7 @@ package com.isencia.properties;
  * identifiers. Currently only implemented to handle XMLPropertyContainers, with
  * XML documents read from file.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 
 import java.io.File;

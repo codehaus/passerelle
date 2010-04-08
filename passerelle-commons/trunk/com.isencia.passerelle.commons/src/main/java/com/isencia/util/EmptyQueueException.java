@@ -21,7 +21,7 @@ package com.isencia.util;
  * 
  * TODO: class comment
  * 
- * @author wim.geeraerts@isencia.be
+ * @author wim g
  */
 public class EmptyQueueException extends Exception {
 

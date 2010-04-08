@@ -32,7 +32,7 @@ import sun.io.ConversionBufferFullException;
  * Writer implementation wrapping a DatagramSocket.send().
  * Based on char-to-byte conversion code as in java.io.OutputStreamWriter.
  * 
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public class DatagramWriter extends Writer {
 	private final static Logger logger = LoggerFactory.getLogger(DatagramWriter.class);

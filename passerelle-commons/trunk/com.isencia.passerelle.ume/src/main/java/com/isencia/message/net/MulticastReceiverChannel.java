@@ -33,7 +33,7 @@ import com.isencia.message.ReceiverChannel;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class MulticastReceiverChannel extends ReceiverChannel {
 

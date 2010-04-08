@@ -32,7 +32,7 @@ import com.isencia.message.ReceiverChannel;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class DatagramReceiverChannel extends ReceiverChannel {
 	private final static Logger logger = LoggerFactory.getLogger(DatagramReceiverChannel.class);

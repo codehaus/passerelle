@@ -43,7 +43,7 @@ import com.isencia.message.requestreply.RequestReplier;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class SocketServerRequestReplier extends ReceiverChannel implements IRequestReplyChannel {
 	private final static Logger logger = LoggerFactory.getLogger(SocketServerRequestReplier.class);

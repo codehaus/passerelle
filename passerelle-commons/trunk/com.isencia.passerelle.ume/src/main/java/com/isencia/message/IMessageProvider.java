@@ -18,7 +18,7 @@ package com.isencia.message;
  * Interface for objects that are able to provide messages,
  * e.g. to a sender channel.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public interface IMessageProvider {
 

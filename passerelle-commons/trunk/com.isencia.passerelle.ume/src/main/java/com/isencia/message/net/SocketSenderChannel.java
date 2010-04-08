@@ -33,7 +33,7 @@ import com.isencia.message.generator.IMessageGenerator;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class SocketSenderChannel extends WriterSenderChannel {
 	private final static Logger logger = LoggerFactory.getLogger(SocketSenderChannel.class);

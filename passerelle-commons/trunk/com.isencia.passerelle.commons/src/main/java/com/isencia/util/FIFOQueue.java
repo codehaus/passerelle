@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
  * 
  * TODO: class comment
  * 
- * @author wim.geeraerts@isencia.be
+ * @author wim g
  */
 public class FIFOQueue implements IQueue {
     

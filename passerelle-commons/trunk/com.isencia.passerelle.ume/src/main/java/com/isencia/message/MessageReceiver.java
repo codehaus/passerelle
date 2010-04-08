@@ -35,7 +35,7 @@ import com.isencia.util.FIFOQueue;
  * TODO: put a max size on the queue.
 
  * @version     1.0
- * @author        erwin.de.ley@isencia.be
+ * @author        erwin dl
  */
 public class MessageReceiver implements IMessageReceiver {
 

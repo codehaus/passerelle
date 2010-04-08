@@ -31,7 +31,7 @@ import com.isencia.message.extractor.TextLineMessageExtractor;
  * An implementation of a receiver channel based on using
  * a java.io.Reader implementation.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class ReaderReceiverChannel extends ReceiverChannel {
 	private final static Logger logger = LoggerFactory.getLogger(ReaderReceiverChannel.class);

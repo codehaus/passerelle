@@ -18,7 +18,7 @@ package com.isencia.message;
  * Exception class for reporting errors in
  * receiver and sender channel operations.
  * 
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public class ChannelException extends MessageException {
 

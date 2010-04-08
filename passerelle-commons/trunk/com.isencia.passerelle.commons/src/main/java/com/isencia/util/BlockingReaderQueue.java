@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * 
  * A bounded queue, with blocking reads as long as it is empty.
  * 
- * @author erwin.de.ley@isencia.be
- * @author dirk.jacobs@isencia.be
+ * @author erwin dl
+ * @author dirk j
  * 
  */
 public class BlockingReaderQueue extends BlockingQueue {

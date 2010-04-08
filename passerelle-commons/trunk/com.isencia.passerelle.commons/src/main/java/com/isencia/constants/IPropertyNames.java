@@ -20,7 +20,7 @@ package com.isencia.constants;
  * A couple of core system properties for 
  * iSencia's fwk components and applications.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public interface IPropertyNames {
     

@@ -20,7 +20,7 @@ package com.isencia.message.interceptor;
  * 
  * Interface contract for interceptors.
  * 
- * @author dirk.jacobs@isencia.be
+ * @author dirk j
  */
 public interface IMessageInterceptor {
 	

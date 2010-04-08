@@ -29,7 +29,7 @@ import com.isencia.message.SenderChannel;
  * 
  * TODO: class comment
  * 
- * @author dirk.jacobs@isencia.be
+ * @author dirk j
  */
 public class MailSenderChannel extends SenderChannel {
 	private final static Logger logger = LoggerFactory.getLogger(MailSenderChannel.class);

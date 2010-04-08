@@ -31,7 +31,7 @@ import com.isencia.message.interceptor.IMessageInterceptorChain;
  * channel's underlying sink.
  * 
  * @version 1.0
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public abstract class SenderChannel implements ISenderChannel, IMessageProvider {
     //~ Instance/static variables ..............................................................................................................................

@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 /**
  * ClassPathTest
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class ClassPathTest extends TestCase {
 

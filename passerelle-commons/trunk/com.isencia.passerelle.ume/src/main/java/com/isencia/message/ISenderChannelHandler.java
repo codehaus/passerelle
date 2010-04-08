@@ -19,7 +19,7 @@ package com.isencia.message;
  * whether they have any messages available, when its messageAvailable() 
  * method is called.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public interface ISenderChannelHandler {
 

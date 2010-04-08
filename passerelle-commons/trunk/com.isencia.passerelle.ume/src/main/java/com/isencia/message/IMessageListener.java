@@ -19,7 +19,7 @@ package com.isencia.message;
  * in an observer mode, not a polling mode.
  * 
  * @version 	1.0
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public interface IMessageListener {
 	/**

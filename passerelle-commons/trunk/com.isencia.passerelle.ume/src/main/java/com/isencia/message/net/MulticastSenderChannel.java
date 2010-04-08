@@ -35,7 +35,7 @@ import com.isencia.message.SenderChannel;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class MulticastSenderChannel extends SenderChannel {
 	private final static Logger logger = LoggerFactory.getLogger(MulticastSenderChannel.class);

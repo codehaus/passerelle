@@ -17,7 +17,7 @@ package com.isencia.message;
 /**
  * Base class for all exceptions in the messaging fwk.
  * 
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public class MessageException extends Exception {
 

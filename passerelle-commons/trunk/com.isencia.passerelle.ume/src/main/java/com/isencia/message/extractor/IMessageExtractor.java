@@ -21,7 +21,7 @@ import java.io.Reader;
  * and extracting messages out of them, based on some specific strategy.
  * REMARK: NOT THREAD_SAFE! Do NOT use an extractor instance concurrently!
  * 
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public interface IMessageExtractor {
 

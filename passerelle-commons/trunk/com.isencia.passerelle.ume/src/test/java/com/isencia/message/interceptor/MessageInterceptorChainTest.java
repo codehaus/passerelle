@@ -23,7 +23,7 @@ import junit.framework.TestCase;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class MessageInterceptorChainTest extends TestCase {
     MessageInterceptorChain chain = null;

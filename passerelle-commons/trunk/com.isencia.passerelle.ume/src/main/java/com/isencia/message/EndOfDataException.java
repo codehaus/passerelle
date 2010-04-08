@@ -17,7 +17,7 @@ package com.isencia.message;
 /**
  * An own EOFException to ensure independence from java.io.
  * 
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public class EndOfDataException extends MessageException {
 

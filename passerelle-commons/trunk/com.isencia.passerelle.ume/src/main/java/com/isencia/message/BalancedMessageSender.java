@@ -34,7 +34,7 @@ import com.isencia.util.IQueue;
  * TODO: put a max size on the queue.
  * 
  * @version     1.0
- * @author        erwin.de.ley@isencia.be
+ * @author        erwin dl
  */
 public class BalancedMessageSender implements IMessageSender, IMessageProvider {
     

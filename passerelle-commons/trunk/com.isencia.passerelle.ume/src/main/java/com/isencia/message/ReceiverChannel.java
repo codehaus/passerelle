@@ -30,7 +30,7 @@ import com.isencia.message.interceptor.IMessageInterceptorChain;
  * channel's listeners.
  * 
  * @version     1.1
- * @author        erwin.de.ley@isencia.be
+ * @author        erwin dl
  */
 public abstract class ReceiverChannel extends Thread implements IReceiverChannel {
 

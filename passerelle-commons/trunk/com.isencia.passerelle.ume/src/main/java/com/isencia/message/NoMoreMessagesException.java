@@ -17,7 +17,7 @@ package com.isencia.message;
 /**
  * An own NoMoreMessagesException
  * 
- * @author		dirk.jacobs@isencia.be
+ * @author		dirk j
  */
 public class NoMoreMessagesException extends MessageException {
 

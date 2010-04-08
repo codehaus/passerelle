@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 /**
  * StringConvertorTest
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class StringConvertorTest extends TestCase {
     private static final String src = "blablbealjbf/7834thiure/iu3r5irf\\iuwerguier\\//blablabla//${be.isencia.home}37894te:${be.isencia.prop}";

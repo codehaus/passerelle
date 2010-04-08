@@ -30,7 +30,7 @@ import com.isencia.message.interceptor.IMessageInterceptorChain;
  * 	for available messages. All available messages from all its providers will be
  * 	sent out.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public interface ISenderChannel {
 	

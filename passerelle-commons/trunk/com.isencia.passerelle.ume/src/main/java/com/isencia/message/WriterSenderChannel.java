@@ -30,7 +30,7 @@ import com.isencia.message.generator.MessageTextLineGenerator;
  * 
  * A sender channel implementation based on using a java.io.Writer implementation.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class WriterSenderChannel extends SenderChannel {
 	private final static Logger logger =

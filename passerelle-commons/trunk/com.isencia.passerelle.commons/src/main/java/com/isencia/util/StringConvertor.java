@@ -19,7 +19,7 @@ package com.isencia.util;
  * 
  * Utility class for String processing
  * 
- * @author dirk.jacobs@isencia.be
+ * @author dirk j
  */
 public class StringConvertor {
     

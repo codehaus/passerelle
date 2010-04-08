@@ -20,7 +20,7 @@ import java.io.Writer;
  * Interface for objects responsible for packaging individual messages 
  * in a manner fit for a specific outgoing protocol/technology.
  * 
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public interface IMessageGenerator {
 	

@@ -35,7 +35,7 @@ import com.isencia.message.ReceiverChannel;
  * 
  * TODO: class comment
  * 
- * @author dirk.jacobs@isencia.be
+ * @author dirk j
  */
 public class MailReceiverChannel extends ReceiverChannel {
 	private final static Logger logger = LoggerFactory.getLogger(MailReceiverChannel.class);

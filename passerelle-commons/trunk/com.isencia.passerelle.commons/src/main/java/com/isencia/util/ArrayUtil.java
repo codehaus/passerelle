@@ -15,7 +15,7 @@ import java.lang.reflect.Array;
  * 
  * Based on work by Jerome Lacoste at www.javapractices.com
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public final class ArrayUtil {
 	// PRIVATE //

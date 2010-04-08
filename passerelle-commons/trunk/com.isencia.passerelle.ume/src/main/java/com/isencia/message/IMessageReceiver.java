@@ -23,7 +23,7 @@ import java.util.Collection;
  * IReceiverChannels, and offer a blocking getMessage() to handle 
  * the incoming messages.
  * 
- * @author  erwin.de.ley@isencia.be
+ * @author  erwin dl
  */
 public interface IMessageReceiver extends IMessageListener {
 	/**

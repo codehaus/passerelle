@@ -25,7 +25,7 @@ import java.util.Collection;
  * a round-robin load-balancing algorithm, route specific
  * messages on specific channels etc.
  * 
- * @author  erwin.de.ley@isencia.be
+ * @author  erwin dl
  */
 public interface IMessageSender {
 

@@ -29,7 +29,7 @@ import java.io.Writer;
  * 
  * TODO: class comment
  * 
- * @author wim.geeraerts@isencia.be
+ * @author wim g
  */
 public class RuntimeStreamReader extends Thread {
     //~ Instance variables ·····································································································································

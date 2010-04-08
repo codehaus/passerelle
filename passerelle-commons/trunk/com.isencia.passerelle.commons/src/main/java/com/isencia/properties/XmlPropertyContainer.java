@@ -18,7 +18,7 @@ package com.isencia.properties;
  * Implementation of a hierarchical properties container based on an XML
  * document.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 
 import java.io.IOException;

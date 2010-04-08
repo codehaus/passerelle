@@ -36,7 +36,7 @@ import com.isencia.message.extractor.IMessageExtractor;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class FileReceiverChannel extends ReaderReceiverChannel {
 	private final static Logger logger = LoggerFactory.getLogger(FileReceiverChannel.class);

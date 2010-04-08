@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * 
  * A base class for a bounded queue, with blocking reads and/or writes.
  * 
- * @author erwin.de.ley@isencia.be
- * @author dirk.jacobs@isencia.be
+ * @author erwin dl
+ * @author dirk j
  * 
  */
 public abstract class BlockingQueue implements IQueue {

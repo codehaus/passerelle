@@ -19,7 +19,7 @@ package com.isencia.properties;
  * Besides the hierarchical property retrieval methods, there is also a method
  * getLinearProperties(), to obtain a traditional java.util.Properties bundle.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public interface IPropertyContainer extends IHierarchicProperty {
     /**

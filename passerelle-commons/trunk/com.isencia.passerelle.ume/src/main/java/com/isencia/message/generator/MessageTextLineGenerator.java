@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * A message generator that delineates each outgoing message
  * by an ending line-separator according to the JVM platform.
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class MessageTextLineGenerator implements IMessageGenerator {
 	private static final Logger logger = 

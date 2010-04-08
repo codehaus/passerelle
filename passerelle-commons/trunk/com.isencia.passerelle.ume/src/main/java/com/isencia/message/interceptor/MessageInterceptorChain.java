@@ -24,7 +24,7 @@ import java.util.List;
  * 
  * Implementation of an interceptor chain
  * 
- * @author dirk.jacobs@isencia.be
+ * @author dirk j
  */
 public class MessageInterceptorChain implements IMessageInterceptorChain {
 	

@@ -34,7 +34,7 @@ import com.isencia.util.FIFOQueue;
  * TODO: put a max size on the queue.
  * 
  * @version 	1.0
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public class MessageSender implements IMessageSender {
 	private final static Logger logger = LoggerFactory.getLogger(MessageSender.class);
@@ -277,7 +277,7 @@ public class MessageSender implements IMessageSender {
 	 * Inner class that implements a separate thread loop for sending out
 	 * messages from the internal queue.
 	 * 
-	 * @author erwin.de.ley@isencia.be
+	 * @author erwin dl
 	 */
 	class MessageLoop extends Thread {
 		/**

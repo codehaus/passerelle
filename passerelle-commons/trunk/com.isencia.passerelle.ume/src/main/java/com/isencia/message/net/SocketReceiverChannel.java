@@ -33,7 +33,7 @@ import com.isencia.message.extractor.IMessageExtractor;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class SocketReceiverChannel extends ReaderReceiverChannel {
 	private final static Logger logger = LoggerFactory.getLogger(SocketReceiverChannel.class);

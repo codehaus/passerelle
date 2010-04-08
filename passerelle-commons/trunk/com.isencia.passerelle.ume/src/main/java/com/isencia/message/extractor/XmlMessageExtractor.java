@@ -39,7 +39,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * TODO: class comment
  * 
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class XmlMessageExtractor extends DefaultHandler implements IMessageExtractor, ContentHandler {
 
@@ -206,7 +206,7 @@ public class XmlMessageExtractor extends DefaultHandler implements IMessageExtra
 	 * 
 	 * SAXEndMessageException
 	 * 
-	 * @author erwin.de.ley@isencia.be
+	 * @author erwin dl
 	 */
 	private class SAXEndMessageException extends SAXException {
 		SAXEndMessageException() {
@@ -219,7 +219,7 @@ public class XmlMessageExtractor extends DefaultHandler implements IMessageExtra
 	 * 
 	 * ReaderWrapper
 	 * 
-	 * @author erwin.de.ley@isencia.be
+	 * @author erwin dl
 	 */
 	private class ReaderWrapper extends Reader {
 		Reader reader = null;

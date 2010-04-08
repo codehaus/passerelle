@@ -24,7 +24,7 @@ import com.isencia.message.interceptor.IMessageInterceptorChain;
  * A channel uses an IMessageExtractor strategy to decide how to
  * "chop" messages from the reader/source.
  * 
- * @author		erwin.de.ley@isencia.be
+ * @author		erwin dl
  */
 public interface IReceiverChannel extends Runnable {
 

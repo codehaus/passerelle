@@ -28,7 +28,7 @@ import com.isencia.message.EndOfDataException;
  * An extractor that chops messages when the stream is closed.
  * E.g. with sockets: when the client drops the connection.
  *
- * @author erwin.de.ley@isencia.be
+ * @author erwin dl
  */
 public class StreamClosedMsgExtractor  implements IMessageExtractor {
 
