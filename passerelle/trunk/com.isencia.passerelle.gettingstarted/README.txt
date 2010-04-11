@@ -9,7 +9,7 @@ DVP PREPARATION
 1. Create a new eclipse workspace. 
    Ensure a JDK 1.5 or 1.6 is used as Java runtime.
    Switch off automatic building on workspace changes (in Window>Preferences>General>Workspace).
-2. Define Subversion repository https://svn.codehaus.org/passerelle.
+2. Define Subversion repository http(s)://svn.codehaus.org/passerelle.
 3. Check out this project!
 
 The next steps depend on the type of Passerelle-related development you need to perform.
@@ -20,12 +20,14 @@ Below, to check out the projects for a team project set : do Import context menu
 and select the mentioned file.
 To set a PDE dvp target : double-click on the target file and then click on the "Set as target platform" link on top right.
 
-Passerelle dvp
---------------------   
+Passerelle (actor) dvp
+----------------------   
 4. Check out the projects using the included team project set passerelle-dev-projectset.psf
-5. From the project com.isencia.passerelle.target, set the passerelle-dev-target.target as PDE target platform
+5. From the project com.isencia.passerelle.gettingstarted, set the passerelle-dev-target.target as PDE target platform
 6. Switch on automatic building. There should be no compilation errors.
 
 Passerelle HMI dvp
 ---------------------   
-TBD
+4. Check out the projects using the included team project set passerelle-swing-hmi-dev-projectset.psf
+5. From the project com.isencia.passerelle.gettingstarted, set the passerelle-dev-target.target as PDE target platform
+6. Switch on automatic building. There should be no compilation errors.
