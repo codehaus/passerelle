@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<psf version="2.0">
+<provider id="org.eclipse.team.svn.core.svnnature">
+<project reference="1.0.1,https://svn.codehaus.org/passerelle/passerelle-actors/trunk/com.isencia.passerelle.actor,com.isencia.passerelle.actor,60481da05333001f15228a60f78b5328;https://svn.codehaus.org/passerelle;https://svn.codehaus.org/passerelle;branches;tags;trunk;true;384cdc12-9176-0410-81a5-8911e62acf96;https://svn.codehaus.org/passerelle;;false;;;22"/>
+<project reference="1.0.1,https://svn.codehaus.org/passerelle/passerelle-engine/trunk/com.isencia.passerelle.engine,com.isencia.passerelle.engine,60481da05333001f15228a60f78b5328;https://svn.codehaus.org/passerelle;https://svn.codehaus.org/passerelle;branches;tags;trunk;true;384cdc12-9176-0410-81a5-8911e62acf96;https://svn.codehaus.org/passerelle;;false;;;22"/>
+<project reference="1.0.1,https://svn.codehaus.org/passerelle/passerelle-tools/trunk/passerelle-HMI,passerelle-HMI,60481da05333001f15228a60f78b5328;https://svn.codehaus.org/passerelle;https://svn.codehaus.org/passerelle;branches;tags;trunk;true;384cdc12-9176-0410-81a5-8911e62acf96;https://svn.codehaus.org/passerelle;;false;;;22"/>
+</provider>
+</psf>
