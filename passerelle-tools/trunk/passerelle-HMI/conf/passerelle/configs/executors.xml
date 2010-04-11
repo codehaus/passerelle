@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE plot PUBLIC "-//UC Berkeley//DTD MoML 1//EN" "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="executors" class="ptolemy.moml.EntityLibrary">
+  <configure>
+    <?moml
+      <group>
+   <doc>Actors that execute external processes.</doc>
+	<!-- custom Passerelle property to support SaveInLibrary for CompositeActors -->
+ 	<property name="_sourcePath" class="ptolemy.data.expr.FileParameter"
+ 		value="$CLASSPATH/passerelle/configs/executors.xml" />
+
+  <entity name="CommandExecutor" class="com.isencia.passerelle.actor.general.CommandExecutor">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+  </entity>
+  <entity name="ModelExecutor" class="com.isencia.passerelle.actor.general.ModelExecutor">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+  </entity>
+      </group>
+    ?>
+  </configure>
+</entity>

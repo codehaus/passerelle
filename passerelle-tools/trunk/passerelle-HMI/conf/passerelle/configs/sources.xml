@@ -1,0 +1,73 @@
+<entity name="sources" class="ptolemy.moml.EntityLibrary">
+    <configure>
+        <group>
+            <doc>Sources</doc>
+            <property name="_sourcePath" class="ptolemy.data.expr.FileParameter" value="$CLASSPATH/passerelle/configs/sources.xml">
+            </property>
+            <entity name="Constant" class="com.isencia.passerelle.actor.general.Const">
+                <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+                </property>
+                <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+                </property>
+                <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+                </property>
+                <property name="_location" class="ptolemy.kernel.util.Location" value="{0.0, 0.0}">
+                </property>
+            </entity>
+            <entity name="FileReader" class="com.isencia.passerelle.actor.io.FileReader">
+                <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+                </property>
+                <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+                </property>
+                <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+                </property>
+                <property name="_location" class="ptolemy.kernel.util.Location" value="[-95.0, 15.0]">
+                </property>
+            </entity>
+            <entity name="Multicast Receiver" class="com.isencia.passerelle.actor.net.MulticastReceiver">
+                <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+                </property>
+                <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+                </property>
+                <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+                </property>
+                <property name="_location" class="ptolemy.kernel.util.Location" value="[85.0, 45.0]">
+                </property>
+            </entity>
+            <entity name="Socket Receiver" class="com.isencia.passerelle.actor.net.SocketServerReceiver">
+                <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+                </property>
+                <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+                </property>
+                <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+                </property>
+                <property name="_optionsFactory" class="com.isencia.passerelle.actor.net.SocketSvrRcvOptionsFactory">
+                </property>
+                <property name="_location" class="ptolemy.kernel.util.Location" value="[5.0, -135.0]">
+                </property>
+            </entity>
+            <entity name="Socket ReqReply" class="com.isencia.passerelle.actor.net.SocketServerRequestReplier">
+                <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+                </property>
+                <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+                </property>
+                <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+                </property>
+                <property name="_optionsFactory" class="com.isencia.passerelle.actor.net.SocketSvrReqReplierOptionsFactory">
+                </property>
+                <property name="_location" class="ptolemy.kernel.util.Location" value="[-110.0, 90.0]">
+                </property>
+            </entity>
+            <entity name="Mail Client" class="com.isencia.passerelle.actor.mail.MailReceiver">
+                <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+                </property>
+                <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+                </property>
+                <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+                </property>
+                <property name="_location" class="ptolemy.kernel.util.Location" value="[-130.0, -95.0]">
+                </property>
+            </entity>
+        </group>
+    </configure>
+</entity>

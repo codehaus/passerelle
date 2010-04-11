@@ -1,0 +1,26 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE plot PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
+    "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+
+<!-- Full utilities library. -->
+<entity name="Utilities" class="ptolemy.moml.EntityLibrary">
+  <configure>
+    <?moml
+      <group>
+		<property name="LocalPreferences" class="ptolemy.actor.gui.PtolemyPreferences"/>
+		<entity name="CompositeActor" class="ptolemy.actor.TypedCompositeActor" >
+ 			<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+ 			<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+            		<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+		</entity>
+		<class name="CompositeClassDefinition" extends="ptolemy.actor.TypedCompositeActor">
+ 			<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+ 			<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+            		<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+		</class>
+		<input source="decorative.xml"/>
+		<input source="utilityParameters.xml"/>
+      </group>
+    ?>
+  </configure>
+</entity>

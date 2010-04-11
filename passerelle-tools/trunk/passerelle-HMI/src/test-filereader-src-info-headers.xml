@@ -1,0 +1,49 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE entity PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
+    "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="test-filereader-src-info-headers" class="ptolemy.actor.TypedCompositeActor">
+    <property name="_createdBy" class="ptolemy.kernel.attributes.VersionAttribute" value="4.0">
+    </property>
+    <property name="Passerelle Std" class="com.isencia.passerelle.domain.cap.Director">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{85, 45}">
+        </property>
+    </property>
+    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds = {432, 262, 815, 526}, maximized = false}">
+    </property>
+    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[600, 400]">
+    </property>
+    <property name="_vergilZoomFactor" class="ptolemy.data.expr.ExpertParameter" value="1.0">
+    </property>
+    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{300.0, 200.0}">
+    </property>
+    <entity name="FileReader" class="com.isencia.passerelle.actor.io.FileReader">
+        <property name="Path" class="ptolemy.data.expr.FileParameter" value="C:\Data\development\eclipse\passerelle-2005\passerelle-v2\build.properties">
+        </property>
+        <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+        </property>
+        <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+        </property>
+        <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{80.0, 145.0}">
+        </property>
+    </entity>
+    <entity name="Console" class="com.isencia.passerelle.actor.general.Console">
+        <property name="PassThrough" class="ptolemy.data.expr.Parameter" value="true">
+        </property>
+        <property name="Chop output at #chars" class="ptolemy.data.expr.Parameter" value="800">
+        </property>
+        <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+        </property>
+        <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+        </property>
+        <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{325, 120}">
+        </property>
+    </entity>
+    <relation name="relation" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <link port="FileReader.output" relation="relation"/>
+    <link port="Console.input" relation="relation"/>
+</entity>
