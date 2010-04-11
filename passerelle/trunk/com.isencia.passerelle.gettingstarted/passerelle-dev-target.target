@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.5"?>
+
+<target name="Passerelle Development target">
+<locations>
+<location path="${project_loc}/passerelle-commons" type="Directory"/>
+<location path="${project_loc}/passerelle-thirdparty-ptolemy" type="Directory"/>
+<location path="${project_loc}/passerelle-thirdparty-base" type="Directory"/>
+</locations>
+</target>
