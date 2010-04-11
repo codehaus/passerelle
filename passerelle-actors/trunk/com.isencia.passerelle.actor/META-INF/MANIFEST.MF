@@ -4,7 +4,6 @@ Bundle-Name: Passerelle Actor Plug-in
 Bundle-SymbolicName: com.isencia.passerelle.actor;singleton:=true
 Bundle-Version: 6.0.0.qualifier
 Bundle-Vendor: ISENCIA
-Eclipse-LazyStart: false
 Eclipse-RegisterBuddy: com.isencia.passerelle.engine, ptolemy.core
 Import-Package: org.apache.commons.logging,
  org.jdom,
@@ -73,4 +72,5 @@ Export-Package: com.isencia.passerelle.actor.dynaport,
  org.python.parser.ast;version="2.2.1",
  org.python.rmi;version="2.2.1",
  org.python.util;version="2.2.1"
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: J2SE-1.5,
+ JavaSE-1.6

@@ -2,7 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="com.isencia.passerelle.engine.api.actors">
+         point="com.isencia.passerelle.engine.actors">
       <actor
             class="com.isencia.passerelle.actor.general.Const"
             group="com.isencia.passerelle.actor.actorgroup.general"
@@ -47,7 +47,7 @@
       </actor>
    </extension>
    <extension
-         point="com.isencia.passerelle.engine.api.actorGroups">
+         point="com.isencia.passerelle.engine.actorGroups">
       <actorgroup
             id="com.isencia.passerelle.actor.actorgroup.general"
             name="General">

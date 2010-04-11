@@ -41,7 +41,7 @@ import ptolemy.kernel.util.KernelException;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.core.PasserelleException;
-import com.isencia.passerelle.engine.Activator;
+import com.isencia.passerelle.engine.activator.Activator;
 import com.isencia.passerelle.ext.ErrorCollector;
 import com.isencia.passerelle.model.util.MoMLParser;
 import com.isencia.passerelle.model.util.RESTFacade;
