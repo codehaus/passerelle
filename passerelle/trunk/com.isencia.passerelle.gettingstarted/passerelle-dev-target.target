@@ -3,8 +3,8 @@
 
 <target name="Passerelle Development target">
 <locations>
-<location path="${project_loc}/passerelle-commons" type="Directory"/>
-<location path="${project_loc}/passerelle-thirdparty-ptolemy" type="Directory"/>
-<location path="${project_loc}/passerelle-thirdparty-base" type="Directory"/>
+<location path="${workspace_loc}/com.isencia.passerelle.gettingstarted/passerelle-commons" type="Directory"/>
+<location path="${workspace_loc}/com.isencia.passerelle.gettingstarted/passerelle-thirdparty-base" type="Directory"/>
+<location path="${workspace_loc}/com.isencia.passerelle.gettingstarted/passerelle-thirdparty-ptolemy" type="Directory"/>
 </locations>
 </target>
