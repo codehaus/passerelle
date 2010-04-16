@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+<extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="com.isencia.passerelle.workbench.model.ui.PasserellePerspective"
+            icon="icons/ide.gif"
+            id="com.isencia.passerelle.workbench.model.ui.perspective"
+            name="Passerelle">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            name="Passerelle"
+            id="com.isencia.passerelle.workbench.model.ui">
+      </category>
+      <wizard
+            name="Passerelle Model"
+            icon="icons/model.gif"
+            category="com.isencia.passerelle.workbench.model.ui"
+            class="com.isencia.passerelle.workbench.model.ui.wizards.PasserelleNewModelWizard"
+            id="com.isencia.passerelle.workbench.model.ui.wizards.PasserelleNewModelWizard">
+      </wizard>
+   </extension>
+    <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+       <shortcut
+             class="com.isencia.passerelle.workbench.model.ui.launch.LaunchShortcut"
+             icon="icons/ide.gif"
+             id="com.isencia.passerelle.workbench.model.ui.launch.launchShortcut"
+             label="Passerelle Model"
+             modes="run, debug">
+        <contextualLaunch>
+            <enablement>
+               <with variable="selection">
+                  <count value="1" />
+            		<iterate>
+                   		<test property="org.eclipse.debug.ui.matchesPattern" value="*.moml"/>
+               		</iterate>
+               </with>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="com.isencia.passerelle.workbench.model.ui.launch.LaunchConfigurationDelegate"
+            icon="icons/ide.gif"
+            id="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationType"
+            modes="run, debug"
+            name="Passerelle Model"
+            public="true">
+            
+            <fileExtension
+               default="true"
+               extension="moml">
+         </fileExtension>
+            </launchConfigurationType>
+   </extension>
+   <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+    	<launchConfigurationTypeImage
+        	icon="icons/model.gif"
+        	configTypeID="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationType"
+        	id="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationTypeImage">
+    	</launchConfigurationTypeImage>
+	</extension>
+   
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="com.isencia.passerelle.workbench.model.ui.launch.LaunchConfigurationTabGroup"
+            id="com.isencia.passerelle.workbench.model.ui.launch.org.eclipse.debug.ui.launchConfigurationTabGroup"
+            type="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationType">
+         <launchMode
+               perspective="org.eclipse.debug.ui.DebugPerspective"
+               description="Debug"
+               mode="debug">
+         </launchMode>
+         <launchMode
+               description="Run"
+               mode="run">
+         </launchMode>
+      </launchConfigurationTabGroup>
+   </extension>
+   
+   <extension point="org.eclipse.ui.perspectiveExtensions">
+	<perspectiveExtension targetID="om.isencia.passerelle.workbench.model.ui.perspective">
+		<actionSet id="org.eclipse.debug.ui.launchActionSet"/>
+	</perspectiveExtension>	
+   </extension>
+   
+</plugin>
