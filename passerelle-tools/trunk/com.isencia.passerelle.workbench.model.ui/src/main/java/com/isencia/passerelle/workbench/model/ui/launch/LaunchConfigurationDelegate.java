@@ -497,8 +497,8 @@ public class LaunchConfigurationDelegate extends AbstractJavaLaunchConfiguration
 				"com.isencia.passerelle.actor",
 				"com.isencia.passerelle.engine",
 				"com.isencia.passerelle.engine.api",
-				"be.isencia.passerelle.commons",
-				"be.isencia.passerelle.ume",
+				"com.isencia.passerelle.commons",
+				"com.isencia.passerelle.ume",
 				"ptolemy.domains.and.actors",
 				"ptolemy.gui",
 				"diva"				
