@@ -3,9 +3,10 @@
 
 <target name="Passerelle eclipse workbench dev target">
 <locations>
-<location path="${workspace_loc}\com.isencia.passerelle.gettingstarted\passerelle-commons" type="Directory"/>
 <location path="${workspace_loc}\com.isencia.passerelle.gettingstarted\passerelle-thirdparty-ptolemy" type="Directory"/>
 <location path="${workspace_loc}\com.isencia.passerelle.gettingstarted\passerelle-workbench" type="Directory"/>
+<location path="${workspace_loc}\com.isencia.passerelle.gettingstarted\passerelle-commons" type="Directory"/>
+<location path="${workspace_loc}\com.isencia.passerelle.gettingstarted\passerelle-engine" type="Directory"/>
 </locations>
 <environment>
 <os>win32</os>
