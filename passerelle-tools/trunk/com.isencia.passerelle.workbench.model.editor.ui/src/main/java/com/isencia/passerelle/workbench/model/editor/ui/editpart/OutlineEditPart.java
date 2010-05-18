@@ -116,14 +116,15 @@ public class OutlineEditPart extends
 			children.addAll(composite.attributeList(AtomicActor.class));
 			children.addAll(composite.attributeList(Parameter.class));
 			children.addAll(composite.inputPortList());
-			
+
 			Enumeration enumeration = composite.getEntities();
-			while(enumeration.hasMoreElements()){
+			while (enumeration.hasMoreElements()) {
 				children.add(enumeration.nextElement());
 			}
 		} else if (namedObjectModel instanceof TextAttribute) {
 			TextAttribute text = (TextAttribute) namedObjectModel;
-			children.addAll(text.attributeList(ptolemy.kernel.util.StringAttribute.class));
+			children.addAll(text
+					.attributeList(ptolemy.kernel.util.StringAttribute.class));
 		} else if (namedObjectModel instanceof Director) {
 			Director director = (Director) namedObjectModel;
 			children.addAll(director.attributeList(Parameter.class));
@@ -169,7 +170,8 @@ public class OutlineEditPart extends
 		} else if (model instanceof TypedAtomicActor) {
 			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_ACTOR.createImage());
 		} else if (model instanceof CompositeActor) {
-			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR.createImage());
+			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR
+					.createImage());
 		} else if (model instanceof TextAttribute)
 			setWidgetImage(CommentEditPart.IMAGE_COMMENT.createImage());
 		// Set Text
@@ -189,8 +191,12 @@ public class OutlineEditPart extends
 
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
-		refreshVisuals();
-		refreshChildren();
+		try {
+			refreshVisuals();
+			refreshChildren();
+		} catch (Exception e) {
+
+		}
 	}
 
 	@Override

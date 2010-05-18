@@ -164,9 +164,9 @@ abstract public class AbstractBaseEditPart extends
 		double[] location = ModelUtils.getLocation(getEntity());
 		Rectangle r = new Rectangle(new Point(location[0], location[1]),
 				getComponentFigure().getPreferredSize(-1, -1));
-
-		((GraphicalEditPart) getParent()).setLayoutConstraint(this,
-				getFigure(), r);
+		if (getParent() instanceof GraphicalEditPart)
+			((GraphicalEditPart) getParent()).setLayoutConstraint(this,
+					getFigure(), r);
 	}
 
 	public Object getAdapter(Class key) {

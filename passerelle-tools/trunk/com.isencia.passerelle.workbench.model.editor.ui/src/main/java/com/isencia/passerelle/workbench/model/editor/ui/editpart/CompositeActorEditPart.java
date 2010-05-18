@@ -88,11 +88,11 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		PasserelleModelSampleEditor multiPageEditor = (PasserelleModelSampleEditor) searchPasserelleModelSampleEditor(getParent());
 		try {
 			if (multiPageEditor != null) {
-	
+
 				TypedCompositeActor model = (TypedCompositeActor) getModel();
 				if (pages.get(model) == null) {
 					CompositeModelEditor editor = new CompositeModelEditor(
-							multiPageEditor,model);
+							multiPageEditor, model);
 					int index = multiPageEditor.addPage(editor, multiPageEditor
 							.getEditorInput());
 					multiPageEditor.setText(index, model.getDisplayName());
@@ -115,7 +115,8 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		return null;
 	}
 
-	public CompositeActorEditPart(boolean showChildren,	 MultiPageEditorPart multiPageEditorPart) {
+	public CompositeActorEditPart(boolean showChildren,
+			MultiPageEditorPart multiPageEditorPart) {
 		super(showChildren);
 		this.multiPageEditorPart = multiPageEditorPart;
 	}
@@ -124,14 +125,16 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		super.changeExecuted(changerequest);
 
 		Object source = changerequest.getSource();
-		Class<?> type = ((ModelChangeRequest) changerequest).getType();
+		if (changerequest instanceof ModelChangeRequest) {
+			Class<?> type = ((ModelChangeRequest) changerequest).getType();
 
-		if (getModel() != source
-				&& (DeleteConnectionCommand.class.equals(type)
-						|| DeleteComponentCommand.class.equals(type) || CreateConnectionCommand.class
-						.equals(type))) {
-			refreshSourceConnections();
-			refreshTargetConnections();
+			if (getModel() != source
+					&& (DeleteConnectionCommand.class.equals(type)
+							|| DeleteComponentCommand.class.equals(type) || CreateConnectionCommand.class
+							.equals(type))) {
+				refreshSourceConnections();
+				refreshTargetConnections();
+			}
 		}
 	}
 
@@ -177,34 +180,34 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		drillDownImageFigure.setBorder(new MarginBorder(0, 0, 5, 0));
 
 		Clickable button = new Clickable(drillDownImageFigure);
-		button.addMouseListener(new MouseListener(){
+		button.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseDoubleClicked(MouseEvent e) {
 				initPage();
-							
+
 			}
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
-//		button.addChangeListener(new ChangeListener() {
-//			public void handleStateChanged(ChangeEvent e) {
-//				initPage();
-//				if (getLogger().isDebugEnabled())
-//					getLogger().debug("Clicked" + e.getPropertyName());
-//			}
-//		});
+		// button.addChangeListener(new ChangeListener() {
+		// public void handleStateChanged(ChangeEvent e) {
+		// initPage();
+		// if (getLogger().isDebugEnabled())
+		// getLogger().debug("Clicked" + e.getPropertyName());
+		// }
+		// });
 
 		Actor actorModel = getActorModel();
 		CompositeActorFigure actorFigure = new CompositeActorFigure(actorModel
