@@ -43,11 +43,13 @@ import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.gef.ui.actions.AlignmentAction;
-import org.eclipse.gef.ui.actions.CopyTemplateAction;
 import org.eclipse.gef.ui.actions.DirectEditAction;
+import org.eclipse.gef.ui.actions.EditorPartAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
+import org.eclipse.gef.ui.actions.SelectionAction;
+import org.eclipse.gef.ui.actions.StackAction;
 import org.eclipse.gef.ui.actions.ToggleGridAction;
 import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
@@ -64,10 +66,10 @@ import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -83,6 +85,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.actions.ActionFactory;
@@ -90,6 +93,7 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
@@ -102,6 +106,9 @@ import ptolemy.actor.CompositeActor;
 import ptolemy.moml.MoMLParser;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.OutlinePartFactory;
@@ -114,8 +121,29 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
 	protected static final String PALETTE_STATE = "Palette state"; //$NON-NLS-1$
 	protected static final int DEFAULT_PALETTE_SIZE = 130;
-	
-	private static Logger logger = LoggerFactory.getLogger(PasserelleModelEditor.class);
+	private List stackActionIDs = new ArrayList();
+	private List editorActionIDs = new ArrayList();
+	private List editPartActionIDs = new ArrayList();
+	private static Logger logger = LoggerFactory
+			.getLogger(PasserelleModelEditor.class);
+	public static final int DELETE_KEYCODE = 127;
+	public static final int COPY_KEYCODE = 99;
+	public static final int PASTE_KEYCODE = 112;
+
+	private ISelectionListener selectionListener = new ISelectionListener() {
+		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+			updateActions(editPartActionIDs);
+		}
+	};
+
+	/**
+	 * Returns the selection listener.
+	 * 
+	 * @return the <code>ISelectionListener</code>
+	 */
+	protected ISelectionListener getSelectionListener() {
+		return selectionListener;
+	}
 
 	static {
 		// LogicPlugin.getDefault().getPreferenceStore().setDefault(
@@ -124,17 +152,28 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 	private KeyHandler sharedKeyHandler;
 	private PaletteRoot root;
-	private OutlinePage outlinePage;
-	private boolean editorSaving = false;
+	protected OutlinePage outlinePage;
+	protected boolean editorSaving = false;
 
 	private CompositeActor model = new CompositeActor();
 	private ResourceTracker resourceListener = new ResourceTracker();
 	private RulerComposite rulerComp;
+	private MultiPageEditorPart parent;
+
+	public MultiPageEditorPart getParent() {
+		return parent;
+
+	}
 
 	public PasserelleModelEditor() {
 		setEditDomain(new DefaultEditDomain(this));
 	}
-	
+
+	public PasserelleModelEditor(MultiPageEditorPart parent) {
+		setEditDomain(new DefaultEditDomain(this));
+		this.parent = parent;
+	}
+
 	public Logger getLogger() {
 		return logger;
 	}
@@ -142,6 +181,29 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	@Override
 	public String getContributorId() {
 		return "com.isencia.passerelle.workbench.model.editor.ui.editors.modelEditor";
+	}
+
+	protected void addStackAction(StackAction action) {
+		getActionRegistry().registerAction(action);
+		stackActionIDs.add(action.getId());
+	}
+
+	protected void addEditPartAction(SelectionAction action) {
+		getActionRegistry().registerAction(action);
+		editPartActionIDs.add(action.getId());
+	}
+
+	protected void addSelectionAction(SelectionAction action) {
+		getSelectionActions().add(action);
+	}
+
+	protected void addEditorAction(EditorPartAction action) {
+		getActionRegistry().registerAction(action);
+		editorActionIDs.add(action.getId());
+	}
+
+	protected void addAction(IAction action) {
+		getActionRegistry().registerAction(action);
 	}
 
 	private IPartListener partListener = new IPartListener() {
@@ -216,13 +278,14 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 		viewer.setRootEditPart(root);
 
-		viewer.setEditPartFactory(new EditPartFactory());
+		viewer.setEditPartFactory(new EditPartFactory(parent));
 		ContextMenuProvider provider = new PasserelleContextMenuProvider(
 				viewer, getActionRegistry());
 		viewer.setContextMenu(provider);
-		getSite().registerContextMenu(
-				"com.isencia.passerelle.workbench.model.editor.ui.editor.contextmenu", //$NON-NLS-1$
-				provider, viewer);
+		getSite()
+				.registerContextMenu(
+						"com.isencia.passerelle.workbench.model.editor.ui.editor.contextmenu", //$NON-NLS-1$
+						provider, viewer);
 		viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer)
 				.setParent(getCommonKeyHandler()));
 
@@ -256,11 +319,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	protected CustomPalettePage createPalettePage() {
 		return new CustomPalettePage(getPaletteViewerProvider()) {
 			public void init(IPageSite pageSite) {
-				super.init(pageSite);
-				IAction copy = getActionRegistry().getAction(
-						ActionFactory.COPY.getId());
-				pageSite.getActionBars().setGlobalActionHandler(
-						ActionFactory.COPY.getId(), copy);
 			}
 		};
 	}
@@ -279,17 +337,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 			protected void hookPaletteViewer(PaletteViewer viewer) {
 				super.hookPaletteViewer(viewer);
-				final CopyTemplateAction copy = (CopyTemplateAction) getActionRegistry()
-						.getAction(ActionFactory.COPY.getId());
-				viewer.addSelectionChangedListener(copy);
-				if (menuListener == null)
-					menuListener = new IMenuListener() {
-						public void menuAboutToShow(IMenuManager manager) {
-							manager.appendToGroup(
-									GEFActionConstants.GROUP_COPY, copy);
-						}
-					};
-				viewer.getContextMenu().addMenuListener(menuListener);
 			}
 		};
 	}
@@ -410,8 +457,8 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		ActionRegistry registry = getActionRegistry();
 		IAction action;
 
-		action = new CopyTemplateAction(this);
-		registry.registerAction(action);
+		// action = new CopyTemplateAction(this);
+		// registry.registerAction(action);
 
 		action = new MatchWidthAction(this);
 		registry.registerAction(action);
@@ -459,6 +506,17 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 				PositionConstants.MIDDLE);
 		registry.registerAction(action);
 		getSelectionActions().add(action.getId());
+
+		CopyNodeAction copyAction = new CopyNodeAction(this);
+		registry.registerAction(copyAction);
+		getSelectionActions().add(copyAction.getId());
+		CutNodeAction cutAction = new CutNodeAction(this);
+		registry.registerAction(cutAction);
+		getSelectionActions().add(cutAction.getId());
+		PasteNodeAction pasteAction = new PasteNodeAction(this, getDiagram());
+		registry.registerAction(pasteAction);
+		getSelectionActions().add(pasteAction.getId());
+
 	}
 
 	/*
@@ -471,8 +529,18 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	protected void createGraphicalViewer(Composite parent) {
 		rulerComp = new RulerComposite(parent, SWT.NONE);
 		super.createGraphicalViewer(rulerComp);
-		rulerComp
-				.setGraphicalViewer((ScrollingGraphicalViewer) getGraphicalViewer());
+		ScrollingGraphicalViewer graphicalViewer = (ScrollingGraphicalViewer) getGraphicalViewer();
+		rulerComp.setGraphicalViewer(graphicalViewer);
+
+		GraphicalViewerKeyHandler graphicalViewerKeyHandler = new GraphicalViewerKeyHandler(
+				graphicalViewer);
+		KeyHandler keyHandler = new KeyHandler();
+
+		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0),
+				getActionRegistry().getAction(GEFActionConstants.DELETE));
+		graphicalViewerKeyHandler.setParent(keyHandler);
+		graphicalViewer.setKeyHandler(graphicalViewerKeyHandler);
+
 	}
 
 	protected FigureCanvas getEditor() {
@@ -547,7 +615,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 								.getBytes()), true, monitor);
 						writer.close();
 					} catch (Exception e) {
-						getLogger().error("Error saving model file : "+file.getName(),e);
+						getLogger().error(
+								"Error saving model file : " + file.getName(),
+								e);
 					}
 				}
 			};
@@ -555,7 +625,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 				new ProgressMonitorDialog(getSite().getWorkbenchWindow()
 						.getShell()).run(false, true, op);
 			} catch (Exception e) {
-				getLogger().error("Error showing progress monitor during saving of model file : "+file.getName(),e);
+				getLogger().error(
+						"Error showing progress monitor during saving of model file : "
+								+ file.getName(), e);
 			}
 		}
 
@@ -563,7 +635,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			superSetInput(new FileEditorInput(file));
 			getCommandStack().markSaveLocation();
 		} catch (Exception e) {
-			getLogger().error("Error during re-read of saved model file : "+file.getName(),e);
+			getLogger().error(
+					"Error during re-read of saved model file : "
+							+ file.getName(), e);
 		}
 		return true;
 	}
@@ -593,7 +667,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 					null, is);
 			setDiagram(compositeActor);
 		} catch (Exception e) {
-			getLogger().error("Error during reading/parsing of model file : "+file.getName(),e);
+			getLogger().error(
+					"Error during reading/parsing of model file : "
+							+ file.getName(), e);
 		} finally {
 			if (is != null) {
 				try {
@@ -665,15 +741,15 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 		public void init(IPageSite pageSite) {
 			super.init(pageSite);
-			ActionRegistry registry = getActionRegistry();
-			IActionBars bars = pageSite.getActionBars();
-			String id = ActionFactory.UNDO.getId();
-			bars.setGlobalActionHandler(id, registry.getAction(id));
-			id = ActionFactory.REDO.getId();
-			bars.setGlobalActionHandler(id, registry.getAction(id));
-			id = ActionFactory.DELETE.getId();
-			bars.setGlobalActionHandler(id, registry.getAction(id));
-			bars.updateActionBars();
+			// ActionRegistry registry = getActionRegistry();
+			// IActionBars bars = pageSite.getActionBars();
+			// String id = ActionFactory.UNDO.getId();
+			// bars.setGlobalActionHandler(id, registry.getAction(id));
+			// id = ActionFactory.REDO.getId();
+			// bars.setGlobalActionHandler(id, registry.getAction(id));
+			// id = ActionFactory.DELETE.getId();
+			// bars.setGlobalActionHandler(id, registry.getAction(id));
+			// bars.updateActionBars();
 		}
 
 		protected void configureOutlineViewer() {
@@ -682,9 +758,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			ContextMenuProvider provider = new PasserelleContextMenuProvider(
 					getViewer(), getActionRegistry());
 			getViewer().setContextMenu(provider);
-			getSite().registerContextMenu(
-					"com.isencia.passerelle.workbench.model.editor.ui.editor.outline.contextmenu", //$NON-NLS-1$  
-					provider, getSite().getSelectionProvider());
+			getSite()
+					.registerContextMenu(
+							"com.isencia.passerelle.workbench.model.editor.ui.editor.outline.contextmenu", //$NON-NLS-1$  
+							provider, getSite().getSelectionProvider());
 			getViewer().setKeyHandler(getCommonKeyHandler());
 			IToolBarManager tbm = getSite().getActionBars().getToolBarManager();
 			showOutlineAction = new Action() {
@@ -716,6 +793,12 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			configureOutlineViewer();
 			hookOutlineViewer();
 			initializeOutlineViewer();
+//			IActionBars bars = getSite().getActionBars();
+//			ActionRegistry ar = getActionRegistry();
+//			bars.setGlobalActionHandler(ActionFactory.COPY.getId(), ar
+//					.getAction(ActionFactory.COPY.getId()));
+//			bars.setGlobalActionHandler(ActionFactory.PASTE.getId(), ar
+//					.getAction(ActionFactory.PASTE.getId()));
 		}
 
 		public void dispose() {
@@ -825,10 +908,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			if (delta.getKind() == IResourceDelta.REMOVED) {
 				Display display = getSite().getShell().getDisplay();
 				if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) { // if
-																			// the
-																			// file
-																			// was
-																			// deleted
+					// the
+					// file
+					// was
+					// deleted
 					// NOTE: The case where an open, unsaved file is deleted is
 					// being handled by the
 					// PartListener added to the Workbench in the initialize()

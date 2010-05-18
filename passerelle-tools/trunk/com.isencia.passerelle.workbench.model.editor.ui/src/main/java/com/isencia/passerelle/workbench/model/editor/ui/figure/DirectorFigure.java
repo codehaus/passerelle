@@ -22,7 +22,7 @@ public class DirectorFigure extends AbstractBaseFigure {
 
     private Body body = null;
     
-    
+
     public DirectorFigure(String name, Image image) {
     	super(name);
         body = new Body();

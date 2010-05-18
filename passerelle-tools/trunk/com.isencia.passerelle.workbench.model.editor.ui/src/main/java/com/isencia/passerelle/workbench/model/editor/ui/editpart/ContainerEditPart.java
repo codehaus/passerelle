@@ -2,21 +2,24 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 
 import ptolemy.actor.CompositeActor;
-import ptolemy.kernel.util.NamedObj;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
+
+import com.isencia.passerelle.actor.Actor;
 
 /**
  * Provides support for Container EditParts.
  */
-abstract public class ContainerEditPart extends AbstractBaseEditPart{
-	
+abstract public class ContainerEditPart extends AbstractBaseEditPart {
+
 	private boolean showChildren = true;
-	
+
 	public ContainerEditPart() {
 		super();
 	}
@@ -57,16 +60,32 @@ abstract public class ContainerEditPart extends AbstractBaseEditPart{
 	 * @return Children of this as a List.
 	 */
 	protected List getModelChildren() {
-		if( !showChildren )
+		if (!showChildren)
 			return Collections.EMPTY_LIST;
 		CompositeActor modelDiagram = getModelDiagram();
-		ArrayList<NamedObj> children = new ArrayList<NamedObj>();
+		ArrayList children = new ArrayList();
 		List entities = modelDiagram.entityList();
 		if (entities != null)
 			children.addAll(entities);
 
 		if (modelDiagram.getDirector() != null)
 			children.add(modelDiagram.getDirector());
+
+		Enumeration attributes = modelDiagram.getAttributes();
+		while (attributes.hasMoreElements()) {
+
+			Object nextElement = attributes.nextElement();
+			if (nextElement instanceof TextAttribute)
+				children.add(nextElement);
+			if (nextElement instanceof CompositeActor)
+				children.add(nextElement);
+		}
+		Enumeration enitites = modelDiagram.getEntities();
+		while (attributes.hasMoreElements()) {
+			
+			Object nextElement = attributes.nextElement();
+			children.add(nextElement);
+		}
 		return children;
 	}
 

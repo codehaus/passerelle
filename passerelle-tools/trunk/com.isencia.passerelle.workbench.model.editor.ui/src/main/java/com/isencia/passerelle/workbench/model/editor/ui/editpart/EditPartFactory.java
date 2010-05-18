@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import org.eclipse.gef.EditPart;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +9,7 @@ import ptolemy.actor.Director;
 import ptolemy.actor.TypedAtomicActor;
 import ptolemy.actor.TypedCompositeActor;
 import ptolemy.kernel.Relation;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.actor.Sink;
 import com.isencia.passerelle.actor.Source;
@@ -15,7 +17,12 @@ import com.isencia.passerelle.actor.Source;
 public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(EditPartFactory.class);
-	
+	private MultiPageEditorPart parent;
+	public EditPartFactory(MultiPageEditorPart parent) {
+		super();
+		this.parent = parent;
+	}
+
 	private Logger getLogger() {
 		return logger;
 	}
@@ -29,15 +36,17 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		// TODO Check what happens when we have sub-models !!!!
 		if (model instanceof Director) {
 			child = new DirectorEditPart();
+		} else if (model instanceof TextAttribute) {
+				child = new CommentEditPart();
 		} else if (model instanceof Relation ) {
 			child = new RelationEditPart();
 		} else if (model instanceof TypedCompositeActor) {
 			// TODO Check if this is the correct check to make the distinction 
 			// between this and child Composites. Check also how to go more then 1 level deeper
 			if( ((TypedCompositeActor) model).getContainer()==null) {
-				child = new DiagramEditPart();
+				child = new DiagramEditPart(parent);
 			} else {
-				child = new CompositeActorEditPart(!(context!=null && context.getParent()!=null));
+				child = new CompositeActorEditPart(!(context!=null && context.getParent()!=null),parent);
 			}
 		} else if (model instanceof TypedAtomicActor) {
 			if( model instanceof Source )

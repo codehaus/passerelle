@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
@@ -8,6 +9,7 @@ import org.eclipse.gef.EditPart;
 import ptolemy.actor.CompositeActor;
 import ptolemy.data.expr.Parameter;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 /**
  * Tree EditPart for the Container.
@@ -62,13 +64,17 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 	 * @return List of children.
 	 */
 	protected List getModelChildren() {
-		ArrayList<NamedObj> children = new ArrayList<NamedObj>();
+		ArrayList children = new ArrayList();
 		
 		CompositeActor actor = getModelDiagram();
 		children.addAll(actor.attributeList(Parameter.class));
+		children.addAll(actor.attributeList(TextAttribute.class));
 		children.addAll(actor.inputPortList());
 		children.addAll(actor.outputPortList());
-		
+		Enumeration enumeration = actor.getEntities();
+		while(enumeration.hasMoreElements()){
+			children.add(enumeration.nextElement());
+		}
 		// Only show children 1 level deep
 		boolean showChildren = !(context!=null && context.getParent()!=null);
 		if( !showChildren )

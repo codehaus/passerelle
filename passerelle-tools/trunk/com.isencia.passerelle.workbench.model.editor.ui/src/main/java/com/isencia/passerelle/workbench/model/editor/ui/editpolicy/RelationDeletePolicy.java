@@ -8,7 +8,7 @@ import ptolemy.kernel.CompositeEntity;
 
 import com.isencia.passerelle.workbench.model.ui.command.DeleteConnectionCommand;
 
-public class RelationEditPolicy
+public class RelationDeletePolicy
 	extends org.eclipse.gef.editpolicies.ConnectionEditPolicy
 {
 

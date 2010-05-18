@@ -32,9 +32,10 @@ import com.isencia.passerelle.core.ControlPort;
 import com.isencia.passerelle.core.ErrorPort;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ActorEditPolicy;
-import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeEditPolicy;
+import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.PortFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
@@ -45,16 +46,22 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class ActorEditPart extends AbstractNodeEditPart {
 
-	private final static Logger logger = LoggerFactory.getLogger(ActorEditPart.class);
+	private final static Logger logger = LoggerFactory
+			.getLogger(ActorEditPart.class);
 
 	public final static Color COLOR_ERROR_PORT = new Color(null, 192, 20, 20);
 	public final static Color COLOR_CONTROL_PORT = new Color(null, 50, 50, 255);
 
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_ACTOR = Activator.getImageDescriptor("icons/actor.gif");
+	public final static ImageDescriptor IMAGE_COMMENT = Activator
+			.getImageDescriptor("icons/comment.png");
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_ACTOR = Activator
+			.getImageDescriptor("icons/actor.gif");
 	public final static ImageDescriptor IMAGE_DESCRIPTOR_PARAMETER = Activator
 			.getImageDescriptor("icons/parameter.gif");
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_INPUTPORT = Activator.getImageDescriptor("icons/input.gif");
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_OUTPUTPORT = Activator.getImageDescriptor("icons/output.gif");
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_INPUTPORT = Activator
+			.getImageDescriptor("icons/input.gif");
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_OUTPUTPORT = Activator
+			.getImageDescriptor("icons/output.gif");
 
 	public Logger getLogger() {
 		return logger;
@@ -65,17 +72,22 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		super.changeExecuted(changerequest);
 
 		Object source = changerequest.getSource();
-		Class<?> type = ((ModelChangeRequest) changerequest).getType();
+		if (changerequest instanceof ModelChangeRequest) {
+			Class<?> type = ((ModelChangeRequest) changerequest).getType();
 
-		if (EntityPropertySource.class.equals(type)) {
-			if (source == this.getModel()) {
-				// Execute the dummy command force a dirty state
-				getViewer().getEditDomain().getCommandStack().execute(new ChangeActorPropertyCommand());
+			if (EntityPropertySource.class.equals(type)
+					|| CommentPropertySource.class.equals(type)) {
+				if (source == this.getModel()) {
+					// Execute the dummy command force a dirty state
+					getViewer().getEditDomain().getCommandStack().execute(
+							new ChangeActorPropertyCommand());
+				}
+			} else if ((DeleteConnectionCommand.class.equals(type)
+					|| DeleteComponentCommand.class.equals(type) || CreateConnectionCommand.class
+					.equals(type))) {
+				refreshSourceConnections();
+				refreshTargetConnections();
 			}
-		} else if ((DeleteConnectionCommand.class.equals(type) || DeleteComponentCommand.class.equals(type) || CreateConnectionCommand.class
-				.equals(type))) {
-			refreshSourceConnections();
-			refreshTargetConnections();
 		}
 	}
 
@@ -97,7 +109,8 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	}
 
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE, new ComponentNodeEditPolicy());
+		installEditPolicy(EditPolicy.COMPONENT_ROLE,
+				new ComponentNodeDeletePolicy());
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new ActorEditPolicy());
 	}
 
@@ -108,12 +121,14 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 */
 	protected IFigure createFigure() {
 		Actor actorModel = getActorModel();
-		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(), IMAGE_DESCRIPTOR_ACTOR.createImage());
+		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(),
+				IMAGE_DESCRIPTOR_ACTOR.createImage());
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
 		if (inputPortList != null) {
 			for (TypedIOPort inputPort : inputPortList) {
-				PortFigure portFigure = actorFigure.addInput(inputPort.getName(), inputPort.getDisplayName());
+				PortFigure portFigure = actorFigure.addInput(inputPort
+						.getName(), inputPort.getDisplayName());
 				if (inputPort instanceof ErrorPort) {
 					portFigure.setFillColor(COLOR_ERROR_PORT);
 				} else if (inputPort instanceof ControlPort) {
@@ -125,7 +140,8 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		List<TypedIOPort> outputPortList = actorModel.outputPortList();
 		if (outputPortList != null) {
 			for (TypedIOPort outputPort : outputPortList) {
-				PortFigure portFigure = actorFigure.addOutput(outputPort.getName(), outputPort.getDisplayName());
+				PortFigure portFigure = actorFigure.addOutput(outputPort
+						.getName(), outputPort.getDisplayName());
 				if (outputPort instanceof ErrorPort) {
 					portFigure.setFillColor(COLOR_ERROR_PORT);
 				} else if (outputPort instanceof ControlPort) {
@@ -141,20 +157,27 @@ public class ActorEditPart extends AbstractNodeEditPart {
 			return new DefaultAccessibleAnchorProvider() {
 				public List<Point> getSourceAnchorLocations() {
 					List<Point> list = new ArrayList<Point>();
-					Vector<ConnectionAnchor> sourceAnchors = getComponentFigure().getSourceConnectionAnchors();
+					Vector<ConnectionAnchor> sourceAnchors = getComponentFigure()
+							.getSourceConnectionAnchors();
 					for (int i = 0; i < sourceAnchors.size(); i++) {
-						ConnectionAnchor anchor = (ConnectionAnchor) sourceAnchors.get(i);
-						list.add(anchor.getReferencePoint().getTranslated(0, -3));
+						ConnectionAnchor anchor = (ConnectionAnchor) sourceAnchors
+								.get(i);
+						list.add(anchor.getReferencePoint()
+								.getTranslated(0, -3));
 					}
 					return list;
 				}
 
 				public List<Point> getTargetAnchorLocations() {
 					List<Point> list = new ArrayList<Point>();
-					Vector<ConnectionAnchor> targetAnchors = getComponentFigure().getTargetConnectionAnchors();
+					Vector<ConnectionAnchor> targetAnchors = getComponentFigure()
+							.getTargetConnectionAnchors();
 					for (int i = 0; i < targetAnchors.size(); i++) {
-						ConnectionAnchor anchor = (ConnectionAnchor) targetAnchors.get(i);
-						list.add(anchor.getReferencePoint().getTranslated(0, 3));
+						ConnectionAnchor anchor = (ConnectionAnchor) targetAnchors
+								.get(i);
+						list
+								.add(anchor.getReferencePoint().getTranslated(
+										0, 3));
 					}
 					return list;
 				}
@@ -187,12 +210,14 @@ public class ActorEditPart extends AbstractNodeEditPart {
 
 	@Override
 	protected List<Relation> getModelSourceConnections() {
-		return ModelUtils.getConnectedRelations(getActorModel(), ModelUtils.ConnectionType.SOURCE);
+		return ModelUtils.getConnectedRelations(getActorModel(),
+				ModelUtils.ConnectionType.SOURCE);
 	}
 
 	@Override
 	protected List<Relation> getModelTargetConnections() {
-		return ModelUtils.getConnectedRelations(getActorModel(), ModelUtils.ConnectionType.TARGET);
+		return ModelUtils.getConnectedRelations(getActorModel(),
+				ModelUtils.ConnectionType.TARGET);
 	}
 
 	/**
@@ -200,14 +225,17 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 * 
 	 * @return ConnectionAnchor.
 	 */
-	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
-		getLogger().debug("Get SourceConnectionAnchor based on ConnectionEditPart");
+	public ConnectionAnchor getSourceConnectionAnchor(
+			ConnectionEditPart connEditPart) {
+		getLogger().debug(
+				"Get SourceConnectionAnchor based on ConnectionEditPart");
 		Relation relation = (Relation) connEditPart.getModel();
 		List linkedPortList = ((IORelation) relation).linkedSourcePortList();
 		if (linkedPortList == null || linkedPortList.size() == 0)
 			return null;
 		Port port = (Port) linkedPortList.get(0);
-		ConnectionAnchor connectionAnchor = getComponentFigure().getConnectionAnchor(port.getName());
+		ConnectionAnchor connectionAnchor = getComponentFigure()
+				.getConnectionAnchor(port.getName());
 		return connectionAnchor;
 	}
 
@@ -227,14 +255,18 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 * 
 	 * @return ConnectionAnchor.
 	 */
-	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
-		getLogger().debug("Get TargetConnectionAnchor based on ConnectionEditPart");
+	public ConnectionAnchor getTargetConnectionAnchor(
+			ConnectionEditPart connEditPart) {
+		getLogger().debug(
+				"Get TargetConnectionAnchor based on ConnectionEditPart");
 		Relation relation = (Relation) connEditPart.getModel();
-		List linkedPortList = ((IORelation) relation).linkedDestinationPortList();
+		List linkedPortList = ((IORelation) relation)
+				.linkedDestinationPortList();
 		if (linkedPortList == null || linkedPortList.size() == 0)
 			return null;
 		Port port = (Port) linkedPortList.get(0);
-		ConnectionAnchor connectionAnchor = getComponentFigure().getConnectionAnchor(port.getName());
+		ConnectionAnchor connectionAnchor = getComponentFigure()
+				.getConnectionAnchor(port.getName());
 		return connectionAnchor;
 	}
 
@@ -250,7 +282,8 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		List outputPortList = getActorModel().outputPortList();
 		for (Iterator iterator = outputPortList.iterator(); iterator.hasNext();) {
 			Port port = (Port) iterator.next();
-			String connectionAnchorName = anchorFigure.getConnectionAnchorName(anchor);
+			String connectionAnchorName = anchorFigure
+					.getConnectionAnchorName(anchor);
 			String portName = port.getName();
 			if (portName != null && portName.equals(connectionAnchorName)) {
 				return port;
@@ -271,7 +304,9 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		List inputPortList = getActorModel().inputPortList();
 		for (Iterator iterator = inputPortList.iterator(); iterator.hasNext();) {
 			Port port = (Port) iterator.next();
-			if (port.getName() != null && port.getName().equals(anchorFigure.getConnectionAnchorName(anchor)))
+			if (port.getName() != null
+					&& port.getName().equals(
+							anchorFigure.getConnectionAnchorName(anchor)))
 				return port;
 		}
 		return null;

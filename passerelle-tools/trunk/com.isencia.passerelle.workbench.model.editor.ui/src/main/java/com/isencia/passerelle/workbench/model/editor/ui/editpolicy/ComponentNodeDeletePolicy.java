@@ -14,7 +14,7 @@ import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
  * @author Dirk Jacobs
  *
  */
-public class ComponentNodeEditPolicy extends
+public class ComponentNodeDeletePolicy extends
 		org.eclipse.gef.editpolicies.ComponentEditPolicy {
 
 	protected Command createDeleteCommand(GroupRequest request) {

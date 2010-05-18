@@ -28,6 +28,7 @@ import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.ui.part.MultiPageEditorPart;
 
 import ptolemy.kernel.util.ChangeRequest;
 
@@ -40,6 +41,16 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.DiagramXYLayo
  */
 public class DiagramEditPart extends ContainerEditPart implements
 		LayerConstants {
+	private MultiPageEditorPart multiPageEditorPart;
+
+	public DiagramEditPart(MultiPageEditorPart parent) {
+		super();
+		this.multiPageEditorPart = parent;
+	}
+
+	public MultiPageEditorPart getMultiPageEditorPart() {
+		return multiPageEditorPart;
+	}
 
 	protected AccessibleEditPart createAccessible() {
 		return new AccessibleGraphicalEditPart() {
@@ -62,7 +73,7 @@ public class DiagramEditPart extends ContainerEditPart implements
 				new RootComponentEditPolicy());
 		installEditPolicy(EditPolicy.LAYOUT_ROLE, new
 		 DiagramXYLayoutEditPolicy(
-		 (XYLayout)getContentPane().getLayoutManager()));
+		 (XYLayout)getContentPane().getLayoutManager(),multiPageEditorPart));
 
 		installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
 	}

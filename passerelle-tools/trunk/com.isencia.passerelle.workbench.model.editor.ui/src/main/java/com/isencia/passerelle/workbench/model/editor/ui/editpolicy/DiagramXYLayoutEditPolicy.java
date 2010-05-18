@@ -19,11 +19,15 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelSampleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
 
@@ -31,10 +35,11 @@ public class DiagramXYLayoutEditPolicy extends
 		org.eclipse.gef.editpolicies.XYLayoutEditPolicy {
 
 	private static Logger logger;
-
-	public DiagramXYLayoutEditPolicy(XYLayout layout) {
+	private MultiPageEditorPart parent;
+	public DiagramXYLayoutEditPolicy(XYLayout layout,MultiPageEditorPart parent) {
 		super();
 		setXyLayout(layout);
+		this.parent = parent;
 	}
 
 	Logger getLogger() {

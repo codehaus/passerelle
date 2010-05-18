@@ -10,7 +10,7 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 import ptolemy.actor.Director;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
-import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeEditPolicy;
+import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.DirectorFigure;
 
 public class DirectorEditPart extends AbstractBaseEditPart {
@@ -36,7 +36,7 @@ public class DirectorEditPart extends AbstractBaseEditPart {
 
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE, new
-				 ComponentNodeEditPolicy());
+				 ComponentNodeDeletePolicy());
 	}
 
 	/**

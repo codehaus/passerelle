@@ -17,7 +17,7 @@ import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
 
-import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationEditPolicy;
+import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationEndpointEditPolicy;
 
 /**
@@ -69,7 +69,7 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 				new RelationEndpointEditPolicy());
 		// //Note that the Connection is already added to the diagram and knows
 		// its Router.
-		installEditPolicy(EditPolicy.CONNECTION_ROLE, new RelationEditPolicy());
+		installEditPolicy(EditPolicy.CONNECTION_ROLE, new RelationDeletePolicy());
 	}
 
 	/**

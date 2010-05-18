@@ -19,11 +19,11 @@ import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
+import org.eclipse.ui.part.EditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 
 public class PaletteBuilder {
 	
@@ -31,13 +31,13 @@ public class PaletteBuilder {
 
 	public final static String PALETTE_CONTAINER_GENERAL = "General";
 
-	static public PaletteRoot createPalette(PasserelleModelEditor parent){
+	static public PaletteRoot createPalette(EditorPart parent){
 		PaletteRoot paletteRoot = new PaletteRoot();
 		paletteRoot.addAll(createCategories(paletteRoot,parent));
 		return paletteRoot;
 	}
 	
-	static private List createCategories(PaletteRoot root, PasserelleModelEditor parent){
+	static private List createCategories(PaletteRoot root, EditorPart parent){
 		List categories = new ArrayList();
 		
 		categories.add(createControlGroup(root));
@@ -69,13 +69,18 @@ public class PaletteBuilder {
 				for (IConfigurationElement configurationElement : config) {
 					String nameAttribute = configurationElement.getAttribute("name");
 					String groupAttribute = configurationElement.getAttribute("group");
+					String iconAttribute = configurationElement.getAttribute("icon");
+					String icon = "icons/ide.gif";
+					if (iconAttribute!=null && !iconAttribute.isEmpty()){
+						icon =iconAttribute;
+					}
 					String classAttribute = configurationElement.getAttribute("class");
 					CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
 							nameAttribute,
 							nameAttribute,
 							new ClassTypeFactory(classAttribute),
-							Activator.getImageDescriptor("icons/ide.gif"), //$NON-NLS-1$
-							Activator.getImageDescriptor("icons/ide.gif")//$NON-NLS-1$
+							Activator.getImageDescriptor(icon), //$NON-NLS-1$
+							Activator.getImageDescriptor(icon)//$NON-NLS-1$
 						);
 					
 					PaletteContainer paletteContainer = paletteContainers.get(groupAttribute);

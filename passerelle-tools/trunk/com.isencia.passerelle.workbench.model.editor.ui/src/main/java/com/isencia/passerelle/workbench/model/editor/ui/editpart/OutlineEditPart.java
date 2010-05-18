@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.gef.EditPolicy;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.AtomicActor;
+import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.TypedAtomicActor;
@@ -19,15 +21,18 @@ import ptolemy.kernel.util.Changeable;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.kernel.util.Settable;
 import ptolemy.kernel.util.ValueListener;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 /**
  * EditPart for components in the Tree.
  */
-public class OutlineEditPart extends org.eclipse.gef.editparts.AbstractTreeEditPart implements ValueListener,
-		ChangeListener {
+public class OutlineEditPart extends
+		org.eclipse.gef.editparts.AbstractTreeEditPart implements
+		ValueListener, ChangeListener {
 
-	private static Logger logger = LoggerFactory.getLogger(OutlineEditPart.class);
-	
+	private static Logger logger = LoggerFactory
+			.getLogger(OutlineEditPart.class);
+
 	/**
 	 * Constructor initializes this with the given model.
 	 * 
@@ -47,7 +52,7 @@ public class OutlineEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 	public Logger getLogger() {
 		return logger;
 	}
-	
+
 	public void activate() {
 		if (isActive())
 			return;
@@ -106,6 +111,19 @@ public class OutlineEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 			children.addAll(actor.attributeList(Parameter.class));
 			children.addAll(actor.inputPortList());
 			children.addAll(actor.outputPortList());
+		} else if (namedObjectModel instanceof CompositeActor) {
+			CompositeActor composite = (CompositeActor) namedObjectModel;
+			children.addAll(composite.attributeList(AtomicActor.class));
+			children.addAll(composite.attributeList(Parameter.class));
+			children.addAll(composite.inputPortList());
+			
+			Enumeration enumeration = composite.getEntities();
+			while(enumeration.hasMoreElements()){
+				children.add(enumeration.nextElement());
+			}
+		} else if (namedObjectModel instanceof TextAttribute) {
+			TextAttribute text = (TextAttribute) namedObjectModel;
+			children.addAll(text.attributeList(ptolemy.kernel.util.StringAttribute.class));
 		} else if (namedObjectModel instanceof Director) {
 			Director director = (Director) namedObjectModel;
 			children.addAll(director.attributeList(Parameter.class));
@@ -135,17 +153,25 @@ public class OutlineEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 		NamedObj model = getNamedObjectModel();
 		// Set Image
 		if (model instanceof Director)
-			setWidgetImage(DirectorEditPart.IMAGE_DESCRIPTOR_DIRECTOR.createImage());
+			setWidgetImage(DirectorEditPart.IMAGE_DESCRIPTOR_DIRECTOR
+					.createImage());
 		else if (model instanceof Parameter)
-			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_PARAMETER.createImage());
+			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_PARAMETER
+					.createImage());
 		else if (model instanceof IOPort) {
 			IOPort port = (IOPort) model;
 			if (port.isInput())
-				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_INPUTPORT.createImage());
+				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_INPUTPORT
+						.createImage());
 			else
-				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_OUTPUTPORT.createImage());
-		} else if (model instanceof TypedAtomicActor)
+				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_OUTPUTPORT
+						.createImage());
+		} else if (model instanceof TypedAtomicActor) {
 			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_ACTOR.createImage());
+		} else if (model instanceof CompositeActor) {
+			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR.createImage());
+		} else if (model instanceof TextAttribute)
+			setWidgetImage(CommentEditPart.IMAGE_COMMENT.createImage());
 		// Set Text
 		if (model instanceof Parameter) {
 			Parameter param = (Parameter) model;
@@ -169,7 +195,7 @@ public class OutlineEditPart extends org.eclipse.gef.editparts.AbstractTreeEditP
 
 	@Override
 	public void changeFailed(ChangeRequest changerequest, Exception exception) {
-		getLogger().error("Error during execution of ChangeRequest",exception);
+		getLogger().error("Error during execution of ChangeRequest", exception);
 	}
 
 }
