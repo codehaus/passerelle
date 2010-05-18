@@ -45,6 +45,19 @@
             id="com.isencia.passerelle.actor.Synchronizer"
             name="Synchronizer">
       </actor>
+      <actor
+            class="ptolemy.actor.CompositeActor"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            id="ptolemy.actor.CompositeActor"
+            name="CompositeActor">
+      </actor>
+      <actor
+            class="ptolemy.vergil.kernel.attributes.TextAttribute"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            icon="icons/comment.png"
+            id="ptolemy.vergil.kernel.attributes.TextAttribute"
+            name="Comment">
+      </actor>
    </extension>
    <extension
          point="com.isencia.passerelle.engine.actorGroups">
