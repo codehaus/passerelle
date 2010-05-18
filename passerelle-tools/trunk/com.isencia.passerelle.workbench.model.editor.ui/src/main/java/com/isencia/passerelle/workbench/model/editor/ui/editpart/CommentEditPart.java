@@ -19,6 +19,7 @@ import ptolemy.kernel.util.StringAttribute;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.model.editor.ui.INameable;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.CommentEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.AbstractBaseFigure;
@@ -47,16 +48,14 @@ public class CommentEditPart extends AbstractNodeEditPart {
 			if (CommentPropertySource.class.equals(type)) {
 				if (source == this.getModel() && source instanceof NamedObj) {
 					String name = getName(source);
-					if ((getComponentFigure() instanceof AbstractBaseFigure)
+					if ((getComponentFigure() instanceof INameable)
 							&& name != null
-							&& !name
-									.equals(((AbstractBaseFigure) getComponentFigure())
-											.getName())) {
+							&& !name.equals(((INameable) getComponentFigure())
+									.getName())) {
 						// Execute the dummy command force a dirty state
 						getViewer().getEditDomain().getCommandStack().execute(
 								new ChangeActorPropertyCommand());
-						((AbstractBaseFigure) getComponentFigure())
-								.setName(name);
+						((INameable) getComponentFigure()).setName(name);
 						getFigure().repaint();
 					}
 				}

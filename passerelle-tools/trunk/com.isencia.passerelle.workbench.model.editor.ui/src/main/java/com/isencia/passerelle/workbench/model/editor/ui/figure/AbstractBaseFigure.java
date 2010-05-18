@@ -2,17 +2,14 @@ package com.isencia.passerelle.workbench.model.editor.ui.figure;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.KeyEvent;
-import org.eclipse.draw2d.KeyListener;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.graphics.Color;
-import static com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor.COPY_KEYCODE;
-import static com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor.DELETE_KEYCODE;
-import static com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor.PASTE_KEYCODE;
 
-public class AbstractBaseFigure extends Figure {
+import com.isencia.passerelle.workbench.model.editor.ui.INameable;
+
+public class AbstractBaseFigure extends Figure implements INameable {
 
 	
 

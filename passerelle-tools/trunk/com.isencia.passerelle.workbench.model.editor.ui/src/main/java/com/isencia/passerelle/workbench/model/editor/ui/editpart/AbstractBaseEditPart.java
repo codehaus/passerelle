@@ -18,6 +18,7 @@ import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
 import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.workbench.model.editor.ui.INameable;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.AbstractBaseFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
@@ -200,15 +201,15 @@ abstract public class AbstractBaseEditPart extends
 					|| CommentPropertySource.class.equals(type)) {
 				if (source == this.getModel() && source instanceof NamedObj) {
 					String name = getName(source);
-					if ((getComponentFigure() instanceof AbstractBaseFigure)
+					if ((getComponentFigure() instanceof INameable)
 							&& name != null
 							&& !name
-									.equals(((AbstractBaseFigure) getComponentFigure())
+									.equals(((INameable) getComponentFigure())
 											.getName())) {
 						// Execute the dummy command force a dirty state
 						getViewer().getEditDomain().getCommandStack().execute(
 								new ChangeActorPropertyCommand());
-						((AbstractBaseFigure) getComponentFigure())
+						((INameable) getComponentFigure())
 								.setName(name);
 						getFigure().repaint();
 					}
