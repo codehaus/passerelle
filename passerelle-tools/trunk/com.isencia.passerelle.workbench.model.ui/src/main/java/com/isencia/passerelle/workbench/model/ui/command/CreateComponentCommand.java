@@ -5,23 +5,35 @@ import java.lang.reflect.Constructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ptolemy.actor.CompositeActor;
+import ptolemy.actor.TypedCompositeActor;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NamedObj;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
-	private static Logger logger = LoggerFactory.getLogger(CreateComponentCommand.class);
-	
+	private static Logger logger = LoggerFactory
+			.getLogger(CreateComponentCommand.class);
+
 	private String type;
+	private ComponentEntity model;
 	private ComponentEntity parent;
-	private ComponentEntity child;
+	private NamedObj child;
 	private double[] location;
 
 	public CreateComponentCommand() {
 		super("CreateComponent");
+	}
+
+	public CreateComponentCommand(ComponentEntity model) {
+		super("CreateComponent");
+		this.model = model;
 	}
 
 	public Logger getLogger() {
@@ -36,40 +48,90 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 		doExecute();
 	}
 
-
 	public void doExecute() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
-		parent.requestChange(new ModelChangeRequest(this.getClass(), parent, "create") {
+		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
+				"create") {
 			@Override
 			protected void _execute() throws Exception {
 				Class<?> newClass = null;
 				try {
-					newClass = CreateComponentCommand.class.getClassLoader().loadClass(
-							type);
-					String name = ModelUtils.findUniqueName(
-							(CompositeEntity) parent, newClass.getSimpleName());
-					Constructor constructor = newClass.getConstructor(
-							CompositeEntity.class, String.class);
-					child = (ComponentEntity) constructor.newInstance(parent,
-							name);
-					if( location != null ) {
+					
+					if (model == null) {
+						newClass = CreateComponentCommand.class
+								.getClassLoader().loadClass(type);
+						String name = ModelUtils.findUniqueName(
+								(CompositeEntity) parent, newClass.getSimpleName());
+
+						Constructor constructor = null;
+						if (type
+								.equals("ptolemy.vergil.kernel.attributes.TextAttribute")) {
+							constructor = newClass.getConstructor(
+									NamedObj.class, String.class);
+							child = (TextAttribute) constructor.newInstance(
+									parent, generateUniqueTextAttributeName(
+											name, parent, 0,
+											TextAttribute.class));
+
+						} else if (type.equals("ptolemy.actor.CompositeActor")) {
+							child = new TypedCompositeActor((CompositeEntity)parent, name);
+
+						} else {
+							constructor = newClass.getConstructor(
+									CompositeEntity.class, String.class);
+
+							child = (ComponentEntity) constructor.newInstance(
+									parent, name);
+						}
+					} else {
+						String name = ModelUtils.findUniqueName(
+								(CompositeEntity) parent, model.getClass().getSimpleName());
+						child = (ComponentEntity) model.clone(((CompositeEntity)parent).workspace());
+						child.setName(name);
+						((ComponentEntity) child).setContainer((CompositeEntity)parent);
+						
+					}
+					if (location != null) {
+						
 						ModelUtils.setLocation(child, location);
 					}
 				} catch (Exception e) {
-					getLogger().error("Unable to create component",e);
+					getLogger().error("Unable to create component", e);
 				}
 
 			}
 		});
 	}
 
+	private String generateUniqueTextAttributeName(String name,
+			NamedObj parent, int index, Class clazz) {
+		try {
+			String newName = index != 0 ? (name + "(" + index + ")") : name;
+			if (parent.getAttribute(newName, clazz) == null) {
+				return newName;
+			} else {
+				index++;
+				return generateUniqueTextAttributeName(name, parent, index,
+						clazz);
+			}
+		} catch (IllegalActionException e) {
+			return name;
+		}
+
+	}
+
 	public void redo() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
-		parent.requestChange(new ModelChangeRequest(this.getClass(), parent, "create") {
+		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
+				"create") {
 			@Override
 			protected void _execute() throws Exception {
 				getLogger().debug("Redo create component");
-				child.setContainer((CompositeEntity) parent);
+				if (child instanceof ComponentEntity) {
+					((ComponentEntity) child)
+							.setContainer((CompositeEntity) parent);
+				}
+
 			}
 		});
 	}
@@ -84,10 +146,13 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
 	public void undo() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
-		parent.requestChange(new ModelChangeRequest(this.getClass(), parent, "create") {
+		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
+				"create") {
 			@Override
 			protected void _execute() throws Exception {
-				child.setContainer(null);
+				if (child instanceof ComponentEntity) {
+					((ComponentEntity) child).setContainer(null);
+				}
 			}
 		});
 	}
