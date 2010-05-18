@@ -9,12 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
-import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.ComponentRelation;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
+import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NameDuplicationException;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
@@ -22,10 +24,11 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils.ConnectionType;
 
 public class DeleteComponentCommand extends Command {
 
-	private static Logger logger = LoggerFactory.getLogger(DeleteComponentCommand.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(DeleteComponentCommand.class);
 
 	private NamedObj container;
-	private ComponentEntity child;
+	private NamedObj child;
 	private CompositeEntity parent;
 	// private LogicGuide vGuide, hGuide;
 	private int vAlign, hAlign;
@@ -49,11 +52,13 @@ public class DeleteComponentCommand extends Command {
 
 		Actor actor = (Actor) model;
 
-		sourceConnections.addAll(ModelUtils.getConnectedRelations(actor, ConnectionType.SOURCE));
+		sourceConnections.addAll(ModelUtils.getConnectedRelations(actor,
+				ConnectionType.SOURCE));
 		Iterator<?> sourceIterator = sourceConnections.iterator();
 		while (sourceIterator.hasNext()) {
 			Relation relation = (Relation) sourceIterator.next();
-			ComponentRelation componentRelation = parent.getRelation(relation.getName());
+			ComponentRelation componentRelation = parent.getRelation(relation
+					.getName());
 			if (componentRelation != null) {
 				try {
 					componentRelation.setContainer(null);
@@ -63,11 +68,13 @@ public class DeleteComponentCommand extends Command {
 			}
 		}
 
-		targetConnections.addAll(ModelUtils.getConnectedRelations(actor, ConnectionType.TARGET));
+		targetConnections.addAll(ModelUtils.getConnectedRelations(actor,
+				ConnectionType.TARGET));
 		Iterator<?> targetIterator = targetConnections.iterator();
 		while (targetIterator.hasNext()) {
 			Relation relation = (Relation) targetIterator.next();
-			ComponentRelation componentRelation = parent.getRelation(relation.getName());
+			ComponentRelation componentRelation = parent.getRelation(relation
+					.getName());
 			if (componentRelation != null) {
 				try {
 					componentRelation.setContainer(null);
@@ -93,13 +100,15 @@ public class DeleteComponentCommand extends Command {
 
 	protected void doExecute() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
-		parent.requestChange(new ModelChangeRequest(this.getClass(), child, "delete") {
+		parent.requestChange(new ModelChangeRequest(this.getClass(), child,
+				"delete") {
 			@Override
 			protected void _execute() throws Exception {
 				deleteConnections(child);
 				// detachFromGuides(child);
 				container = child.getContainer();
-				child.setContainer(null);
+				setContainer(child, null);
+
 			}
 		});
 
@@ -134,7 +143,7 @@ public class DeleteComponentCommand extends Command {
 		targetConnections.clear();
 	}
 
-	public void setChild(ComponentEntity c) {
+	public void setChild(NamedObj c) {
 		child = c;
 	}
 
@@ -148,9 +157,10 @@ public class DeleteComponentCommand extends Command {
 			@Override
 			protected void _execute() throws Exception {
 				try {
-					child.setContainer((CompositeEntity) container);
+					setContainer(child, container);
 				} catch (Exception e) {
-					getLogger().error("Unable to undo deletion of component", e);
+					getLogger()
+							.error("Unable to undo deletion of component", e);
 				}
 				restoreConnections();
 				// reattachToGuides(child);
@@ -158,4 +168,21 @@ public class DeleteComponentCommand extends Command {
 		});
 	}
 
+	public static void setContainer(NamedObj child, NamedObj container) {
+		try {
+			if (child instanceof CompositeEntity) {
+
+				((CompositeEntity) child)
+						.setContainer((CompositeEntity) container);
+
+			} else if (child instanceof TextAttribute) {
+				((TextAttribute) child)
+						.setContainer((CompositeEntity) container);
+			}
+		} catch (IllegalActionException e) {
+			e.printStackTrace();
+		} catch (NameDuplicationException e) {
+			e.printStackTrace();
+		}
+	}
 }

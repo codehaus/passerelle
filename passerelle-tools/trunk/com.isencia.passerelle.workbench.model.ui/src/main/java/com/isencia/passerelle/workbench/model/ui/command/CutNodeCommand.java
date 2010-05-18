@@ -84,4 +84,8 @@ public class CutNodeCommand extends Command {
 			return false;
 		return true;
 	}
+	@Override
+	public boolean canUndo() {
+		return !(list.isEmpty());
+	}
 }

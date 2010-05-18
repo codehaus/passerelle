@@ -16,6 +16,7 @@ import ptolemy.kernel.util.NamedObj;
 
 public class PasteNodeCommand extends Command {
 	private CompositeEntity parent;
+
 	public PasteNodeCommand(CompositeEntity parent) {
 		super();
 		this.parent = parent;
@@ -54,7 +55,8 @@ public class PasteNodeCommand extends Command {
 		while (it.hasNext()) {
 			try {
 				NamedObj child = (NamedObj) it.next();
-				CreateComponentCommand createCommand = new CreateComponentCommand((ComponentEntity)child);
+				CreateComponentCommand createCommand = new CreateComponentCommand(
+						child);
 				createCommand.setParent(parent);
 				createCommand.setChildType(child.getClass().getName());
 				double[] location = ModelUtils.getLocation(child);
@@ -75,7 +77,8 @@ public class PasteNodeCommand extends Command {
 		Iterator<CreateComponentCommand> it = list.values().iterator();
 		while (it.hasNext()) {
 			CreateComponentCommand cmd = it.next();
-			cmd.redo();
+			if (cmd != null)
+				cmd.redo();
 		}
 	}
 
