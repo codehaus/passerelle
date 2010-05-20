@@ -27,7 +27,7 @@ import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelSampleEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
 
