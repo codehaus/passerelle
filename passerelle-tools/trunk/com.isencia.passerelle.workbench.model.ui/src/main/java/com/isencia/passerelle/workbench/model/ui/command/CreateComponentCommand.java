@@ -5,8 +5,8 @@ import java.lang.reflect.Constructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ptolemy.actor.CompositeActor;
 import ptolemy.actor.TypedCompositeActor;
+import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NamedObj;
@@ -89,7 +89,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 						if (model instanceof TextAttribute) {
 							name = generateUniqueTextAttributeName(model.getName(),
 									parent, 0, TextAttribute.class);
-						} else if (model instanceof CompositeEntity) {
+						} else if (model instanceof ComponentEntity) {
 							name = ModelUtils.findUniqueName(
 									(CompositeEntity) parent, model.getClass()
 											.getSimpleName());
@@ -159,7 +159,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			@Override
 			protected void _execute() throws Exception {
 				if (child instanceof NamedObj) {
-					DeleteComponentCommand.setContainer(child, parent);
+					DeleteComponentCommand.setContainer(child, null);
 				}
 			}
 		});
