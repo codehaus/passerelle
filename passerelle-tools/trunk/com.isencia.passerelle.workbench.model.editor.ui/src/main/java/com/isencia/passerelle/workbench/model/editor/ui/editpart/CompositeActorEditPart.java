@@ -27,8 +27,10 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.pde.internal.ui.editor.EditorUtilities;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +46,7 @@ import ptolemy.kernel.util.ChangeRequest;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.CompositeModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelSampleEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.CompositeActorEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
@@ -85,21 +87,23 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	}
 
 	private void initPage() {
-		PasserelleModelSampleEditor multiPageEditor = (PasserelleModelSampleEditor) searchPasserelleModelSampleEditor(getParent());
+		PasserelleModelMultiPageEditor multiPageEditor = (PasserelleModelMultiPageEditor) searchPasserelleModelSampleEditor(getParent());
 		try {
 			if (multiPageEditor != null) {
 
 				TypedCompositeActor model = (TypedCompositeActor) getModel();
-				if (pages.get(model) == null) {
-					CompositeModelEditor editor = new CompositeModelEditor(
-							multiPageEditor, model);
-					int index = multiPageEditor.addPage(editor, multiPageEditor
-							.getEditorInput());
-					multiPageEditor.setText(index, model.getDisplayName());
-					pages.put(model, editor);
-				}
+
+//				 CompositeModelEditor editor = new CompositeModelEditor(
+//				 multiPageEditor, model);
+				DiagramEditPart parent = (DiagramEditPart) getParent();
+				CompositeModelEditor editor = new CompositeModelEditor(
+						multiPageEditor, parent.getModelDiagram());
+				int index = multiPageEditor.addPage(editor, multiPageEditor
+						.getEditorInput());
+				multiPageEditor.setText(index, model.getDisplayName());
+				pages.put(model, editor);
 			}
-		} catch (PartInitException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
