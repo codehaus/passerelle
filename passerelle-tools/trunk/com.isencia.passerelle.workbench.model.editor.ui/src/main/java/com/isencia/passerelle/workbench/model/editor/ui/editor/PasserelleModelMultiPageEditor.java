@@ -1,28 +1,59 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.MouseWheelHandler;
+import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
+import org.eclipse.gef.editparts.ZoomManager;
+import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.gef.ui.actions.AlignmentAction;
+import org.eclipse.gef.ui.actions.DirectEditAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
+import org.eclipse.gef.ui.actions.MatchHeightAction;
+import org.eclipse.gef.ui.actions.MatchWidthAction;
+import org.eclipse.gef.ui.actions.ToggleGridAction;
+import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
+import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
+import org.eclipse.gef.ui.actions.ZoomInAction;
+import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
+import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+
+import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -33,7 +64,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
  * <li>page 2 shows the words in page 0 in sorted order
  * </ul>
  */
-public class PasserelleModelSampleEditor extends MultiPageEditorPart implements
+public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implements
 		IResourceChangeListener {
 
 	/** The text editor used in page 0. */
@@ -48,7 +79,7 @@ public class PasserelleModelSampleEditor extends MultiPageEditorPart implements
 	/**
 	 * Creates a multi-page editor example.
 	 */
-	public PasserelleModelSampleEditor() {
+	public PasserelleModelMultiPageEditor() {
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
@@ -179,6 +210,7 @@ public class PasserelleModelSampleEditor extends MultiPageEditorPart implements
 			text.setFont(font);
 		}
 	}
+
 //	public void createPartControl(Composite parent) {
 //		super.createPartControl(parent);
 //

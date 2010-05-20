@@ -109,12 +109,12 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 		// of proper implementation. Plus, the resourceListener needs to be
 		// added
 		// to the workspace the first time around.
-		if (getEditorInput() != null) {
-			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-			file.getWorkspace().removeResourceChangeListener(resourceListener);
-		}
+//		if (getEditorInput() != null) {
+//			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+//			file.getWorkspace().removeResourceChangeListener(resourceListener);
+//		}
 
-		super.setInput(input);
+//		super.setInput(input);
 
 		if (getEditorInput() != null) {
 			IFile file = ((IFileEditorInput) getEditorInput()).getFile();

@@ -129,7 +129,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	public static final int DELETE_KEYCODE = 127;
 	public static final int COPY_KEYCODE = 99;
 	public static final int PASTE_KEYCODE = 112;
-
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) { 
+		updateActions(getSelectionActions()); 
+	} 
 	private ISelectionListener selectionListener = new ISelectionListener() {
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			updateActions(editPartActionIDs);
