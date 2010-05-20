@@ -10,6 +10,7 @@ import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.kernel.util.StringAttribute;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
@@ -72,6 +73,8 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 									parent, generateUniqueTextAttributeName(
 											name, parent, 0,
 											TextAttribute.class));
+							((StringAttribute) child.getAttribute("text")).setExpression("Edit text in parameters in properties view");
+
 
 						} else if (type.equals("ptolemy.actor.CompositeActor")) {
 							child = new TypedCompositeActor(
