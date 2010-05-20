@@ -47,7 +47,8 @@ public class CutNodeCommand extends Command {
 					NamedObj child = (NamedObj) it.next();
 					DeleteComponentCommand deleteCommand = new DeleteComponentCommand();
 					deleteCommand.setParent((CompositeEntity) child.getContainer());
-					deleteCommand.setChild((ComponentEntity) child);
+					
+					deleteCommand.setChild(child);
 					deleteCommand.execute();
 
 					list.put(child, deleteCommand);
