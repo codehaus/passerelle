@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
+import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.ComponentRelation;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Relation;
@@ -170,9 +171,9 @@ public class DeleteComponentCommand extends Command {
 
 	public static void setContainer(NamedObj child, NamedObj container) {
 		try {
-			if (child instanceof CompositeEntity) {
+			if (child instanceof ComponentEntity) {
 
-				((CompositeEntity) child)
+				((ComponentEntity) child)
 						.setContainer((CompositeEntity) container);
 
 			} else if (child instanceof TextAttribute) {
