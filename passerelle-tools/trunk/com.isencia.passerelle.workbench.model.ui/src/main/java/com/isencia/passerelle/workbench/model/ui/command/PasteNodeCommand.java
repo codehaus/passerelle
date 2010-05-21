@@ -1,18 +1,24 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
-import com.isencia.passerelle.workbench.model.utils.ModelUtils;
-
 import ptolemy.actor.Director;
+import ptolemy.actor.IOPort;
+import ptolemy.actor.IORelation;
 import ptolemy.kernel.ComponentEntity;
+import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.Port;
+import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.NamedObj;
+
+import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class PasteNodeCommand extends Command {
 	private CompositeEntity parent;
@@ -23,7 +29,7 @@ public class PasteNodeCommand extends Command {
 
 	}
 
-	private HashMap<NamedObj, CreateComponentCommand> list = new HashMap<NamedObj, CreateComponentCommand>();
+	private HashMap<NamedObj, org.eclipse.gef.commands.Command> list = new HashMap<NamedObj, org.eclipse.gef.commands.Command>();
 
 	@Override
 	public boolean canExecute() {
@@ -55,16 +61,40 @@ public class PasteNodeCommand extends Command {
 		while (it.hasNext()) {
 			try {
 				NamedObj child = (NamedObj) it.next();
-				CreateComponentCommand createCommand = new CreateComponentCommand(
-						child);
-				createCommand.setParent(parent);
-				createCommand.setChildType(child.getClass().getName());
-				double[] location = ModelUtils.getLocation(child);
-				createCommand.setLocation(new double[] { location[0] + 100,
-						location[1] + 100 });
-				createCommand.execute();
+				if (!(child instanceof Relation)) {
+					CreateComponentCommand createCommand = new CreateComponentCommand(
+							child);
+					createCommand.setParent(parent);
+					createCommand.setChildType(child.getClass().getName());
+					double[] location = ModelUtils.getLocation(child);
+					createCommand.setLocation(new double[] { location[0] + 100,
+							location[1] + 100 });
+					createCommand.execute();
+					list.put(child, createCommand);
 
-				list.put(child, createCommand);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				redo();
+			}
+		}
+		it = list.keySet().iterator();
+		while (it.hasNext()) {
+			try {
+				NamedObj child = (NamedObj) it.next();
+				if (child instanceof Relation) {
+					IORelation rel = (IORelation) child;
+					ComponentPort destination = searchPort(rel
+							.linkedDestinationPorts());
+					ComponentPort source = searchPort(rel.linkedSourcePorts());
+					if (source != null && destination != null) {
+						CreateConnectionCommand connection = new CreateConnectionCommand(
+								source, destination);
+						connection.execute();
+						list.put(rel, connection);
+					}
+
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				redo();
@@ -72,11 +102,37 @@ public class PasteNodeCommand extends Command {
 		}
 	}
 
+	private ComponentPort searchPort(Enumeration enumeration) {
+		while (enumeration.hasMoreElements()) {
+			IOPort port = (IOPort) enumeration.nextElement();
+			port.getName();
+			NamedObj node = port.getContainer();
+			org.eclipse.gef.commands.Command cmd = list.get(node);
+			if (cmd instanceof CreateComponentCommand) {
+				CreateComponentCommand createComponentCommand = (CreateComponentCommand) cmd;
+				NamedObj obj = createComponentCommand.getChild();
+				if (obj instanceof ComponentEntity) {
+					ComponentEntity ce = (ComponentEntity) obj;
+					for (Object o : ce.portList()) {
+						Port cPort = (Port) o;
+						if (cPort.getName().equals(port.getName())) {
+							if (cPort instanceof ComponentPort)
+								return (ComponentPort) cPort;
+						}
+					}
+
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void redo() {
-		Iterator<CreateComponentCommand> it = list.values().iterator();
+		Iterator<org.eclipse.gef.commands.Command> it = list.values()
+				.iterator();
 		while (it.hasNext()) {
-			CreateComponentCommand cmd = it.next();
+			org.eclipse.gef.commands.Command cmd = it.next();
 			if (cmd != null)
 				cmd.redo();
 		}
@@ -89,9 +145,10 @@ public class PasteNodeCommand extends Command {
 
 	@Override
 	public void undo() {
-		Iterator<CreateComponentCommand> it = list.values().iterator();
+		Iterator<org.eclipse.gef.commands.Command> it = list.values()
+				.iterator();
 		while (it.hasNext()) {
-			CreateComponentCommand cmd = it.next();
+			org.eclipse.gef.commands.Command cmd = it.next();
 			cmd.undo();
 		}
 	}

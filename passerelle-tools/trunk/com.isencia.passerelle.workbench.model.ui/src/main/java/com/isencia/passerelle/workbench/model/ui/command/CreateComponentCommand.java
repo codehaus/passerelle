@@ -25,6 +25,10 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	private NamedObj model;
 	private NamedObj parent;
 	private NamedObj child;
+	public NamedObj getChild() {
+		return child;
+	}
+
 	private double[] location;
 
 	public CreateComponentCommand() {

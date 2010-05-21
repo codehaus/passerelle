@@ -12,6 +12,12 @@ import ptolemy.kernel.Port;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 
 public class CreateConnectionCommand extends Command {
+	public CreateConnectionCommand(ComponentPort source, ComponentPort target) {
+		super();
+		this.source = source;
+		this.target = target;
+	}
+
 	private final static Logger logger = LoggerFactory
 			.getLogger(CreateConnectionCommand.class);
 	
