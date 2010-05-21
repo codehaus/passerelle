@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,9 +13,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 
+import ptolemy.actor.IOPort;
+import ptolemy.actor.IORelation;
+import ptolemy.kernel.Port;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.CopyNodeCommand;
 
 public class CopyNodeAction extends SelectionAction {
@@ -50,11 +55,22 @@ public class CopyNodeAction extends SelectionAction {
 			if (!(o instanceof AbstractEditPart)) {
 				return null;
 			}
-			AbstractBaseEditPart ep = (AbstractBaseEditPart) o;
-			NamedObj NamedObj = (NamedObj) ep.getEntity();
-			if (!cmd.isCopyableNamedObj(NamedObj))
-				return null;
-			cmd.addElement(NamedObj);
+			if (o instanceof AbstractBaseEditPart) {
+				AbstractBaseEditPart ep = (AbstractBaseEditPart) o;
+				
+				NamedObj NamedObj = (NamedObj) ep.getEntity();
+				
+				if (!cmd.isCopyableNamedObj(NamedObj))
+					return null;
+				cmd.addElement(NamedObj);
+			}
+			if (o instanceof RelationEditPart) {
+				RelationEditPart ep = (RelationEditPart) o;
+				IORelation rel = (IORelation)ep.getRelation();
+				if (!cmd.isCopyableNamedObj(rel))
+					return null;
+				cmd.addElement(rel);
+			}
 		}
 		return cmd;
 	}
@@ -80,5 +96,5 @@ public class CopyNodeAction extends SelectionAction {
 		// TODO Auto-generated method stub
 		super.setSelection(selection);
 	}
-	
+
 }

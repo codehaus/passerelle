@@ -11,8 +11,11 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 
+import ptolemy.actor.IORelation;
 import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.CutNodeCommand;
 
 public class CutNodeAction extends SelectionAction {
@@ -45,12 +48,22 @@ public class CutNodeAction extends SelectionAction {
 			if (!(o instanceof AbstractEditPart)) {
 				return null;
 			}
-
-			AbstractEditPart ep = (AbstractEditPart) o;
-			NamedObj NamedObj = (NamedObj) ep.getModel();
-			if (!cmd.isCopyableNamedObj(NamedObj))
-				return null;
-			cmd.addElement(NamedObj);
+			if (o instanceof AbstractBaseEditPart) {
+				AbstractBaseEditPart ep = (AbstractBaseEditPart) o;
+				
+				NamedObj NamedObj = (NamedObj) ep.getEntity();
+				
+				if (!cmd.isCopyableNamedObj(NamedObj))
+					return null;
+				cmd.addElement(NamedObj);
+			}
+			if (o instanceof RelationEditPart) {
+				RelationEditPart ep = (RelationEditPart) o;
+				IORelation rel = (IORelation)ep.getRelation();
+				if (!cmd.isCopyableNamedObj(rel))
+					return null;
+				cmd.addElement(rel);
+			}
 		}
 		return cmd;
 	}

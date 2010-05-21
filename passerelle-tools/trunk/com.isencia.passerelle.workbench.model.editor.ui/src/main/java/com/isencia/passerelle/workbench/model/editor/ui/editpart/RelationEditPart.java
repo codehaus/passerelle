@@ -114,7 +114,7 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 	 * 
 	 * @return Model of this as <code>Relation</code>
 	 */
-	protected Relation getRelation() {
+	public Relation getRelation() {
 		return (Relation) getModel();
 	}
 
