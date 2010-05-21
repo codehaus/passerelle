@@ -24,6 +24,10 @@ public class DeleteConnectionCommand extends Command {
 	private CompositeEntity parent;
 	private List<ComponentPort> linkedPorts = new ArrayList<ComponentPort>();
 
+	public void setLinkedPorts(List<ComponentPort> linkedPorts) {
+		this.linkedPorts = linkedPorts;
+	}
+
 	public DeleteConnectionCommand() {
 		super("DeleteConnection");
 	}

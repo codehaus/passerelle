@@ -10,15 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
-import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
+import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.ComponentPort;
-import ptolemy.kernel.ComponentRelation;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
-import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NameDuplicationException;
@@ -40,8 +38,7 @@ public class DeleteComponentCommand extends Command {
 	// private LogicGuide vGuide, hGuide;
 	private int vAlign, hAlign;
 	private int index = -1;
-	private List sourceConnections = new ArrayList();
-	private List targetConnections = new ArrayList();
+	private List<DeleteConnectionCommand> delecteConnectionCommands = new ArrayList<DeleteConnectionCommand>();
 
 	public DeleteComponentCommand() {
 		super("Delete");
@@ -63,31 +60,29 @@ public class DeleteComponentCommand extends Command {
 				ConnectionType.SOURCE).iterator();
 		while (sourceIterator.hasNext()) {
 			IORelation relation = (IORelation) sourceIterator.next();
-			sourceConnections.add(relation.linkedSourcePortList());
-			targetConnections.add(relation.linkedDestinationPortList());
-			deleteRelation(relation);
-
+			DeleteConnectionCommand cmd = generateDeleteConnectionCommand(
+					actor, relation);
+			cmd.execute();
+			delecteConnectionCommands.add(cmd);
 		}
 		Iterator<?> targetIterator = ModelUtils.getConnectedRelations(actor,
 				ConnectionType.TARGET).iterator();
 		while (targetIterator.hasNext()) {
 			IORelation relation = (IORelation) targetIterator.next();
-			sourceConnections.add(relation.linkedSourcePortList());
-			targetConnections.add(relation.linkedDestinationPortList());
-			deleteRelation(relation);
+			DeleteConnectionCommand cmd = generateDeleteConnectionCommand(
+					actor, relation);
+			cmd.execute();
+			delecteConnectionCommands.add(cmd);
 		}
 	}
 
-	private void deleteRelation(IORelation relation) {
-		ComponentRelation componentRelation = parent.getRelation(relation
-				.getName());
-		if (componentRelation != null) {
-			try {
-				componentRelation.setContainer(null);
-			} catch (Exception e) {
-				getLogger().error("Unable to delete sourceConnection", e);
-			}
-		}
+	private DeleteConnectionCommand generateDeleteConnectionCommand(
+			Actor actor, IORelation relation) {
+		DeleteConnectionCommand cmd = new DeleteConnectionCommand();
+		cmd.setParent((CompositeEntity) actor.getContainer());
+		cmd.setConnection((TypedIORelation) relation);
+		cmd.setLinkedPorts(((TypedIORelation) relation).linkedPortList());
+		return cmd;
 	}
 
 	/*
@@ -130,17 +125,20 @@ public class DeleteComponentCommand extends Command {
 	}
 
 	private void restoreConnections(NamedObj child) {
-		Iterator<?> targetIterator = targetConnections.iterator();
-		Iterator<?> sourceIterator = sourceConnections.iterator();
-
-		while (targetIterator.hasNext()) {
-			restoreRelation(child, (List) targetIterator.next(),
-					(List) sourceIterator.next());
-
+		// Iterator<?> targetIterator = targetConnections.iterator();
+		// Iterator<?> sourceIterator = sourceConnections.iterator();
+		//
+		// while (targetIterator.hasNext()) {
+		// restoreRelation(child, (List) targetIterator.next(),
+		// (List) sourceIterator.next());
+		//
+		// }
+		//
+		// sourceConnections.clear();
+		// targetConnections.clear();
+		for (DeleteConnectionCommand cmd : delecteConnectionCommands) {
+			cmd.undo();
 		}
-
-		sourceConnections.clear();
-		targetConnections.clear();
 	}
 
 	private void restoreRelation(NamedObj child, List destination, List source) {
