@@ -8,29 +8,36 @@ import java.io.StringWriter;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.gef.ui.actions.ActionRegistry;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
+import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
+import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
+
 import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.util.Instantiable;
 import ptolemy.moml.MoMLParser;
 
-import com.isencia.passerelle.actor.Actor;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor.ResourceTracker;
-
 public class CompositeModelEditor extends PasserelleModelEditor {
-	private CompositeActor compositeActor;
+	private CompositeActor actor;
+	private CompositeActor model;
 	private ResourceTracker resourceListener = new ResourceTracker();
 
 	public CompositeModelEditor(MultiPageEditorPart parent,
-			CompositeActor compositeActor) {
+			CompositeActor actor,CompositeActor model) {
 		super(parent);
-		this.compositeActor = compositeActor;
+		this.actor = actor;
+		this.model = model;
 
 	}
-
+	protected EditPartFactory createEditPartFactory() {
+		return new EditPartFactory(getParent(),actor);
+	}
 	protected void setInput(IEditorInput input) {
 		IFile file = ((IFileEditorInput) input).getFile();
 		InputStream is = null;
@@ -41,7 +48,7 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 			// moMLParser.parse(
 			// null, is);
 
-			setDiagram(compositeActor);
+			setDiagram(model);
 		} catch (Exception e) {
 			getLogger().error(
 					"Error during reading/parsing of model file : "
@@ -58,7 +65,7 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 		}
 
 		superSetInput(input);
-		setDiagram(compositeActor);
+		setDiagram(model);
 
 		if (!editorSaving) {
 			if (getGraphicalViewer() != null) {
@@ -122,5 +129,17 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 			setPartName(file.getName());
 		}
 	}
+	protected PasteNodeAction setPasteNodeAction() {
+		return new PasteNodeAction(this, actor);
+	}
+	@Override
+	protected void createActions() {
+		// TODO Auto-generated method stub
+		super.createActions();
+		ActionRegistry registry = getActionRegistry();
+		CloseEditorAction closeEditorAction = new CloseEditorAction(this);
+		registry.registerAction(closeEditorAction);
+		getSelectionActions().add(closeEditorAction.getId());
 
+	}
 }

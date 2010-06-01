@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
+import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IORelation;
 import ptolemy.actor.TypedCompositeActor;
 import ptolemy.actor.TypedIOPort;
@@ -60,7 +61,7 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 public class CompositeActorEditPart extends ContainerEditPart implements
 		NodeEditPart {
 	private MultiPageEditorPart multiPageEditorPart;
-
+	private int index;
 	public MultiPageEditorPart getMultiPageEditorPart() {
 		return multiPageEditorPart;
 	}
@@ -71,7 +72,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(ActorEditPart.class);
-	private Map<TypedCompositeActor, PasserelleModelEditor> pages = new HashMap<TypedCompositeActor, PasserelleModelEditor>();
 	public final static ImageDescriptor IMAGE_DESCRIPTOR_COMPOSITEACTOR = Activator
 			.getImageDescriptor("icons/compound.gif");
 	public final static ImageDescriptor IMAGE_DESCRIPTOR_DRILLDOWN = Activator
@@ -81,27 +81,28 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		return logger;
 	}
 
-	public CompositeActorEditPart() {
-		super();
+	public CompositeActorEditPart(CompositeActor actor) {
+		super(actor);
 
 	}
 
-	private void initPage() {
+	private void initPage(TypedCompositeActor actor) {
 		PasserelleModelMultiPageEditor multiPageEditor = (PasserelleModelMultiPageEditor) searchPasserelleModelSampleEditor(getParent());
 		try {
 			if (multiPageEditor != null) {
 
 				TypedCompositeActor model = (TypedCompositeActor) getModel();
 
-//				 CompositeModelEditor editor = new CompositeModelEditor(
-//				 multiPageEditor, model);
-				DiagramEditPart parent = (DiagramEditPart) getParent();
 				CompositeModelEditor editor = new CompositeModelEditor(
-						multiPageEditor, parent.getModelDiagram());
-				int index = multiPageEditor.addPage(editor, multiPageEditor
-						.getEditorInput());
-				multiPageEditor.setText(index, model.getDisplayName());
-				pages.put(model, editor);
+						multiPageEditor, model, (CompositeActor) model
+								.getContainer());
+				if (!multiPageEditor.containsModel(model)) {
+					
+					index = multiPageEditor.addPage(model, editor,
+							multiPageEditor.getEditorInput());
+					multiPageEditor.setText(index, model.getDisplayName());
+					
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -156,7 +157,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	 */
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
-				new ComponentNodeDeletePolicy());
+				new ComponentNodeDeletePolicy((PasserelleModelMultiPageEditor)getMultiPageEditorPart(),index));
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new CompositeActorEditPolicy());
 
@@ -188,7 +189,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 			@Override
 			public void mouseDoubleClicked(MouseEvent e) {
-				initPage();
+				initPage((TypedCompositeActor) getModel());
 
 			}
 
@@ -205,13 +206,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 			}
 
 		});
-		// button.addChangeListener(new ChangeListener() {
-		// public void handleStateChanged(ChangeEvent e) {
-		// initPage();
-		// if (getLogger().isDebugEnabled())
-		// getLogger().debug("Clicked" + e.getPropertyName());
-		// }
-		// });
 
 		Actor actorModel = getActorModel();
 		CompositeActorFigure actorFigure = new CompositeActorFigure(actorModel

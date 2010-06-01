@@ -5,6 +5,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Director;
 import ptolemy.actor.TypedAtomicActor;
 import ptolemy.actor.TypedCompositeActor;
@@ -16,11 +17,21 @@ import com.isencia.passerelle.actor.Source;
 
 public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 
+	public MultiPageEditorPart getParent() {
+		return parent;
+	}
+
 	private static Logger logger = LoggerFactory.getLogger(EditPartFactory.class);
-	private MultiPageEditorPart parent;
+	protected MultiPageEditorPart parent;
+	private CompositeActor actor;
 	public EditPartFactory(MultiPageEditorPart parent) {
 		super();
 		this.parent = parent;
+	}
+	public EditPartFactory(MultiPageEditorPart parent,CompositeActor actor) {
+		super();
+		this.parent = parent;
+		this.actor = actor;
 	}
 
 	private Logger getLogger() {
@@ -44,7 +55,7 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 			// TODO Check if this is the correct check to make the distinction 
 			// between this and child Composites. Check also how to go more then 1 level deeper
 			if( ((TypedCompositeActor) model).getContainer()==null) {
-				child = new DiagramEditPart(parent);
+				child = new DiagramEditPart(parent,actor);
 			} else {
 				child = new CompositeActorEditPart(!(context!=null && context.getParent()!=null),parent);
 			}

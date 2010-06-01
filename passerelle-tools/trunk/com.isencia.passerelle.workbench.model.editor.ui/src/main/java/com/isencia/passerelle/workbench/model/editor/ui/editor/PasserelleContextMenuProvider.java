@@ -42,6 +42,9 @@ public class PasserelleContextMenuProvider extends
 		action = getActionRegistry().getAction(ActionFactory.CUT.getId());
 		if (action != null && action.isEnabled())
 			manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
+		action = getActionRegistry().getAction(ActionFactory.CLOSE_PERSPECTIVE.getId());
+		if (action != null && action.isEnabled())
+			manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 		action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
 		if (action != null && action.isEnabled())
 			manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
@@ -90,6 +93,9 @@ public class PasserelleContextMenuProvider extends
 		action = getActionRegistry().getAction(ActionFactory.SAVE.getId());
 		if (action != null && action.isEnabled())
 			manager.appendToGroup(GEFActionConstants.GROUP_SAVE, action);
+		action = getActionRegistry().getAction(ActionFactory.CLOSE_PERSPECTIVE.getId());
+		if (action != null && action.isEnabled())
+			manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 
 	}
 

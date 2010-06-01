@@ -85,8 +85,12 @@ public class ActorEditPart extends AbstractNodeEditPart {
 			} else if ((DeleteConnectionCommand.class.equals(type)
 					|| DeleteComponentCommand.class.equals(type) || CreateConnectionCommand.class
 					.equals(type))) {
-				refreshSourceConnections();
-				refreshTargetConnections();
+				try {
+					refreshSourceConnections();
+					refreshTargetConnections();
+				} catch (Exception e) {
+				
+				}
 			}
 		}
 	}

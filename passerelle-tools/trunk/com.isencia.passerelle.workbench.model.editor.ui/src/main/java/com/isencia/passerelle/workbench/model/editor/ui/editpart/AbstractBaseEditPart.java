@@ -203,14 +203,12 @@ abstract public class AbstractBaseEditPart extends
 					String name = getName(source);
 					if ((getComponentFigure() instanceof INameable)
 							&& name != null
-							&& !name
-									.equals(((INameable) getComponentFigure())
-											.getName())) {
+							&& !name.equals(((INameable) getComponentFigure())
+									.getName())) {
 						// Execute the dummy command force a dirty state
 						getViewer().getEditDomain().getCommandStack().execute(
 								new ChangeActorPropertyCommand());
-						((INameable) getComponentFigure())
-								.setName(name);
+						((INameable) getComponentFigure()).setName(name);
 						getFigure().repaint();
 					}
 				}
@@ -228,8 +226,12 @@ abstract public class AbstractBaseEditPart extends
 				}
 			} else if (DeleteComponentCommand.class.equals(type)
 					|| CreateConnectionCommand.class.equals(type)) {
-				refreshSourceConnections();
-				refreshTargetConnections();
+				try {
+					refreshSourceConnections();
+					refreshTargetConnections();
+				} catch (Exception e) {
+
+				}
 			}
 		}
 	}

@@ -80,7 +80,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -106,6 +105,7 @@ import ptolemy.actor.CompositeActor;
 import ptolemy.moml.MoMLParser;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
@@ -121,6 +121,15 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
 	protected static final String PALETTE_STATE = "Palette state"; //$NON-NLS-1$
 	protected static final int DEFAULT_PALETTE_SIZE = 130;
+	private int index;
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
 	private List stackActionIDs = new ArrayList();
 	private List editorActionIDs = new ArrayList();
 	private List editPartActionIDs = new ArrayList();
@@ -129,9 +138,11 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	public static final int DELETE_KEYCODE = 127;
 	public static final int COPY_KEYCODE = 99;
 	public static final int PASTE_KEYCODE = 112;
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) { 
-		updateActions(getSelectionActions()); 
-	} 
+
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		updateActions(getSelectionActions());
+	}
+
 	private ISelectionListener selectionListener = new ISelectionListener() {
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			updateActions(editPartActionIDs);
@@ -280,7 +291,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 		viewer.setRootEditPart(root);
 
-		viewer.setEditPartFactory(new EditPartFactory(parent));
+		viewer.setEditPartFactory(createEditPartFactory());
 		ContextMenuProvider provider = new PasserelleContextMenuProvider(
 				viewer, getActionRegistry());
 		viewer.setContextMenu(provider);
@@ -288,8 +299,13 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 				.registerContextMenu(
 						"com.isencia.passerelle.workbench.model.editor.ui.editor.contextmenu", //$NON-NLS-1$
 						provider, viewer);
-		viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer)
-				.setParent(getCommonKeyHandler()));
+		GraphicalViewerKeyHandler graphicalViewerKeyHandler = new GraphicalViewerKeyHandler(
+				viewer);
+		graphicalViewerKeyHandler.setParent(getCommonKeyHandler());
+		
+		graphicalViewerKeyHandler.put(KeyStroke.getPressed('X', SWT.CTRL, 0),
+				getActionRegistry().getAction(ActionFactory.CUT.getId()));
+		viewer.setKeyHandler(graphicalViewerKeyHandler);
 
 		// Zoom with the mouse wheel
 		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.CTRL),
@@ -316,6 +332,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		};
 		getGraphicalControl().addListener(SWT.Activate, listener);
 		getGraphicalControl().addListener(SWT.Deactivate, listener);
+	}
+
+	protected EditPartFactory createEditPartFactory() {
+		return new EditPartFactory(parent);
 	}
 
 	protected CustomPalettePage createPalettePage() {
@@ -432,15 +452,15 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	protected void handleActivationChanged(Event event) {
-		IAction copy = null;
-		if (event.type == SWT.Deactivate)
-			copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
-		if (getEditorSite().getActionBars().getGlobalActionHandler(
-				ActionFactory.COPY.getId()) != copy) {
-			getEditorSite().getActionBars().setGlobalActionHandler(
-					ActionFactory.COPY.getId(), copy);
-			getEditorSite().getActionBars().updateActionBars();
-		}
+//		IAction copy = null;
+//		if (event.type == SWT.Deactivate)
+//			copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
+//		if (getEditorSite().getActionBars().getGlobalActionHandler(
+//				ActionFactory.COPY.getId()) != copy) {
+//			getEditorSite().getActionBars().setGlobalActionHandler(
+//					ActionFactory.COPY.getId(), copy);
+//			getEditorSite().getActionBars().updateActionBars();
+//		}
 	}
 
 	protected void initializeGraphicalViewer() {
@@ -515,10 +535,14 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		CutNodeAction cutAction = new CutNodeAction(this);
 		registry.registerAction(cutAction);
 		getSelectionActions().add(cutAction.getId());
-		PasteNodeAction pasteAction = new PasteNodeAction(this, getDiagram());
+		PasteNodeAction pasteAction = setPasteNodeAction();
 		registry.registerAction(pasteAction);
 		getSelectionActions().add(pasteAction.getId());
 
+	}
+
+	protected PasteNodeAction setPasteNodeAction() {
+		return new PasteNodeAction(this, getDiagram());
 	}
 
 	/*
@@ -795,12 +819,12 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			configureOutlineViewer();
 			hookOutlineViewer();
 			initializeOutlineViewer();
-//			IActionBars bars = getSite().getActionBars();
-//			ActionRegistry ar = getActionRegistry();
-//			bars.setGlobalActionHandler(ActionFactory.COPY.getId(), ar
-//					.getAction(ActionFactory.COPY.getId()));
-//			bars.setGlobalActionHandler(ActionFactory.PASTE.getId(), ar
-//					.getAction(ActionFactory.PASTE.getId()));
+			// IActionBars bars = getSite().getActionBars();
+			// ActionRegistry ar = getActionRegistry();
+			// bars.setGlobalActionHandler(ActionFactory.COPY.getId(), ar
+			// .getAction(ActionFactory.COPY.getId()));
+			// bars.setGlobalActionHandler(ActionFactory.PASTE.getId(), ar
+			// .getAction(ActionFactory.PASTE.getId()));
 		}
 
 		public void dispose() {

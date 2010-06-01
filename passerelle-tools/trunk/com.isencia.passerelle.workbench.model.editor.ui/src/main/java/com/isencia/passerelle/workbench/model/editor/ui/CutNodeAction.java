@@ -3,6 +3,7 @@ package com.isencia.passerelle.workbench.model.editor.ui;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gef.ui.actions.SelectionAction;
@@ -15,6 +16,7 @@ import ptolemy.actor.IORelation;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.CutNodeCommand;
 
@@ -70,11 +72,20 @@ public class CutNodeAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		Command cmd = createCutCommand(getSelectedObjects());
-		if (cmd == null)
-			return false;
-		return cmd.canExecute();
+		return checkSelectedObjects();
 	}
+
+	private boolean checkSelectedObjects() {
+		if (getSelectedObjects()==null)
+			return false;
+		for (Object o:getSelectedObjects()){
+			if (o instanceof EditPart && !(o instanceof DiagramEditPart) ){
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 	@Override
 	public void run() {

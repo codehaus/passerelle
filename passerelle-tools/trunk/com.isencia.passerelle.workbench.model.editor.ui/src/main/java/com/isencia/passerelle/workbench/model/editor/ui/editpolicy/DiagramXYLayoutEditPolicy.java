@@ -23,6 +23,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 
+import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.util.NamedObj;
 
@@ -35,11 +36,11 @@ public class DiagramXYLayoutEditPolicy extends
 		org.eclipse.gef.editpolicies.XYLayoutEditPolicy {
 
 	private static Logger logger;
-	private MultiPageEditorPart parent;
-	public DiagramXYLayoutEditPolicy(XYLayout layout,MultiPageEditorPart parent) {
+	private CompositeActor actor;
+	public DiagramXYLayoutEditPolicy(XYLayout layout,CompositeActor actor) {
 		super();
 		setXyLayout(layout);
-		this.parent = parent;
+		this.actor = actor;
 	}
 
 	Logger getLogger() {
@@ -270,7 +271,7 @@ public class DiagramXYLayoutEditPolicy extends
 	protected Command getCreateCommand(CreateRequest request) {
 		CreateComponentCommand create = null;
 		try {
-			create = new CreateComponentCommand();
+			create = new CreateComponentCommand(actor);
 			create.setParent((ComponentEntity) getHost().getModel());
 			String type = (String) request.getNewObject();
 			create.setChildType(type);

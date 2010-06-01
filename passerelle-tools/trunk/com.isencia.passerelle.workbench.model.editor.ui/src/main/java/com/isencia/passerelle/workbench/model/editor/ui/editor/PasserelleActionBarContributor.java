@@ -24,6 +24,7 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
+import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 
 public class PasserelleActionBarContributor extends ActionBarContributor {
 
@@ -59,10 +60,12 @@ public class PasserelleActionBarContributor extends ActionBarContributor {
 				GEFActionConstants.TOGGLE_GRID_VISIBILITY,
 				GEFMessages.ToggleGrid_Label, IAction.AS_CHECK_BOX));
 		IWorkbenchWindow iww = getPage().getWorkbenchWindow();
+		addRetargetAction(new RetargetAction(ActionFactory.CLOSE_PERSPECTIVE
+				.getId(), "Close editor"));
 		addRetargetAction((RetargetAction) ActionFactory.COPY.create(iww));
 		addRetargetAction((RetargetAction) ActionFactory.CUT.create(iww));
 		addRetargetAction((RetargetAction) ActionFactory.PASTE.create(iww));
-//		addAction(ActionFactory.DELETE.create(iww));
+		// addAction(ActionFactory.DELETE.create(iww));
 	}
 
 	/**
@@ -125,7 +128,6 @@ public class PasserelleActionBarContributor extends ActionBarContributor {
 			menubar
 					.add(new GroupMarker(IWorkbenchActionConstants.GROUP_EDITOR));
 		}
-
 
 	}
 

@@ -9,6 +9,7 @@ import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 
 import ptolemy.actor.CompositeActor;
+import ptolemy.actor.TypedCompositeActor;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.actor.Actor;
@@ -19,9 +20,11 @@ import com.isencia.passerelle.actor.Actor;
 abstract public class ContainerEditPart extends AbstractBaseEditPart {
 
 	private boolean showChildren = true;
+	private CompositeActor actor;
 
-	public ContainerEditPart() {
+	public ContainerEditPart(CompositeActor actor) {
 		super();
+		this.actor = actor;
 	}
 
 	public ContainerEditPart(boolean showChildren) {
@@ -50,8 +53,10 @@ abstract public class ContainerEditPart extends AbstractBaseEditPart {
 	 * 
 	 * @return CompositeActor of this.
 	 */
-	protected CompositeActor getModelDiagram() {
-		return (CompositeActor) getModel();
+	protected CompositeActor getModelDiagram(CompositeActor actor) {
+		if (actor == null)
+			return (CompositeActor) getModel();
+		return actor;
 	}
 
 	/**
@@ -62,13 +67,14 @@ abstract public class ContainerEditPart extends AbstractBaseEditPart {
 	protected List getModelChildren() {
 		if (!showChildren)
 			return Collections.EMPTY_LIST;
-		CompositeActor modelDiagram = getModelDiagram();
+		CompositeActor modelDiagram = getModelDiagram(actor);
+
 		ArrayList children = new ArrayList();
 		List entities = modelDiagram.entityList();
 		if (entities != null)
 			children.addAll(entities);
 
-		if (modelDiagram.getDirector() != null)
+		if (modelDiagram.getContainer()==null && modelDiagram.getDirector() != null)
 			children.add(modelDiagram.getDirector());
 
 		Enumeration attributes = modelDiagram.getAttributes();
@@ -82,7 +88,7 @@ abstract public class ContainerEditPart extends AbstractBaseEditPart {
 		}
 		Enumeration enitites = modelDiagram.getEntities();
 		while (attributes.hasMoreElements()) {
-			
+
 			Object nextElement = attributes.nextElement();
 			children.add(nextElement);
 		}
