@@ -8,6 +8,7 @@ import java.util.Iterator;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
+import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
@@ -21,11 +22,11 @@ import ptolemy.kernel.util.NamedObj;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class PasteNodeCommand extends Command {
-	private CompositeEntity parent;
+	private CompositeEntity actor;
 
-	public PasteNodeCommand(CompositeEntity parent) {
+	public PasteNodeCommand(CompositeEntity actor) {
 		super();
-		this.parent = parent;
+		this.actor = actor;
 
 	}
 
@@ -53,18 +54,33 @@ public class PasteNodeCommand extends Command {
 		return true;
 	}
 
+	private NamedObj getParent(NamedObj actor) {
+		if (actor == null)
+			return null;
+		if (actor.getContainer() == null) {
+			return actor;
+		}
+		return (getParent(actor.getContainer()));
+	}
+
 	@Override
 	public void execute() {
 		if (!canExecute())
 			return;
 		Iterator<NamedObj> it = list.keySet().iterator();
+		
 		while (it.hasNext()) {
 			try {
 				NamedObj child = (NamedObj) it.next();
 				if (!(child instanceof Relation)) {
-					CreateComponentCommand createCommand = new CreateComponentCommand(
-							child);
-					createCommand.setParent(parent);
+					CreateComponentCommand createCommand = null;
+					if (actor instanceof CompositeActor)
+						createCommand = new CreateComponentCommand(
+								child, (CompositeActor)actor);
+					else
+						createCommand = new CreateComponentCommand(
+								child, null);
+					createCommand.setParent(getParent(actor));
 					createCommand.setChildType(child.getClass().getName());
 					double[] location = ModelUtils.getLocation(child);
 					createCommand.setLocation(new double[] { location[0] + 100,

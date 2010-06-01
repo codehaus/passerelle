@@ -6,10 +6,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
+import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
+import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
 import ptolemy.actor.TypedIORelation;
@@ -28,6 +30,14 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils.ConnectionType;
 
 public class DeleteComponentCommand extends Command {
+	private MultiPageEditorPart multiPageEditor;
+	private int index;
+
+	public DeleteComponentCommand(MultiPageEditorPart multiPageEditor, int index) {
+		super();
+		this.multiPageEditor = multiPageEditor;
+		this.index = index;
+	}
 
 	private static Logger logger = LoggerFactory
 			.getLogger(DeleteComponentCommand.class);
@@ -37,7 +47,6 @@ public class DeleteComponentCommand extends Command {
 	private CompositeEntity parent;
 	// private LogicGuide vGuide, hGuide;
 	private int vAlign, hAlign;
-	private int index = -1;
 	private List<DeleteConnectionCommand> delecteConnectionCommands = new ArrayList<DeleteConnectionCommand>();
 
 	public DeleteComponentCommand() {
@@ -108,6 +117,9 @@ public class DeleteComponentCommand extends Command {
 				// detachFromGuides(child);
 				container = child.getContainer();
 				setContainer(child, null);
+				if (child instanceof CompositeActor && multiPageEditor != null){
+					multiPageEditor.removePage(index);
+				}
 
 			}
 		});
