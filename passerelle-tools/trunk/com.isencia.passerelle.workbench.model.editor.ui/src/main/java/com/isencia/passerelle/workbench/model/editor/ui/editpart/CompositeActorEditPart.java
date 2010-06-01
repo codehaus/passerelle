@@ -61,7 +61,8 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 public class CompositeActorEditPart extends ContainerEditPart implements
 		NodeEditPart {
 	private MultiPageEditorPart multiPageEditorPart;
-	private int index;
+	
+
 	public MultiPageEditorPart getMultiPageEditorPart() {
 		return multiPageEditorPart;
 	}
@@ -94,19 +95,19 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 				TypedCompositeActor model = (TypedCompositeActor) getModel();
 
 				CompositeModelEditor editor = new CompositeModelEditor(
-						multiPageEditor, model, (CompositeActor) model
-								.getContainer());
-				if (!multiPageEditor.containsModel(model)) {
-					
+						multiPageEditor, model, multiPageEditor.getEditor().getDiagram());
+				Integer index = multiPageEditor.getModelIndex(model);
+				if (index == null) {
+
 					index = multiPageEditor.addPage(model, editor,
 							multiPageEditor.getEditorInput());
 					multiPageEditor.setText(index, model.getDisplayName());
-					
+					multiPageEditor.setActiveEditor(editor);
+
 				}
+				multiPageEditor.setActiveEditor(multiPageEditor.getEditor(index));
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -156,8 +157,10 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	 * Installs EditPolicies specific to this.
 	 */
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.COMPONENT_ROLE,
-				new ComponentNodeDeletePolicy((PasserelleModelMultiPageEditor)getMultiPageEditorPart(),index));
+		installEditPolicy(
+				EditPolicy.COMPONENT_ROLE,
+				new ComponentNodeDeletePolicy(
+						(PasserelleModelMultiPageEditor) getMultiPageEditorPart()));
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new CompositeActorEditPolicy());
 

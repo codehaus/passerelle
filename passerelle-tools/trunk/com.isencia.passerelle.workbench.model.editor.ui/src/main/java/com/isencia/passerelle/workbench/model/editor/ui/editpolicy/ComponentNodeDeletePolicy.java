@@ -20,12 +20,10 @@ import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 public class ComponentNodeDeletePolicy extends
 		org.eclipse.gef.editpolicies.ComponentEditPolicy {
 	private PasserelleModelMultiPageEditor multiPageEditor;
-	private int index;
 	public ComponentNodeDeletePolicy(){
 		
 	}
-	public ComponentNodeDeletePolicy(PasserelleModelMultiPageEditor multiPageEditor,int index){
-		this.index = index;
+	public ComponentNodeDeletePolicy(PasserelleModelMultiPageEditor multiPageEditor){
 		this.multiPageEditor = multiPageEditor;
 	}
 	protected Command createDeleteCommand(GroupRequest request) {

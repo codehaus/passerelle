@@ -1,8 +1,8 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -49,6 +49,14 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		return pages.get(model) != null;
 	}
 
+	public Integer getModelIndex(TypedCompositeActor model) {
+		return pages.get(model);
+	}
+
+	public IEditorPart getEditor(int index) {
+		return super.getEditor(index);
+	}
+
 	public int addPage(TypedCompositeActor model, IEditorPart editor,
 			IEditorInput input) throws PartInitException {
 
@@ -60,6 +68,10 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 
 	/** The text editor used in page 0. */
 	private PasserelleModelEditor editor;
+
+	public PasserelleModelEditor getEditor() {
+		return editor;
+	}
 
 	/** The font chosen in page 1. */
 	private Font font;
@@ -85,6 +97,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 			int index = addPage(editor, getEditorInput());
 			editor.setIndex(index);
 			setPageText(index, editor.getTitle());
+			pages.put(editor.getDiagram(),0);
 		} catch (PartInitException e) {
 			ErrorDialog.openError(getSite().getShell(),
 					"Error creating nested text editor", null, e.getStatus());
@@ -128,6 +141,14 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 */
 	public void doSave(IProgressMonitor monitor) {
 		getEditor(0).doSave(monitor);
+		for (Entry<CompositeActor, Integer> entry : pages.entrySet()) {
+			if (entry.getValue() != 0) {
+				IEditorPart editor = getEditor(entry.getValue());
+				editor.doSave(monitor);
+//				setPageText(0, editor.getTitle());
+//				setInput(editor.getEditorInput());
+			}
+		}
 	}
 
 	/**
@@ -136,10 +157,13 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 * correspond to the nested editor's.
 	 */
 	public void doSaveAs() {
-		IEditorPart editor = getEditor(0);
-		editor.doSaveAs();
-		setPageText(0, editor.getTitle());
-		setInput(editor.getEditorInput());
+		for (Entry<CompositeActor, Integer> entry : pages.entrySet()) {
+
+			IEditorPart editor = getEditor(entry.getValue());
+			editor.doSaveAs();
+			setPageText(0, editor.getTitle());
+			setInput(editor.getEditorInput());
+		}
 	}
 
 	/*

@@ -6,13 +6,20 @@ import java.io.InputStream;
 import java.io.StringWriter;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.gef.ui.actions.ActionRegistry;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
 
 import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
@@ -83,14 +90,6 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 
 		SafeRunner.run(new SafeRunnable() {
 			public void run() throws Exception {
-				saveProperties();
-				CompositeActor diagram = getParent(getDiagram());
-				StringWriter writer = new StringWriter();
-				diagram.exportMoML(writer);
-
-				IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-				file.setContents(new ByteArrayInputStream(writer.toString()
-						.getBytes()), true, false, progressMonitor);
 				getCommandStack().markSaveLocation();
 			}
 		});
@@ -122,12 +121,12 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 //		}
 
 //		super.setInput(input);
-
-		if (getEditorInput() != null) {
-			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-			file.getWorkspace().addResourceChangeListener(resourceListener);
-			setPartName(file.getName());
-		}
+//
+//		if (getEditorInput() != null) {
+//			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+//			file.getWorkspace().addResourceChangeListener(resourceListener);
+//			setPartName(file.getName());
+//		}
 	}
 	protected PasteNodeAction setPasteNodeAction() {
 		return new PasteNodeAction(this, actor);
@@ -141,5 +140,10 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 		registry.registerAction(closeEditorAction);
 		getSelectionActions().add(closeEditorAction.getId());
 
+	}
+	protected boolean performSaveAs() {
+
+//		getCommandStack().markSaveLocation();
+		return true;
 	}
 }
