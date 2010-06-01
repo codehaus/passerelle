@@ -52,6 +52,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     
     private IWorkbenchAction cutAction;
     private IWorkbenchAction copyAction;
+    private IWorkbenchAction closeEditorAction;
     private IWorkbenchAction pasteAction;
     private IWorkbenchAction deleteAction;
     
@@ -107,6 +108,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         register(pasteAction);
     	deleteAction = ActionFactory.DELETE.create(window);
         register(deleteAction);
+
+        closeEditorAction = ActionFactory.CLOSE_PERSPECTIVE.create(window);
+        register(closeEditorAction);
 
         // Run
 //        runConfigurationsAction = new org.eclipse.debug.ui.actions.internal.ui.actions.OpenRunConfigurations();
