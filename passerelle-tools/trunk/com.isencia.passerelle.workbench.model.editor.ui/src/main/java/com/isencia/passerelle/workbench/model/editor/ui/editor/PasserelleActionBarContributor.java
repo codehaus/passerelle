@@ -60,7 +60,7 @@ public class PasserelleActionBarContributor extends ActionBarContributor {
 				GEFActionConstants.TOGGLE_GRID_VISIBILITY,
 				GEFMessages.ToggleGrid_Label, IAction.AS_CHECK_BOX));
 		IWorkbenchWindow iww = getPage().getWorkbenchWindow();
-		addRetargetAction(new RetargetAction(ActionFactory.CLOSE_PERSPECTIVE
+		addRetargetAction(new RetargetAction(ActionFactory.CLOSE
 				.getId(), "Close editor"));
 		addRetargetAction((RetargetAction) ActionFactory.COPY.create(iww));
 		addRetargetAction((RetargetAction) ActionFactory.CUT.create(iww));

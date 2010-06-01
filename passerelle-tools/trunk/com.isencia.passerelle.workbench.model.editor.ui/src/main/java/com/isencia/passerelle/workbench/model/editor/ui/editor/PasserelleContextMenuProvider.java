@@ -42,7 +42,7 @@ public class PasserelleContextMenuProvider extends
 		action = getActionRegistry().getAction(ActionFactory.CUT.getId());
 		if (action != null && action.isEnabled())
 			manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
-		action = getActionRegistry().getAction(ActionFactory.CLOSE_PERSPECTIVE.getId());
+		action = getActionRegistry().getAction(ActionFactory.CLOSE.getId());
 		if (action != null && action.isEnabled())
 			manager.appendToGroup(GEFActionConstants.GROUP_EDIT, action);
 		action = getActionRegistry().getAction(ActionFactory.PASTE.getId());

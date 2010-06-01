@@ -50,65 +50,20 @@ public class DiagramXYLayoutEditPolicy extends
 	protected Command chainGuideAttachmentCommand(Request request,
 			NamedObj model, Command cmd, boolean horizontal) {
 		Command result = cmd;
-
-		// Attach to guide, if one is given
-		/*
-		 * Integer guidePos = (Integer)request.getExtendedData() .get(horizontal
-		 * ? SnapToGuides.KEY_HORIZONTAL_GUIDE :
-		 * SnapToGuides.KEY_VERTICAL_GUIDE); if (guidePos != null) { int
-		 * alignment = ((Integer)request.getExtendedData() .get(horizontal ?
-		 * SnapToGuides.KEY_HORIZONTAL_ANCHOR :
-		 * SnapToGuides.KEY_VERTICAL_ANCHOR)).intValue(); ChangeGuideCommand cgm
-		 * = new ChangeGuideCommand(part, horizontal);
-		 * cgm.setNewGuide(findGuideAt(guidePos.intValue(), horizontal),
-		 * alignment); result = result.chain(cgm); }
-		 */
 		return result;
 	}
 
 	protected Command chainGuideDetachmentCommand(Request request,
 			NamedObj model, Command cmd, boolean horizontal) {
 		Command result = cmd;
-
-		// Detach from guide, if none is given
-		/*
-		 * Integer guidePos = (Integer)request.getExtendedData() .get(horizontal
-		 * ? SnapToGuides.KEY_HORIZONTAL_GUIDE :
-		 * SnapToGuides.KEY_VERTICAL_GUIDE); if (guidePos == null) result =
-		 * result.chain(new ChangeGuideCommand(part, horizontal));
-		 */
 		return result;
 	}
 
 	protected Command createAddCommand(Request request, EditPart childEditPart,
 			Object constraint) {
-		// NamedObj model = (NamedObj)childEditPart.getModel();
-		// Rectangle rect = (Rectangle)constraint;
 		if (getLogger().isDebugEnabled())
 			getLogger().debug(
 					"createAddCommand for editPart : " + childEditPart);
-		/*
-		 * LogicSubpart part = (LogicSubpart)childEditPart.getModel(); Rectangle
-		 * rect = (Rectangle)constraint;
-		 * 
-		 * AddCommand add = new AddCommand();
-		 * add.setParent((LogicDiagram)getHost().getModel());
-		 * add.setChild(part);
-		 * add.setLabel(LogicMessages.LogicXYLayoutEditPolicy_AddCommandLabelText
-		 * ); add.setDebugLabel("LogicXYEP add subpart");//$NON-NLS-1$
-		 * 
-		 * SetConstraintCommand setConstraint = new SetConstraintCommand();
-		 * setConstraint.setLocation(rect); setConstraint.setPart(part);
-		 * setConstraint
-		 * .setLabel(LogicMessages.LogicXYLayoutEditPolicy_AddCommandLabelText);
-		 * setConstraint.setDebugLabel("LogicXYEP setConstraint");//$NON-NLS-1$
-		 * 
-		 * Command cmd = add.chain(setConstraint); cmd =
-		 * chainGuideAttachmentCommand(request, part, cmd, true); cmd =
-		 * chainGuideAttachmentCommand(request, part, cmd, false); cmd =
-		 * chainGuideDetachmentCommand(request, part, cmd, true); return
-		 * chainGuideDetachmentCommand(request, part, cmd, false);
-		 */
 		return null;
 	}
 
@@ -138,14 +93,6 @@ public class DiagramXYLayoutEditPolicy extends
 		cmd.setLocation(new double[] { location.x, location.y });
 		Command result = cmd;
 
-		/*
-		 * if (request.getType().equals(REQ_MOVE_CHILDREN) ||
-		 * request.getType().equals(REQ_ALIGN_CHILDREN)) { result =
-		 * chainGuideAttachmentCommand(request, model, result, true); result =
-		 * chainGuideAttachmentCommand(request, model, result, false); result =
-		 * chainGuideDetachmentCommand(request, model, result, true); result =
-		 * chainGuideDetachmentCommand(request, model, result, false); }
-		 */
 		return result;
 	}
 
@@ -165,13 +112,6 @@ public class DiagramXYLayoutEditPolicy extends
 
 		if (getLogger().isDebugEnabled())
 			getLogger().debug("createSizeOnDropFeedback");
-		/*
-		 * if (createRequest.getNewObject() instanceof Circuit) figure = new
-		 * CircuitFeedbackFigure(); else if (createRequest.getNewObject()
-		 * instanceof LogicFlowContainer) figure = new
-		 * LogicFlowFeedbackFigure(); else if (createRequest.getNewObject()
-		 * instanceof LogicLabel) figure = new LabelFeedbackFigure(); else {
-		 */
 
 		// TODO Check if we shouldn't return a more meaningful figure during DND
 		figure = new RectangleFigure();

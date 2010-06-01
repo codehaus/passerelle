@@ -1,7 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IMarker;
@@ -39,18 +39,26 @@ import ptolemy.actor.TypedCompositeActor;
  */
 public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		implements IResourceChangeListener {
-	private Map<CompositeActor, Integer> pages = new HashMap<CompositeActor, Integer>();
+	@Override
+	public void removePage(int pageIndex) {
+
+		super.removePage(pageIndex);
+		pages.remove(pageIndex);
+	}
+
+	private List<CompositeActor> pages = new ArrayList<CompositeActor>();
 
 	public int getPageIndex(CompositeActor actor) {
-		return pages.get(actor);
+
+		for (int i = 0; i < pages.size(); i++) {
+			if (actor == pages.get(i))
+				return i;
+		}
+		return -1;
 	}
 
 	public boolean containsModel(TypedCompositeActor model) {
-		return pages.get(model) != null;
-	}
-
-	public Integer getModelIndex(TypedCompositeActor model) {
-		return pages.get(model);
+		return getPageIndex(model) == -1;
 	}
 
 	public IEditorPart getEditor(int index) {
@@ -61,7 +69,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 			IEditorInput input) throws PartInitException {
 
 		int index = super.addPage(editor, input);
-		pages.put(model, index);
+		pages.add(model);
 		return index;
 
 	}
@@ -97,7 +105,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 			int index = addPage(editor, getEditorInput());
 			editor.setIndex(index);
 			setPageText(index, editor.getTitle());
-			pages.put(editor.getDiagram(),0);
+			pages.add(0, editor.getDiagram());
 		} catch (PartInitException e) {
 			ErrorDialog.openError(getSite().getShell(),
 					"Error creating nested text editor", null, e.getStatus());
@@ -141,12 +149,11 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 */
 	public void doSave(IProgressMonitor monitor) {
 		getEditor(0).doSave(monitor);
-		for (Entry<CompositeActor, Integer> entry : pages.entrySet()) {
-			if (entry.getValue() != 0) {
-				IEditorPart editor = getEditor(entry.getValue());
+		for (CompositeActor actor : pages) {
+			int index = getPageIndex(actor);
+			if (index != -1 && index != 0) {
+				IEditorPart editor = getEditor(getPageIndex(actor));
 				editor.doSave(monitor);
-//				setPageText(0, editor.getTitle());
-//				setInput(editor.getEditorInput());
 			}
 		}
 	}
@@ -157,13 +164,16 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 * correspond to the nested editor's.
 	 */
 	public void doSaveAs() {
-		for (Entry<CompositeActor, Integer> entry : pages.entrySet()) {
-
-			IEditorPart editor = getEditor(entry.getValue());
-			editor.doSaveAs();
-			setPageText(0, editor.getTitle());
-			setInput(editor.getEditorInput());
+		for (CompositeActor actor : pages) {
+			int index = getPageIndex(actor);
+			if (index != -1 && index != 0) {
+				IEditorPart editor = getEditor(index);
+				editor.doSaveAs();
+				setPageText(0, editor.getTitle());
+				setInput(editor.getEditorInput());
+			}
 		}
+
 	}
 
 	/*

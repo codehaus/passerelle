@@ -47,26 +47,16 @@ public class PasteNodeAction extends SelectionAction {
 		if (selectedObjects != null) {
 			Iterator<Object> it = selectedObjects.iterator();
 			while (it.hasNext()) {
-				Object o = it.next();
-				if (o instanceof DiagramEditPart && ((DiagramEditPart) o).getActor() != null) {
-					NamedObj container = ((DiagramEditPart) o).getActor()
-							.getContainer();
-					if (container != null) {
-						return new PasteNodeCommand(((DiagramEditPart) o).getActor());
-					}
-				}
-				if (o instanceof EditPart
-						&& ((EditPart) o).getParent() instanceof DiagramEditPart) {
-					NamedObj container = ((DiagramEditPart) ((EditPart) o)
-							.getParent()).getActor().getContainer();
-					if (container != null) {
-						return new PasteNodeCommand((CompositeEntity) container);
-					}
+				CompositeEntity compositeActor = WorkbenchUtility.getParentActor(it.next());
+				if (compositeActor != null){
+					return new PasteNodeCommand(compositeActor);
 				}
 			}
 		}
 		return new PasteNodeCommand(actor);
 	}
+
+	
 
 	@Override
 	protected boolean calculateEnabled() {

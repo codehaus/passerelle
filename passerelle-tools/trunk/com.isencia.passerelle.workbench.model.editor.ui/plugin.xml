@@ -9,7 +9,7 @@
             extensions="moml"
             icon="icons/model.gif"
             contributorClass="com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleActionBarContributor"
-            class="com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor"
+            class="com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor"
             id="com.isencia.passerelle.workbench.model.editor.ui.editors.modelEditor">
       </editor>
    </extension>

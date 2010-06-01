@@ -538,6 +538,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		PasteNodeAction pasteAction = setPasteNodeAction();
 		registry.registerAction(pasteAction);
 		getSelectionActions().add(pasteAction.getId());
+		CloseEditorAction closeEditorAction = new CloseEditorAction(this);
+		registry.registerAction(closeEditorAction);
+		getSelectionActions().add(closeEditorAction.getId());
+
 
 	}
 

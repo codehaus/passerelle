@@ -1,39 +1,28 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.gef.ui.actions.ActionRegistry;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.actions.WorkspaceModifyOperation;
-import org.eclipse.ui.dialogs.SaveAsDialog;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
-
-import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
-import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.util.Instantiable;
 import ptolemy.moml.MoMLParser;
 
+import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
+import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
+
 public class CompositeModelEditor extends PasserelleModelEditor {
 	private CompositeActor actor;
 	private CompositeActor model;
-	private ResourceTracker resourceListener = new ResourceTracker();
 
 	public CompositeModelEditor(MultiPageEditorPart parent,
 			CompositeActor actor,CompositeActor model) {
@@ -107,27 +96,6 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 		}
 		return null;
 	}
-	protected void superSetInput(IEditorInput input) {
-		// The workspace never changes for an editor. So, removing and re-adding
-		// the
-		// resourceListener is not necessary. But it is being done here for the
-		// sake
-		// of proper implementation. Plus, the resourceListener needs to be
-		// added
-		// to the workspace the first time around.
-//		if (getEditorInput() != null) {
-//			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-//			file.getWorkspace().removeResourceChangeListener(resourceListener);
-//		}
-
-//		super.setInput(input);
-//
-//		if (getEditorInput() != null) {
-//			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-//			file.getWorkspace().addResourceChangeListener(resourceListener);
-//			setPartName(file.getName());
-//		}
-	}
 	protected PasteNodeAction setPasteNodeAction() {
 		return new PasteNodeAction(this, actor);
 	}
@@ -135,15 +103,11 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 	protected void createActions() {
 		// TODO Auto-generated method stub
 		super.createActions();
-		ActionRegistry registry = getActionRegistry();
-		CloseEditorAction closeEditorAction = new CloseEditorAction(this);
-		registry.registerAction(closeEditorAction);
-		getSelectionActions().add(closeEditorAction.getId());
 
 	}
 	protected boolean performSaveAs() {
 
-//		getCommandStack().markSaveLocation();
+		getCommandStack().markSaveLocation();
 		return true;
 	}
 }

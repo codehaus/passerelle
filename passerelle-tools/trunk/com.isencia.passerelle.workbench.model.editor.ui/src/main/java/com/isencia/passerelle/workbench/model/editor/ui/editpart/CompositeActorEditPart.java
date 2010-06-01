@@ -45,6 +45,7 @@ import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.model.editor.ui.WorkbenchUtility;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.CompositeModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
@@ -96,12 +97,12 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 				CompositeModelEditor editor = new CompositeModelEditor(
 						multiPageEditor, model, multiPageEditor.getEditor().getDiagram());
-				Integer index = multiPageEditor.getModelIndex(model);
-				if (index == null) {
+				int index = multiPageEditor.getPageIndex(model);
+				if (index == -1) {
 
 					index = multiPageEditor.addPage(model, editor,
 							multiPageEditor.getEditorInput());
-					multiPageEditor.setText(index, model.getDisplayName());
+					multiPageEditor.setText(index,WorkbenchUtility.getPath(model));
 					multiPageEditor.setActiveEditor(editor);
 
 				}
@@ -147,8 +148,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	protected AccessibleEditPart createAccessible() {
 		return new AccessibleGraphicalEditPart() {
 			public void getName(AccessibleEvent e) {
-				// e.result = LogicMessages.LogicDiagram_LabelText;
-				e.result = "Test";
 			}
 		};
 	}
@@ -163,17 +162,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 						(PasserelleModelMultiPageEditor) getMultiPageEditorPart()));
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
 				new CompositeActorEditPolicy());
-
-		// installEditPolicy(EditPolicy.NODE_ROLE, null);
-		// installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, null);
-		// installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
-		// installEditPolicy(EditPolicy.COMPONENT_ROLE,
-		// new RootComponentEditPolicy());
-		// installEditPolicy(EditPolicy.LAYOUT_ROLE, new
-		// DiagramXYLayoutEditPolicy(
-		// (XYLayout)getContentPane().getLayoutManager()));
-		//
-		//		installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
 	}
 
 	/**

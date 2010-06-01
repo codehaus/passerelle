@@ -3,27 +3,22 @@ package com.isencia.passerelle.workbench.model.editor.ui;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.commands.Command;
-import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 
-import ptolemy.actor.IORelation;
-import ptolemy.kernel.util.NamedObj;
+import ptolemy.actor.CompositeActor;
+import ptolemy.kernel.CompositeEntity;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editor.CompositeModelEditor;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
-import com.isencia.passerelle.workbench.model.ui.command.CopyNodeCommand;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
+import com.isencia.passerelle.workbench.model.ui.command.PasteNodeCommand;
 
 public class CloseEditorAction extends SelectionAction {
-	public CloseEditorAction(CompositeModelEditor part) {
+	public CloseEditorAction(PasserelleModelEditor part) {
 		super(part);
 		setLazyEnablementCalculation(true);
 	}
@@ -34,30 +29,33 @@ public class CloseEditorAction extends SelectionAction {
 		ISharedImages sharedImages = PlatformUI.getWorkbench()
 				.getSharedImages();
 		setText("Close page");
-		setId(ActionFactory.CLOSE_PERSPECTIVE.getId());
+		setId(ActionFactory.CLOSE.getId());
 		setHoverImageDescriptor(sharedImages
-				.getImageDescriptor(ISharedImages.IMG_TOOL_UP));
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 		setImageDescriptor(sharedImages
-				.getImageDescriptor(ISharedImages.IMG_TOOL_UP));
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
 		setDisabledImageDescriptor(sharedImages
-				.getImageDescriptor(ISharedImages.IMG_TOOL_UP_DISABLED));
+				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR_DISABLED));
 		setEnabled(false);
 
 	}
 
-
 	@Override
 	protected boolean calculateEnabled() {
-		return true;
+		return WorkbenchUtility.containsCompositeEntity(getSelectedObjects())!=null;
 	}
-
-
 
 	@Override
 	public void run() {
-		CompositeModelEditor workbenchPart = (CompositeModelEditor)getWorkbenchPart();
-		workbenchPart.getParent().removePage(workbenchPart.getIndex());
-		
+		CompositeModelEditor workbenchPart = (CompositeModelEditor) getWorkbenchPart();
+		CompositeEntity compositeEntity = WorkbenchUtility.containsCompositeEntity(getSelectedObjects());
+		if (compositeEntity !=null && workbenchPart.getParent() instanceof PasserelleModelMultiPageEditor){
+			PasserelleModelMultiPageEditor parent = (PasserelleModelMultiPageEditor)workbenchPart.getParent();
+			int index = parent.getPageIndex((CompositeActor)compositeEntity);
+			workbenchPart.getParent().removePage(index);
+		}
+	
+
 	}
 
 	@Override
