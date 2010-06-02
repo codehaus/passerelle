@@ -35,6 +35,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ActorEditPoli
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.PortFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
@@ -125,8 +126,12 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 */
 	protected IFigure createFigure() {
 		Actor actorModel = getActorModel();
+		ImageDescriptor imageDescriptor = PaletteBuilder.getIcon(actorModel.getClass().getName());
+		if (imageDescriptor == null){
+			imageDescriptor = IMAGE_DESCRIPTOR_ACTOR;
+		}
 		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(),
-				IMAGE_DESCRIPTOR_ACTOR.createImage());
+				imageDescriptor.createImage());
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
 		if (inputPortList != null) {

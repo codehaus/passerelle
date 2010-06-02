@@ -1,8 +1,10 @@
 package com.isencia.passerelle.workbench.model.editor.ui.palette;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
@@ -19,6 +21,7 @@ import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.part.EditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,10 @@ public class PaletteBuilder {
 	private static Logger logger = LoggerFactory.getLogger(PaletteBuilder.class);
 
 	public final static String PALETTE_CONTAINER_GENERAL = "General";
-
+	private static Map<String,ImageDescriptor> actorIconMap = new HashMap<String,ImageDescriptor>();
+	public static ImageDescriptor getIcon(String className){
+		return actorIconMap.get(className);
+	}
 	static public PaletteRoot createPalette(EditorPart parent){
 		PaletteRoot paletteRoot = new PaletteRoot();
 		paletteRoot.addAll(createCategories(paletteRoot,parent));
@@ -74,13 +80,20 @@ public class PaletteBuilder {
 					if (iconAttribute!=null && !iconAttribute.isEmpty()){
 						icon =iconAttribute;
 					}
+					
 					String classAttribute = configurationElement.getAttribute("class");
+					
+					ImageDescriptor imageDescriptor = Activator.getImageDescriptor("com.isencia.passerelle.actor",icon);
+					if (imageDescriptor == null){
+						imageDescriptor = Activator.getImageDescriptor(icon);
+					}
+					actorIconMap.put(classAttribute,imageDescriptor);
 					CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
 							nameAttribute,
 							nameAttribute,
 							new ClassTypeFactory(classAttribute),
-							Activator.getImageDescriptor(icon), //$NON-NLS-1$
-							Activator.getImageDescriptor(icon)//$NON-NLS-1$
+							imageDescriptor, //$NON-NLS-1$
+							imageDescriptor//$NON-NLS-1$
 						);
 					
 					PaletteContainer paletteContainer = paletteContainers.get(groupAttribute);

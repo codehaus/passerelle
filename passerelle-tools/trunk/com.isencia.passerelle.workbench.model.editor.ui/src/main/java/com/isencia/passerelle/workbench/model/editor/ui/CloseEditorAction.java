@@ -1,8 +1,5 @@
 package com.isencia.passerelle.workbench.model.editor.ui;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
@@ -15,14 +12,13 @@ import ptolemy.kernel.CompositeEntity;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.CompositeModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
-import com.isencia.passerelle.workbench.model.ui.command.PasteNodeCommand;
 
 public class CloseEditorAction extends SelectionAction {
 	public CloseEditorAction(PasserelleModelEditor part) {
 		super(part);
 		setLazyEnablementCalculation(true);
 	}
-
+	private final String icon = "icons/close_view.gif";
 	@Override
 	protected void init() {
 		super.init();
@@ -30,12 +26,10 @@ public class CloseEditorAction extends SelectionAction {
 				.getSharedImages();
 		setText("Close page");
 		setId(ActionFactory.CLOSE.getId());
-		setHoverImageDescriptor(sharedImages
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
-		setImageDescriptor(sharedImages
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR));
-		setDisabledImageDescriptor(sharedImages
-				.getImageDescriptor(ISharedImages.IMG_ETOOL_CLEAR_DISABLED));
+		Activator.getImageDescriptor(icon);
+		setHoverImageDescriptor(Activator.getImageDescriptor(icon));
+		setImageDescriptor(Activator.getImageDescriptor(icon));
+		setDisabledImageDescriptor(Activator.getImageDescriptor(icon));
 		setEnabled(false);
 
 	}
