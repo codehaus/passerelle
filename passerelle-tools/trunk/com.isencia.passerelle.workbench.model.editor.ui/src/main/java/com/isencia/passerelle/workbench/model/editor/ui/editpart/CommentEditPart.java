@@ -31,7 +31,7 @@ import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 public class CommentEditPart extends AbstractNodeEditPart {
 
 	public final static ImageDescriptor IMAGE_COMMENT = Activator
-			.getImageDescriptor("icons/comment.png");
+			.getImageDescriptor("com.isencia.passerelle.actor","icons/comment.png");
 
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
