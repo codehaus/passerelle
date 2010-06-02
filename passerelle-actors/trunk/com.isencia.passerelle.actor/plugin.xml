@@ -48,14 +48,14 @@
       </actor>
       <actor
             class="ptolemy.actor.CompositeActor"
-            group="com.isencia.passerelle.actor.actorgroup.general"
+            group="com.isencia.passerelle.actor.actorgroup.utilities"
             icon="icons/comp.gif"
             id="ptolemy.actor.CompositeActor"
             name="CompositeActor">
       </actor>
       <actor
             class="ptolemy.vergil.kernel.attributes.TextAttribute"
-            group="com.isencia.passerelle.actor.actorgroup.general"
+            group="com.isencia.passerelle.actor.actorgroup.utilities"
             icon="icons/comment.png"
             id="ptolemy.vergil.kernel.attributes.TextAttribute"
             name="Comment">
@@ -66,6 +66,10 @@
       <actorgroup
             id="com.isencia.passerelle.actor.actorgroup.general"
             name="General">
+      </actorgroup>
+      <actorgroup
+            id="com.isencia.passerelle.actor.actorgroup.utilities"
+            name="Utilities">
       </actorgroup>
       <actorgroup
             id="com.isencia.passerelle.actor.actorgroup.flow"
