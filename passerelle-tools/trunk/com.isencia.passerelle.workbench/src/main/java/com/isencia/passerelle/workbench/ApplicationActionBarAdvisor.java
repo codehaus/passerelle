@@ -109,7 +109,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     	deleteAction = ActionFactory.DELETE.create(window);
         register(deleteAction);
 
-        closeEditorAction = ActionFactory.CLOSE_PERSPECTIVE.create(window);
+        closeEditorAction = ActionFactory.CLOSE.create(window);
         register(closeEditorAction);
 
         // Run
