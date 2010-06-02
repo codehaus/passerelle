@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.TypedCompositeActor;
+import ptolemy.actor.TypedIOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.IllegalActionException;
@@ -14,6 +15,7 @@ import ptolemy.kernel.util.NamedObj;
 import ptolemy.kernel.util.StringAttribute;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
+import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
@@ -33,16 +35,16 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
 	private double[] location;
 
-	public CreateComponentCommand(CompositeActor actor) {
+	public CreateComponentCommand() {
 		super("CreateComponent");
+	}
+	public void setActor(CompositeActor actor) {
 		this.actor = actor;
 	}
-
-	public CreateComponentCommand(NamedObj model,CompositeActor actor) {
-		this(actor);
+	
+	public void setModel(NamedObj model) {
 		this.model = model;
 	}
-
 	public Logger getLogger() {
 		return logger;
 	}
@@ -84,6 +86,10 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 							((StringAttribute) child.getAttribute("text")).setExpression("Edit text in parameters in properties view");
 
 
+						} else if (type.equals("ptolemy.actor.TypedIOPort")) {
+							child = new TypedIOPort(
+									(CompositeEntity) parentModel, name);
+							
 						} else if (type.equals("ptolemy.actor.CompositeActor")) {
 							child = new TypedCompositeActor(
 									(CompositeEntity) parentModel, name);
@@ -109,7 +115,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 						child = (NamedObj) model
 								.clone(((CompositeEntity) parentModel).workspace());
 						child.setName(name);
-						DeleteComponentCommand.setContainer(child, parentModel);
+						ComponentUtility.setContainer(child, parentModel);
 					}
 					if (location != null) {
 
@@ -148,7 +154,8 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			protected void _execute() throws Exception {
 				getLogger().debug("Redo create component");
 				if (child instanceof NamedObj) {
-					DeleteComponentCommand.setContainer(child, parent);
+					ComponentUtility.setContainer(child, parent);
+				
 				}
 
 			}
@@ -170,7 +177,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			@Override
 			protected void _execute() throws Exception {
 				if (child instanceof NamedObj) {
-					DeleteComponentCommand.setContainer(child, null);
+					ComponentUtility.setContainer(child, null);
 				}
 			}
 		});

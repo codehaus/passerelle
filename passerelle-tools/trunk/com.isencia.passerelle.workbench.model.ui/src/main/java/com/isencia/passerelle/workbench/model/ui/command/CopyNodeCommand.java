@@ -1,29 +1,45 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
+import com.isencia.passerelle.workbench.model.ui.Relation;
+
 import ptolemy.actor.Director;
+import ptolemy.actor.IOPort;
+import ptolemy.actor.IORelation;
 import ptolemy.kernel.util.NamedObj;
 
 public class CopyNodeCommand extends Command {
-	private ArrayList<NamedObj> list = new ArrayList<NamedObj>();
+	private ArrayList<Object> list = new ArrayList<Object>();
 
 	public boolean addElement(NamedObj NamedObj) {
 		if (!list.contains(NamedObj)) {
-			return list.add(NamedObj);
+			if (NamedObj instanceof IORelation) {
+				list.add(new Relation(((IORelation)NamedObj)
+						.linkedSourcePorts(),((IORelation)NamedObj).linkedDestinationPorts()));
+
+			} else {
+				return list.add(NamedObj);
+			}
+
 		}
 		return false;
+	}
+
+	public void emptyElementList() {
+		list.clear();
 	}
 
 	@Override
 	public boolean canExecute() {
 		if (list == null || list.isEmpty())
 			return false;
-		Iterator<NamedObj> it = list.iterator();
+		Iterator<Object> it = list.iterator();
 		while (it.hasNext()) {
 			if (!isCopyableNamedObj(it.next()))
 				return false;
@@ -42,9 +58,16 @@ public class CopyNodeCommand extends Command {
 		return false;
 	}
 
-	public boolean isCopyableNamedObj(NamedObj NamedObj) {
+	public boolean isCopyableNamedObj(Object NamedObj) {
 		if (NamedObj instanceof Director)
 			return false;
 		return true;
+	}
+
+	private IOPort searchPort(Enumeration enumeration) {
+		while (enumeration.hasMoreElements()) {
+			return (IOPort) enumeration.nextElement();
+		}
+		return null;
 	}
 }

@@ -1,27 +1,47 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
+import com.isencia.passerelle.workbench.model.ui.Relation;
+
 import ptolemy.actor.Director;
-import ptolemy.kernel.ComponentEntity;
+import ptolemy.actor.IOPort;
+import ptolemy.actor.IORelation;
+import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.NamedObj;
 
 public class CutNodeCommand extends Command {
 	private HashMap<NamedObj, DeleteComponentCommand> list = new HashMap<NamedObj, DeleteComponentCommand>();
+	private HashMap<NamedObj, DeleteConnectionCommand> connectionList = new HashMap<NamedObj, DeleteConnectionCommand>();
+
+	public void emptyElementList() {
+		list.clear();
+		connectionList.clear();
+	}
 
 	public boolean addElement(NamedObj NamedObj) {
-		if (!list.keySet().contains(NamedObj)) {
-			list.put(NamedObj, new DeleteComponentCommand());
-			return true;
+		if (!(NamedObj instanceof IORelation)) {
+			if (!list.keySet().contains(NamedObj)) {
+				list.put(NamedObj, new DeleteComponentCommand());
+				return true;
+			}
+		} else {
+			if (!connectionList.keySet().contains(NamedObj)) {
+				connectionList.put(NamedObj, new DeleteConnectionCommand());
+				return true;
+			}
 		}
+
 		return false;
 	}
 
@@ -40,25 +60,47 @@ public class CutNodeCommand extends Command {
 
 	@Override
 	public void execute() {
-		if (canExecute()){
-			Iterator<NamedObj> it = list.keySet().iterator();
+		if (canExecute()) {
+			CompositeEntity container = null;
+			Iterator it = connectionList.keySet().iterator();
+			List<Relation> relations = new ArrayList<Relation>();
 			while (it.hasNext()) {
 				try {
 					NamedObj child = (NamedObj) it.next();
-					DeleteComponentCommand deleteCommand = new DeleteComponentCommand();
-					deleteCommand.setParent((CompositeEntity) child.getContainer());
-					
-					deleteCommand.setChild(child);
-					deleteCommand.execute();
+					if (child instanceof IORelation) {
+						relations.add(new Relation(((IORelation) child)
+								.linkedDestinationPorts(), ((IORelation) child)
+								.linkedSourcePorts()));
 
-					list.put(child, deleteCommand);
+						DeleteConnectionCommand deleteCommand = connectionList
+								.get(child);
+						deleteCommand.setParent(container);
+						deleteCommand.setConnection(((TypedIORelation) child));
+						deleteCommand.execute();
+					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					redo();
 				}
 			}
-			List<NamedObj> cutObjects = new ArrayList<NamedObj>();
+
+			it = list.keySet().iterator();
+			while (it.hasNext()) {
+				try {
+					NamedObj child = (NamedObj) it.next();
+					if (!(child instanceof IORelation)) {
+						DeleteComponentCommand deleteCommand = list.get(child);
+						container = (CompositeEntity) child.getContainer();
+						deleteCommand.setParent(container);
+
+						deleteCommand.setChild(child);
+						deleteCommand.execute();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			List cutObjects = new ArrayList();
 			cutObjects.addAll(list.keySet());
+			cutObjects.addAll(relations);
 			Clipboard.getDefault().setContents(cutObjects);
 		}
 	}
@@ -70,12 +112,24 @@ public class CutNodeCommand extends Command {
 			DeleteComponentCommand cmd = it.next();
 			cmd.undo();
 		}
+		Iterator<DeleteConnectionCommand> it2 = connectionList.values().iterator();
+		while (it2.hasNext()) {
+			DeleteConnectionCommand cmd = it2.next();
+			cmd.undo();
+		}
+
 	}
+
 	@Override
 	public void redo() {
 		Iterator<DeleteComponentCommand> it = list.values().iterator();
 		while (it.hasNext()) {
 			DeleteComponentCommand cmd = it.next();
+			cmd.redo();
+		}
+		Iterator<DeleteConnectionCommand> it2 = connectionList.values().iterator();
+		while (it2.hasNext()) {
+			DeleteConnectionCommand cmd = it2.next();
 			cmd.redo();
 		}
 	}
@@ -85,6 +139,14 @@ public class CutNodeCommand extends Command {
 			return false;
 		return true;
 	}
+
+	private IOPort searchPort(Enumeration enumeration) {
+		while (enumeration.hasMoreElements()) {
+			return (IOPort) enumeration.nextElement();
+		}
+		return null;
+	}
+
 	@Override
 	public boolean canUndo() {
 		return !(list.isEmpty());

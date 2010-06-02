@@ -1,9 +1,9 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
@@ -11,38 +11,34 @@ import org.eclipse.gef.ui.actions.Clipboard;
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
-import ptolemy.actor.IORelation;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
-import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.workbench.model.ui.Relation;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class PasteNodeCommand extends Command {
 	private CompositeEntity actor;
 
-	public PasteNodeCommand(CompositeEntity actor) {
+	public PasteNodeCommand() {
 		super();
-		this.actor = actor;
 
 	}
 
-	private HashMap<NamedObj, org.eclipse.gef.commands.Command> list = new HashMap<NamedObj, org.eclipse.gef.commands.Command>();
+	private HashMap<Object, org.eclipse.gef.commands.Command> list = new HashMap<Object, org.eclipse.gef.commands.Command>();
 
 	@Override
 	public boolean canExecute() {
-		ArrayList<NamedObj> bList = (ArrayList<NamedObj>) Clipboard
-				.getDefault().getContents();
-		if (bList == null || bList.isEmpty())
+		ArrayList clipBoardList = (ArrayList) Clipboard.getDefault()
+				.getContents();
+		if (clipBoardList == null || clipBoardList.isEmpty())
 			return false;
-		Iterator<NamedObj> it = bList.iterator();
-		while (it.hasNext()) {
-			NamedObj NamedObj = (NamedObj) it.next();
-			if (NamedObj != null && isPastableNamedObj(NamedObj)) {
-				list.put(NamedObj, null);
+		for (Object o : clipBoardList) {
+			if (!(o instanceof NamedObj) && !(o instanceof Relation)) {
+				return false;
 			}
 		}
 		return true;
@@ -67,19 +63,24 @@ public class PasteNodeCommand extends Command {
 	public void execute() {
 		if (!canExecute())
 			return;
-		Iterator<NamedObj> it = list.keySet().iterator();
-		
+		ArrayList bList = (ArrayList) Clipboard.getDefault().getContents();
+
+		Iterator<Object> it = bList.iterator();
+		list.clear();
 		while (it.hasNext()) {
 			try {
-				NamedObj child = (NamedObj) it.next();
-				if (!(child instanceof Relation)) {
+				Object o = it.next();
+				if (o instanceof NamedObj) {
+					NamedObj child = (NamedObj) o;
 					CreateComponentCommand createCommand = null;
-					if (actor instanceof CompositeActor)
-						createCommand = new CreateComponentCommand(
-								child, (CompositeActor)actor);
-					else
-						createCommand = new CreateComponentCommand(
-								child, null);
+					if (actor instanceof CompositeActor) {
+						createCommand = new CreateComponentCommand();
+						createCommand.setActor((CompositeActor) actor);
+						createCommand.setModel(child);
+					} else {
+						createCommand = new CreateComponentCommand();
+						createCommand.setModel(child);
+					}
 					createCommand.setParent(getParent(actor));
 					createCommand.setChildType(child.getClass().getName());
 					double[] location = ModelUtils.getLocation(child);
@@ -91,21 +92,22 @@ public class PasteNodeCommand extends Command {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				redo();
 			}
 		}
-		it = list.keySet().iterator();
+		it = bList.iterator();
 		while (it.hasNext()) {
 			try {
-				NamedObj child = (NamedObj) it.next();
-				if (child instanceof Relation) {
-					IORelation rel = (IORelation) child;
-					ComponentPort destination = searchPort(rel
-							.linkedDestinationPorts());
-					ComponentPort source = searchPort(rel.linkedSourcePorts());
+				Object o = it.next();
+				if (o instanceof Relation) {
+
+					Relation rel = (Relation) o;
+
+					ComponentPort destination = searchPort(rel.getDestination());
+					ComponentPort source = searchPort(rel.getSource());
 					if (source != null && destination != null) {
 						CreateConnectionCommand connection = new CreateConnectionCommand(
 								source, destination);
+						connection.setContainer(actor);
 						connection.execute();
 						list.put(rel, connection);
 					}
@@ -116,11 +118,12 @@ public class PasteNodeCommand extends Command {
 				redo();
 			}
 		}
+
 	}
 
-	private ComponentPort searchPort(Enumeration enumeration) {
-		while (enumeration.hasMoreElements()) {
-			IOPort port = (IOPort) enumeration.nextElement();
+	private ComponentPort searchPort(List enumeration) {
+		for (Object o : enumeration) {
+			IOPort port = (IOPort) o;
 			port.getName();
 			NamedObj node = port.getContainer();
 			org.eclipse.gef.commands.Command cmd = list.get(node);
@@ -129,8 +132,8 @@ public class PasteNodeCommand extends Command {
 				NamedObj obj = createComponentCommand.getChild();
 				if (obj instanceof ComponentEntity) {
 					ComponentEntity ce = (ComponentEntity) obj;
-					for (Object o : ce.portList()) {
-						Port cPort = (Port) o;
+					for (Object p : ce.portList()) {
+						Port cPort = (Port) p;
 						if (cPort.getName().equals(port.getName())) {
 							if (cPort instanceof ComponentPort)
 								return (ComponentPort) cPort;
@@ -138,6 +141,30 @@ public class PasteNodeCommand extends Command {
 					}
 
 				}
+			}
+		}
+		return null;
+	}
+
+	public void setActor(CompositeEntity actor) {
+		this.actor = actor;
+	}
+
+	private ComponentPort searchPort(NamedObj node, String name) {
+		org.eclipse.gef.commands.Command cmd = list.get(node);
+		if (cmd instanceof CreateComponentCommand) {
+			CreateComponentCommand createComponentCommand = (CreateComponentCommand) cmd;
+			NamedObj obj = createComponentCommand.getChild();
+			if (obj instanceof ComponentEntity) {
+				ComponentEntity ce = (ComponentEntity) obj;
+				for (Object o : ce.portList()) {
+					Port cPort = (Port) o;
+					if (cPort.getName().equals(name)) {
+						if (cPort instanceof ComponentPort)
+							return (ComponentPort) cPort;
+					}
+				}
+
 			}
 		}
 		return null;

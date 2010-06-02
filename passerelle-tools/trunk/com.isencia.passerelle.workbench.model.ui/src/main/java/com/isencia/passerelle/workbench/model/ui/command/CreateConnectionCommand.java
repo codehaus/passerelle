@@ -20,12 +20,17 @@ public class CreateConnectionCommand extends Command {
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(CreateConnectionCommand.class);
-	
+
 	public Logger getLogger() {
 		return logger;
 	}
-	
+
 	protected CompositeEntity container;
+
+	public void setContainer(CompositeEntity container) {
+		this.container = container;
+	}
+
 	protected TypedIORelation connection;
 	protected ComponentPort source;
 	protected ComponentPort target;
@@ -35,7 +40,7 @@ public class CreateConnectionCommand extends Command {
 	}
 
 	public boolean canExecute() {
-		return (source!=null && target!=null);
+		return (source != null && target != null);
 	}
 
 	public void execute() {
@@ -44,13 +49,23 @@ public class CreateConnectionCommand extends Command {
 
 	public void doExecute() {
 		if (source != null && target != null) {
-			container = (CompositeEntity) source.getContainer().getContainer();
-			// Perform Change in a ChangeRequest so that all Listeners are notified
-			container.requestChange(new ModelChangeRequest(this.getClass(), container, "connection") {
+			CompositeEntity temp = (CompositeEntity) source.getContainer()
+					.getContainer();
+			if (temp != null) {
+				container = temp;
+			}
+			if (container == null) {
+				return;
+			}
+			// Perform Change in a ChangeRequest so that all Listeners are
+			// notified
+			container.requestChange(new ModelChangeRequest(this.getClass(),
+					container, "connection") {
 				@Override
 				protected void _execute() throws Exception {
 					getLogger().debug("Create new connection");
-					connection = (TypedIORelation) container.connect(source, target);
+					connection = (TypedIORelation) container.connect(source,
+							target);
 				}
 			});
 		}
@@ -82,8 +97,10 @@ public class CreateConnectionCommand extends Command {
 
 	public void undo() {
 		if (connection != null) {
-			// Perform Change in a ChangeRequest so that all Listeners are notified
-			container.requestChange(new ModelChangeRequest(this.getClass(), container, "connection") {
+			// Perform Change in a ChangeRequest so that all Listeners are
+			// notified
+			container.requestChange(new ModelChangeRequest(this.getClass(),
+					container, "connection") {
 				@Override
 				protected void _execute() throws Exception {
 					getLogger().debug("Remove connection");

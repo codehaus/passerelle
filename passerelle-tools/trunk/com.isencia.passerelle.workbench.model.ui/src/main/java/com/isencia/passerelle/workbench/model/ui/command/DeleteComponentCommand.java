@@ -1,6 +1,8 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -11,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
-import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
 import ptolemy.actor.TypedIORelation;
@@ -20,24 +21,27 @@ import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.util.ChangeRequest;
-import ptolemy.kernel.util.IllegalActionException;
-import ptolemy.kernel.util.NameDuplicationException;
 import ptolemy.kernel.util.NamedObj;
-import ptolemy.vergil.kernel.attributes.TextAttribute;
 
+import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils.ConnectionType;
 
 public class DeleteComponentCommand extends Command {
 	private MultiPageEditorPart multiPageEditor;
-	private int index;
-
-	public DeleteComponentCommand(MultiPageEditorPart multiPageEditor, int index) {
-		super();
+	public void setMultiPageEditor(MultiPageEditorPart multiPageEditor) {
 		this.multiPageEditor = multiPageEditor;
-		this.index = index;
 	}
+
+	private List<Integer> indexList = new ArrayList<Integer>();
+	public void addIndex(Integer index){
+		indexList.add(index);
+	}
+	public void emptyIndexList(){
+		indexList.removeAll(indexList);
+	}
+	
 
 	private static Logger logger = LoggerFactory
 			.getLogger(DeleteComponentCommand.class);
@@ -116,8 +120,10 @@ public class DeleteComponentCommand extends Command {
 				deleteConnections(child);
 				// detachFromGuides(child);
 				container = child.getContainer();
-				setContainer(child, null);
-				if (child instanceof CompositeActor && multiPageEditor != null){
+				ComponentUtility.setContainer(child, null);
+				for(Integer index:indexList){
+					Comparator comparator = Collections.reverseOrder();
+					Collections.sort(indexList,comparator);
 					multiPageEditor.removePage(index);
 				}
 
@@ -159,6 +165,7 @@ public class DeleteComponentCommand extends Command {
 				CreateConnectionCommand connection = new CreateConnectionCommand(
 						(ComponentPort) source.get(0),
 						(ComponentPort) destination.get(0));
+				connection.setContainer(parent);
 				connection.execute();
 			}
 		} catch (Exception e) {
@@ -200,7 +207,7 @@ public class DeleteComponentCommand extends Command {
 			@Override
 			protected void _execute() throws Exception {
 				try {
-					setContainer(child, container);
+					ComponentUtility.setContainer(child, container);
 					restoreConnections(child);
 				} catch (Exception e) {
 					getLogger()
@@ -212,21 +219,5 @@ public class DeleteComponentCommand extends Command {
 
 	}
 
-	public static void setContainer(NamedObj child, NamedObj container) {
-		try {
-			if (child instanceof ComponentEntity) {
-
-				((ComponentEntity) child)
-						.setContainer((CompositeEntity) container);
-
-			} else if (child instanceof TextAttribute) {
-				((TextAttribute) child)
-						.setContainer((CompositeEntity) container);
-			}
-		} catch (IllegalActionException e) {
-			e.printStackTrace();
-		} catch (NameDuplicationException e) {
-			e.printStackTrace();
-		}
-	}
+	
 }
