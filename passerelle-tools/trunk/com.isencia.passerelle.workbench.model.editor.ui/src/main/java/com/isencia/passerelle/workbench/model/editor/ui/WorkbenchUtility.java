@@ -7,8 +7,12 @@ import java.util.List;
 import org.eclipse.gef.EditPart;
 
 import ptolemy.actor.CompositeActor;
+import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NameDuplicationException;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
 

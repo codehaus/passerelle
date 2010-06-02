@@ -14,6 +14,7 @@ import ptolemy.kernel.ComponentPort;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.CompositeActorEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
+import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 
 /**
  * <code>CompositeActorEditPolicy</code> creates commands for connection initiation and completion. It uses the default
@@ -25,6 +26,14 @@ import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand
 public class CompositeActorEditPolicy extends GraphicalNodeEditPolicy {
 
 	private final static Logger logger = LoggerFactory.getLogger(CompositeActorEditPolicy.class);	
+	private CreateConnectionCommand CreateConnectionCommand;
+	
+	private CreateConnectionCommand getCreateConnectionCommand() {
+		if (CreateConnectionCommand == null) {
+			return CreateConnectionCommand = new CreateConnectionCommand();
+		}
+		return CreateConnectionCommand;
+	}
 
 	public CompositeActorEditPolicy() {
 		super();
@@ -46,7 +55,7 @@ public class CompositeActorEditPolicy extends GraphicalNodeEditPolicy {
 		ConnectionAnchor anchor = editPart.getSourceConnectionAnchor(request);
 		ComponentPort port = (ComponentPort) editPart.getSourcePort(anchor);
 		if (port != null) {
-			CreateConnectionCommand command = new CreateConnectionCommand();
+			CreateConnectionCommand command = getCreateConnectionCommand();
 			command.setSource(port);
 			request.setStartCommand(command);
 			return command;

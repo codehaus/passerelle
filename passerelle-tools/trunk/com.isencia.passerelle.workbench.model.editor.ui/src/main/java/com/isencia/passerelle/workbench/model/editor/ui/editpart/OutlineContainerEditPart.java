@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.gef.EditPart;
 
 import ptolemy.actor.CompositeActor;
+import ptolemy.actor.IOPort;
 import ptolemy.data.expr.Parameter;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
@@ -69,6 +70,7 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 		CompositeActor actor = getModelDiagram();
 		children.addAll(actor.attributeList(Parameter.class));
 		children.addAll(actor.attributeList(TextAttribute.class));
+		children.addAll(actor.attributeList(IOPort.class));
 		children.addAll(actor.inputPortList());
 		children.addAll(actor.outputPortList());
 		Enumeration enumeration = actor.getEntities();

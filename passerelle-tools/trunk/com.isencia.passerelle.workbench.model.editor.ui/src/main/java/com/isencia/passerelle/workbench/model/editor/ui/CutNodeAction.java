@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,15 +13,26 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 
+import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
+import com.isencia.passerelle.workbench.model.ui.Relation;
 import com.isencia.passerelle.workbench.model.ui.command.CutNodeCommand;
 
 public class CutNodeAction extends SelectionAction {
+	private CutNodeCommand CutNodeCommand;
+
+	private CutNodeCommand getCutNodeCommand() {
+		if (CutNodeCommand == null) {
+			return CutNodeCommand = new CutNodeCommand();
+		}
+		return CutNodeCommand;
+	}
+
 	public CutNodeAction(IWorkbenchPart part) {
 		super(part);
 		setLazyEnablementCalculation(true);
@@ -43,7 +55,8 @@ public class CutNodeAction extends SelectionAction {
 		if (selectedObjects == null || selectedObjects.isEmpty()) {
 			return null;
 		}
-		CutNodeCommand cmd = new CutNodeCommand();
+		CutNodeCommand cmd = getCutNodeCommand();
+		cmd.emptyElementList();
 		Iterator<Object> it = selectedObjects.iterator();
 		while (it.hasNext()) {
 			Object o = it.next();
@@ -52,16 +65,16 @@ public class CutNodeAction extends SelectionAction {
 			}
 			if (o instanceof AbstractBaseEditPart) {
 				AbstractBaseEditPart ep = (AbstractBaseEditPart) o;
-				
+
 				NamedObj NamedObj = (NamedObj) ep.getEntity();
-				
+
 				if (!cmd.isCopyableNamedObj(NamedObj))
 					return null;
 				cmd.addElement(NamedObj);
 			}
 			if (o instanceof RelationEditPart) {
 				RelationEditPart ep = (RelationEditPart) o;
-				IORelation rel = (IORelation)ep.getRelation();
+				IORelation rel = (IORelation) ep.getRelation();
 				if (!cmd.isCopyableNamedObj(rel))
 					return null;
 				cmd.addElement(rel);
@@ -70,22 +83,22 @@ public class CutNodeAction extends SelectionAction {
 		return cmd;
 	}
 
+
 	@Override
 	protected boolean calculateEnabled() {
 		return checkSelectedObjects();
 	}
 
 	private boolean checkSelectedObjects() {
-		if (getSelectedObjects()==null)
+		if (getSelectedObjects() == null)
 			return false;
-		for (Object o:getSelectedObjects()){
-			if (o instanceof EditPart && !(o instanceof DiagramEditPart) ){
+		for (Object o : getSelectedObjects()) {
+			if (o instanceof EditPart && !(o instanceof DiagramEditPart)) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 	@Override
 	public void run() {
@@ -95,4 +108,5 @@ public class CutNodeAction extends SelectionAction {
 		}
 	}
 
+	
 }

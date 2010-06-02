@@ -121,6 +121,10 @@ public class OutlineEditPart extends
 			while (enumeration.hasMoreElements()) {
 				children.add(enumeration.nextElement());
 			}
+		} else if (namedObjectModel instanceof IOPort) {
+			IOPort text = (IOPort) namedObjectModel;
+			children.addAll(text
+					.attributeList(ptolemy.kernel.util.StringAttribute.class));
 		} else if (namedObjectModel instanceof TextAttribute) {
 			TextAttribute text = (TextAttribute) namedObjectModel;
 			children.addAll(text
@@ -172,8 +176,10 @@ public class OutlineEditPart extends
 		} else if (model instanceof CompositeActor) {
 			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR
 					.createImage());
-		} else if (model instanceof TextAttribute)
+		} else if (model instanceof TextAttribute){
 			setWidgetImage(CommentEditPart.IMAGE_COMMENT.createImage());
+	} else if (model instanceof IOPort)
+		setWidgetImage(PortEditPart.IMAGE_INPUT.createImage());
 		// Set Text
 		if (model instanceof Parameter) {
 			Parameter param = (Parameter) model;

@@ -9,6 +9,7 @@ import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 
 import ptolemy.actor.CompositeActor;
+import ptolemy.actor.IOPort;
 import ptolemy.actor.TypedCompositeActor;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
@@ -90,6 +91,12 @@ abstract public class ContainerEditPart extends AbstractBaseEditPart {
 		while (attributes.hasMoreElements()) {
 
 			Object nextElement = attributes.nextElement();
+			children.add(nextElement);
+		}
+		Enumeration ports = modelDiagram.getPorts();
+		while (ports.hasMoreElements()) {
+			
+			Object nextElement = ports.nextElement();
 			children.add(nextElement);
 		}
 		return children;

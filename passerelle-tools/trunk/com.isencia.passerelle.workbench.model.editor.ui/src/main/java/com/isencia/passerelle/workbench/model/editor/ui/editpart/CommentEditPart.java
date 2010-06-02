@@ -5,7 +5,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
@@ -20,14 +19,11 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.INameable;
-import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.CommentEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
-import com.isencia.passerelle.workbench.model.editor.ui.figure.AbstractBaseFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CommentFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
-import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
@@ -98,8 +94,6 @@ public class CommentEditPart extends AbstractNodeEditPart {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 				new ComponentNodeDeletePolicy());
-		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new CommentEditPolicy());
 	}
 
 	/**

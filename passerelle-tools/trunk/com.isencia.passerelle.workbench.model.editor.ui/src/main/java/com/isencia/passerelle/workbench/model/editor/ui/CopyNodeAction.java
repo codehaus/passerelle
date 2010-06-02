@@ -23,11 +23,19 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEdi
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.CopyNodeCommand;
+import com.isencia.passerelle.workbench.model.ui.command.CopyNodeCommand;
 
 public class CopyNodeAction extends SelectionAction {
 	public CopyNodeAction(IWorkbenchPart part) {
 		super(part);
 		setLazyEnablementCalculation(true);
+	}
+	private CopyNodeCommand CopyNodeCommand;
+	private CopyNodeCommand getCopyNodeCommand(){
+		if (CopyNodeCommand == null){
+			return CopyNodeCommand = new CopyNodeCommand();
+		}
+		return CopyNodeCommand;
 	}
 
 	@Override
@@ -50,7 +58,8 @@ public class CopyNodeAction extends SelectionAction {
 		if (selectedObjects == null || selectedObjects.isEmpty()) {
 			return null;
 		}
-		CopyNodeCommand cmd = new CopyNodeCommand();
+		CopyNodeCommand cmd = getCopyNodeCommand();
+		cmd.emptyElementList();
 		Iterator<Object> it = selectedObjects.iterator();
 		while (it.hasNext()) {
 			Object o = it.next();

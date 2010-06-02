@@ -19,25 +19,39 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-import org.eclipse.ui.part.EditorPart;
-import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.util.NamedObj;
 
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
 
 public class DiagramXYLayoutEditPolicy extends
 		org.eclipse.gef.editpolicies.XYLayoutEditPolicy {
 
+	private SetConstraintCommand setConstraintCommand;
+
+	private SetConstraintCommand getSetConstraintCommand() {
+		if (setConstraintCommand == null) {
+			return setConstraintCommand = new SetConstraintCommand();
+		}
+		return setConstraintCommand;
+	}
+	private CreateComponentCommand createComponentCommand;
+	
+	private CreateComponentCommand getCreateComponentCommand() {
+		if (createComponentCommand == null) {
+			return createComponentCommand = new CreateComponentCommand();
+		}
+		return createComponentCommand;
+	}
+
 	private static Logger logger;
 	private CompositeActor actor;
-	public DiagramXYLayoutEditPolicy(XYLayout layout,CompositeActor actor) {
+
+	public DiagramXYLayoutEditPolicy(XYLayout layout, CompositeActor actor) {
 		super();
 		setXyLayout(layout);
 		this.actor = actor;
@@ -73,7 +87,7 @@ public class DiagramXYLayoutEditPolicy extends
 	 */
 	protected Command createChangeConstraintCommand(EditPart child,
 			Object constraint) {
-		SetConstraintCommand locationCommand = new SetConstraintCommand();
+		SetConstraintCommand locationCommand = getSetConstraintCommand();
 		locationCommand.setModel((NamedObj) child.getModel());
 		Rectangle rectangle = (Rectangle) constraint;
 		Point location = rectangle.getLocation();
@@ -86,7 +100,7 @@ public class DiagramXYLayoutEditPolicy extends
 	 */
 	protected Command createChangeConstraintCommand(
 			ChangeBoundsRequest request, EditPart child, Object constraint) {
-		SetConstraintCommand cmd = new SetConstraintCommand();
+		SetConstraintCommand cmd= getSetConstraintCommand();
 		cmd.setModel((NamedObj) child.getModel());
 		Rectangle rectangle = (Rectangle) constraint;
 		Point location = rectangle.getLocation();
@@ -211,7 +225,8 @@ public class DiagramXYLayoutEditPolicy extends
 	protected Command getCreateCommand(CreateRequest request) {
 		CreateComponentCommand create = null;
 		try {
-			create = new CreateComponentCommand(actor);
+			create = getCreateComponentCommand();
+			create.setActor(actor);
 			create.setParent((ComponentEntity) getHost().getModel());
 			String type = (String) request.getNewObject();
 			create.setChildType(type);
@@ -221,7 +236,7 @@ public class DiagramXYLayoutEditPolicy extends
 					constraint.getLocation().preciseY() });
 			create.setLabel("new");
 		} catch (Exception e) {
-			getLogger().error("Error creating CreateComponentCommand",e);
+			getLogger().error("Error creating CreateComponentCommand", e);
 		}
 
 		// Command cmd = chainGuideAttachmentCommand(request, newPart, create,

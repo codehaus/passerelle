@@ -25,6 +25,14 @@ import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand
 public class ActorEditPolicy extends GraphicalNodeEditPolicy {
 
 	private final static Logger logger = LoggerFactory.getLogger(ActorEditPolicy.class);	
+	private CreateConnectionCommand CreateConnectionCommand;
+	
+	private CreateConnectionCommand getCreateConnectionCommand() {
+		if (CreateConnectionCommand == null) {
+			return CreateConnectionCommand = new CreateConnectionCommand();
+		}
+		return CreateConnectionCommand;
+	}
 
 	public ActorEditPolicy() {
 		super();
@@ -46,7 +54,7 @@ public class ActorEditPolicy extends GraphicalNodeEditPolicy {
 		ConnectionAnchor anchor = editPart.getSourceConnectionAnchor(request);
 		ComponentPort port = (ComponentPort) editPart.getSourcePort(anchor);
 		if (port != null) {
-			CreateConnectionCommand command = new CreateConnectionCommand();
+			CreateConnectionCommand command = getCreateConnectionCommand();
 			command.setSource(port);
 			request.setStartCommand(command);
 			return command;

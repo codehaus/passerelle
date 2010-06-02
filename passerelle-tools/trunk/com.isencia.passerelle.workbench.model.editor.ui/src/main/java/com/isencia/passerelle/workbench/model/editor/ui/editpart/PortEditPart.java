@@ -4,6 +4,9 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.Request;
+import org.eclipse.jface.resource.ImageDescriptor;
+
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 
 /**
  * <code>PortEditPart</code> is the EditPart for the Port model objects
@@ -11,6 +14,10 @@ import org.eclipse.gef.Request;
  * @author Dirk Jacobs
  */
 public abstract class PortEditPart extends AbstractNodeEditPart {
+	public final static ImageDescriptor IMAGE_OUTPUT = Activator
+	.getImageDescriptor("icons/arow_left.gif");
+	public final static ImageDescriptor IMAGE_INPUT = Activator
+	.getImageDescriptor("icons/arow_right.gif");
 
 	/*
 	 * (non-Javadoc)

@@ -18,9 +18,18 @@ import ptolemy.kernel.util.NamedObj;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.CompositeActorEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.PasteNodeCommand;
+import com.isencia.passerelle.workbench.model.ui.command.PasteNodeCommand;
 
 public class PasteNodeAction extends SelectionAction {
 	private CompositeActor actor;
+	private PasteNodeCommand PasteNodeCommand;
+
+	private PasteNodeCommand getPasteNodeCommand() {
+		if (PasteNodeCommand == null) {
+			return PasteNodeCommand = new PasteNodeCommand();
+		}
+		return PasteNodeCommand;
+	}
 
 	public PasteNodeAction(IWorkbenchPart part, CompositeActor actor) {
 		super(part);
@@ -44,19 +53,22 @@ public class PasteNodeAction extends SelectionAction {
 	}
 
 	private Command createPasteCommand(List<Object> selectedObjects) {
+		PasteNodeCommand cmd = getPasteNodeCommand();
 		if (selectedObjects != null) {
 			Iterator<Object> it = selectedObjects.iterator();
 			while (it.hasNext()) {
-				CompositeEntity compositeActor = WorkbenchUtility.getParentActor(it.next());
-				if (compositeActor != null){
-					return new PasteNodeCommand(compositeActor);
+				CompositeEntity compositeActor = WorkbenchUtility
+						.getParentActor(it.next());
+				if (compositeActor != null) {
+
+					cmd.setActor(compositeActor);
+					return cmd;
 				}
 			}
 		}
-		return new PasteNodeCommand(actor);
+		cmd.setActor(actor);
+		return cmd;
 	}
-
-	
 
 	@Override
 	protected boolean calculateEnabled() {

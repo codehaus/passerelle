@@ -41,7 +41,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		implements IResourceChangeListener {
 	@Override
 	public void removePage(int pageIndex) {
-
+		
 		super.removePage(pageIndex);
 		pages.remove(pageIndex);
 	}
