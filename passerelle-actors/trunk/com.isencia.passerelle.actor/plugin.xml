@@ -49,6 +49,7 @@
       <actor
             class="ptolemy.actor.CompositeActor"
             group="com.isencia.passerelle.actor.actorgroup.general"
+            icon="icons/comp.gif"
             id="ptolemy.actor.CompositeActor"
             name="CompositeActor">
       </actor>
