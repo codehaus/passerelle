@@ -12,6 +12,7 @@
       <actor
             class="com.isencia.passerelle.actor.general.Console"
             group="com.isencia.passerelle.actor.actorgroup.general"
+            icon="icons/console.gif"
             id="com.isencia.passerelle.actor.console"
             name="Console">
       </actor>
