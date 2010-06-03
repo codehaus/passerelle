@@ -86,9 +86,13 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 							((StringAttribute) child.getAttribute("text")).setExpression("Edit text in parameters in properties view");
 
 
-						} else if (type.equals("ptolemy.actor.TypedIOPort")) {
+						} else if (type.equals("com.isencia.passerelle.actor.general.InputIOPort")) {
 							child = new TypedIOPort(
-									(CompositeEntity) parentModel, name);
+									(CompositeEntity) parentModel, name,true,false);
+							
+						} else if (type.equals("com.isencia.passerelle.actor.general.OutputIOPort")) {
+							child = new TypedIOPort(
+									(CompositeEntity) parentModel, name,false,true);
 							
 						} else if (type.equals("ptolemy.actor.CompositeActor")) {
 							child = new TypedCompositeActor(
