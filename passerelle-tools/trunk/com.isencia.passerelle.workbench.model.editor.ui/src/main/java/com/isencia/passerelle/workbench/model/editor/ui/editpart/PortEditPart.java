@@ -2,87 +2,88 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.ConnectionEditPart;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.accessibility.AccessibleControlEvent;
+import org.eclipse.swt.accessibility.AccessibleEvent;
 
-import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import ptolemy.actor.IOPort;
+
+import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
+import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundInputFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundOutputFigure;
 
 /**
  * <code>PortEditPart</code> is the EditPart for the Port model objects
  * 
  * @author Dirk Jacobs
  */
-public abstract class PortEditPart extends AbstractNodeEditPart {
-	public final static ImageDescriptor IMAGE_OUTPUT = Activator
-	.getImageDescriptor("icons/arow_left.gif");
-	public final static ImageDescriptor IMAGE_INPUT = Activator
-	.getImageDescriptor("icons/arow_right.gif");
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.editparts.AbstractGraphicalEditPart#createFigure()
-	 */
-	protected abstract IFigure createFigure();
-
-	public void activate() {
-		super.activate();
+public class PortEditPart extends AbstractNodeEditPart {
+	private boolean isInput;
+	public PortEditPart(boolean isInput) {
+		super();
+		this.isInput = isInput;
 	}
 
-	public void deactivate() {
-		super.deactivate();
+	@Override
+	protected void createEditPolicies() {
+		installEditPolicy(EditPolicy.COMPONENT_ROLE,
+				new ComponentNodeDeletePolicy());
+
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
-	 */
-	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connection) {
-//		return getNodeFigure().getConnectionAnchor("dummyName");
+	@Override
+	protected AccessibleEditPart createAccessible() {
+		return new AccessibleGraphicalEditPart() {
+
+			public void getName(AccessibleEvent e) {
+				e.result = "hello";
+				// e.result =
+				// LogicMessages.LogicPlugin_Tool_CreationTool_LED_Label;
+			}
+
+			public void getValue(AccessibleControlEvent e) {
+				e.result = "1";
+				// e.result = Integer.toString(getLEDModel().getValue());
+			}
+
+		};
+	}
+
+	@Override
+	protected IFigure createFigure() {
+		if (isInput)
+			return new CompoundInputFigure(((IOPort)getModel()).getName());
+		else
+			return new CompoundOutputFigure(((IOPort)getModel()).getName());
+	}
+
+	@Override
+	public ConnectionAnchor getSourceConnectionAnchor(
+			ConnectionEditPart connection) {
+		// TODO Auto-generated method stub
 		return null;
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.NodeEditPart#getSourceConnectionAnchor(org.eclipse.gef.Request)
-	 */
+	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
-//		Point pt = new Point(((DropRequest) request).getLocation());
-//		return getNodeFigure().getSourceConnectionAnchorAt(pt);
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.ConnectionEditPart)
-	 */
-	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connection) {
-//		return getNodeFigure().getConnectionAnchor("dummyName");
+	@Override
+	public ConnectionAnchor getTargetConnectionAnchor(
+			ConnectionEditPart connection) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.gef.NodeEditPart#getTargetConnectionAnchor(org.eclipse.gef.Request)
-	 */
+	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
-//		Point pt = new Point(((DropRequest) request).getLocation());
-//		return getNodeFigure().getTargetConnectionAnchorAt(pt);
+		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private void updateCompositeElements() {
-//		Port port = (Port) getModel();
-//		Flow subFlow = (Flow) port.eContainer();
-//		CompositeActor compositeActor = (CompositeActor) subFlow.eContainer();
-//		Port compositeActorPort = (Port) compositeActor.getPortById(port.getId());
-//		compositeActorPort.setName(port.getName());
-	}
-        
 }

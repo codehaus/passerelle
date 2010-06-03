@@ -2,9 +2,12 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +17,7 @@ import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.TypedAtomicActor;
+import ptolemy.actor.TypedIOPort;
 import ptolemy.data.expr.Parameter;
 import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
@@ -23,13 +27,15 @@ import ptolemy.kernel.util.Settable;
 import ptolemy.kernel.util.ValueListener;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
+
 /**
  * EditPart for components in the Tree.
  */
 public class OutlineEditPart extends
 		org.eclipse.gef.editparts.AbstractTreeEditPart implements
 		ValueListener, ChangeListener {
-
+	private Set<String> modelImages = new HashSet<String>();
 	private static Logger logger = LoggerFactory
 			.getLogger(OutlineEditPart.class);
 
@@ -158,28 +164,27 @@ public class OutlineEditPart extends
 		NamedObj model = getNamedObjectModel();
 		// Set Image
 		if (model instanceof Director)
-			setWidgetImage(DirectorEditPart.IMAGE_DESCRIPTOR_DIRECTOR
-					.createImage());
+			setWidgetImage(DirectorEditPart.IMAGE_DESCRIPTOR_DIRECTOR,model);
 		else if (model instanceof Parameter)
-			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_PARAMETER
-					.createImage());
+			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_PARAMETER,model);
 		else if (model instanceof IOPort) {
 			IOPort port = (IOPort) model;
 			if (port.isInput())
-				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_INPUTPORT
-						.createImage());
+				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_INPUTPORT,model);
 			else
-				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_OUTPUTPORT
-						.createImage());
+				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_OUTPUTPORT,model);
 		} else if (model instanceof TypedAtomicActor) {
-			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_ACTOR.createImage());
+			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_ACTOR,model);
 		} else if (model instanceof CompositeActor) {
-			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR
-					.createImage());
-		} else if (model instanceof TextAttribute){
-			setWidgetImage(CommentEditPart.IMAGE_COMMENT.createImage());
-	} else if (model instanceof IOPort)
-		setWidgetImage(PortEditPart.IMAGE_INPUT.createImage());
+			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR,model);
+		} else if (model instanceof TextAttribute) {
+			setWidgetImage(CommentEditPart.IMAGE_COMMENT,model);
+		} else if (model instanceof TypedIOPort) {
+			if (((IOPort)model).isInput())
+				setWidgetImage(PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.InputIOPort"),model);
+			else
+				setWidgetImage(PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.OutputIOPort"),model);
+		}
 		// Set Text
 		if (model instanceof Parameter) {
 			Parameter param = (Parameter) model;
@@ -209,5 +214,10 @@ public class OutlineEditPart extends
 	public void changeFailed(ChangeRequest changerequest, Exception exception) {
 		getLogger().error("Error during execution of ChangeRequest", exception);
 	}
-
+	protected void setWidgetImage(ImageDescriptor image,NamedObj obj) {
+		if (!modelImages.contains(obj.getClass().getName())){
+			setWidgetImage(image.createImage());
+			modelImages.add(obj.getClass().getName());
+		}
+	}
 }

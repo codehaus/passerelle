@@ -21,6 +21,7 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
 import com.isencia.passerelle.actor.Sink;
 import com.isencia.passerelle.actor.Source;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
+import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundInputFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.InputPortFigure;
 
 public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
@@ -61,39 +62,10 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		} else if (model instanceof TextAttribute) {
 			child = new CommentEditPart();
 		} else if (model instanceof IOPort) {
-			child = new PortEditPart() {
-
-				@Override
-				protected void createEditPolicies() {
-					installEditPolicy(EditPolicy.COMPONENT_ROLE,
-							new ComponentNodeDeletePolicy());
-
-				}
-
-				@Override
-				protected AccessibleEditPart createAccessible() {
-					return new AccessibleGraphicalEditPart() {
-
-						public void getName(AccessibleEvent e) {
-							e.result = "hello";
-							// e.result =
-							// LogicMessages.LogicPlugin_Tool_CreationTool_LED_Label;
-						}
-
-						public void getValue(AccessibleControlEvent e) {
-							e.result = "1";
-							// e.result = Integer.toString(getLEDModel().getValue());
-						}
-
-					};
-				}
-
-				@Override
-				protected IFigure createFigure() {
-					
-					return new InputPortFigure(((IOPort)getModel()).getName());
-				}
-			};
+			if (((IOPort)model).isInput())
+				child = new PortEditPart(true);
+			else
+				child = new PortEditPart(false);
 		} else if (model instanceof Relation) {
 			child = new RelationEditPart();
 		} else if (model instanceof TypedCompositeActor) {

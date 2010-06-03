@@ -16,7 +16,7 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
  * Tree EditPart for the Container.
  */
 public class OutlineContainerEditPart extends OutlineEditPart {
-	
+	private boolean imageSet;
 	private EditPart context;
 
 	/**
@@ -55,7 +55,12 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 	@Override
 	protected void refreshVisuals() {
 		super.refreshVisuals();
-		setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR.createImage());
+		if (!imageSet) {
+			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR
+					.createImage());
+			imageSet = true;
+		}
+
 	}
 
 	/**
@@ -66,7 +71,7 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 	 */
 	protected List getModelChildren() {
 		ArrayList children = new ArrayList();
-		
+
 		CompositeActor actor = getModelDiagram();
 		children.addAll(actor.attributeList(Parameter.class));
 		children.addAll(actor.attributeList(TextAttribute.class));
@@ -74,20 +79,20 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 		children.addAll(actor.inputPortList());
 		children.addAll(actor.outputPortList());
 		Enumeration enumeration = actor.getEntities();
-		while(enumeration.hasMoreElements()){
+		while (enumeration.hasMoreElements()) {
 			children.add(enumeration.nextElement());
 		}
 		// Only show children 1 level deep
-		boolean showChildren = !(context!=null && context.getParent()!=null);
-		if( !showChildren )
+		boolean showChildren = !(context != null && context.getParent() != null);
+		if (!showChildren)
 			return children;
-		
-		if( actor.isOpaque() )
+
+		if (actor.isOpaque())
 			children.add(actor.getDirector());
 		List entities = actor.entityList();
-		if( entities != null)
+		if (entities != null)
 			children.addAll(entities);
-		
+
 		return children;
 	}
 

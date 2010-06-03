@@ -25,53 +25,21 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 	private CompositeActor model;
 
 	public CompositeModelEditor(MultiPageEditorPart parent,
-			CompositeActor actor,CompositeActor model) {
+			CompositeActor actor, CompositeActor model) {
 		super(parent);
 		this.actor = actor;
 		this.model = model;
 
 	}
+
 	protected EditPartFactory createEditPartFactory() {
-		return new EditPartFactory(getParent(),actor);
+		return new EditPartFactory(getParent(), actor);
 	}
+
 	protected void setInput(IEditorInput input) {
-		IFile file = ((IFileEditorInput) input).getFile();
-		InputStream is = null;
-		try {
-			is = file.getContents();
-			MoMLParser moMLParser = new MoMLParser();
-			// CompositeActor compositeActor = (CompositeActor)
-			// moMLParser.parse(
-			// null, is);
 
-			setDiagram(model);
-		} catch (Exception e) {
-			getLogger().error(
-					"Error during reading/parsing of model file : "
-							+ file.getName(), e);
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					// Do Nothing
-				}
-			}
-
-		}
-
-		superSetInput(input);
 		setDiagram(model);
-
-		if (!editorSaving) {
-			if (getGraphicalViewer() != null) {
-				getGraphicalViewer().setContents(getDiagram());
-				loadProperties();
-			}
-			if (outlinePage != null) {
-				outlinePage.setContents(getDiagram());
-			}
-		}
+		superSetInput(input);
 	}
 
 	public void doSave(final IProgressMonitor progressMonitor) {
@@ -96,15 +64,18 @@ public class CompositeModelEditor extends PasserelleModelEditor {
 		}
 		return null;
 	}
+
 	protected PasteNodeAction setPasteNodeAction() {
 		return new PasteNodeAction(this, actor);
 	}
+
 	@Override
 	protected void createActions() {
 		// TODO Auto-generated method stub
 		super.createActions();
 
 	}
+
 	protected boolean performSaveAs() {
 
 		getCommandStack().markSaveLocation();
