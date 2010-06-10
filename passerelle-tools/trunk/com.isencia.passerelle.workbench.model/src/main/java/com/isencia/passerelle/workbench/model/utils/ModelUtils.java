@@ -7,7 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ptolemy.actor.Actor;
 import ptolemy.actor.IOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
@@ -18,6 +17,7 @@ import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.Locatable;
 import ptolemy.kernel.util.Location;
 import ptolemy.kernel.util.NameDuplicationException;
+import ptolemy.kernel.util.Nameable;
 import ptolemy.kernel.util.NamedObj;
 
 public class ModelUtils {
@@ -25,8 +25,17 @@ public class ModelUtils {
 	public static Logger logger = LoggerFactory.getLogger(ModelUtils.class);
 	
 	public static enum ConnectionType {SOURCE,TARGET};
+	public static final boolean isPort(String type){
+		return ModelConstants.INPUT_IOPORT.equals(type) || ModelConstants.OUTPUT_IOPORT.equals(type);
+	}
+	public static final boolean isOutputPort(String type){
+		return ModelConstants.OUTPUT_IOPORT.equals(type);
+	}
+	public static final boolean isInputPort(String type){
+		return ModelConstants.INPUT_IOPORT.equals(type);
+	}
 	
-	public static List<Relation> getConnectedRelations(Actor model, ConnectionType connectionType) {
+	public static List<Relation> getConnectedRelations(Nameable model, ConnectionType connectionType) {
 		ArrayList<Relation> connections = new ArrayList<Relation>();
 		if( model.getContainer() == null || !(model.getContainer() instanceof CompositeEntity))
 			return Collections.EMPTY_LIST;
@@ -41,12 +50,12 @@ public class ModelUtils {
 			if( linkedObjectsList==null || linkedObjectsList.size()==0)
 				continue;
 			for (Port port : linkedObjectsList) {
-				if( port.getContainer().equals(model)) {
+				if( port.getContainer().equals(model) || (model instanceof IOPort && (port.equals( ((IOPort)model))))) {
 					if( connectionType.equals(ConnectionType.SOURCE)) {
-						if( port instanceof IOPort && ((IOPort)port).isOutput() )
+						if( port instanceof IOPort && (!(model instanceof IOPort) && ((IOPort)port).isOutput())||((model instanceof IOPort) && ((IOPort)port).isInput()))
 							connections.add(relation);
 					} else {
-						if( port instanceof IOPort && ((IOPort)port).isInput() )
+						if( port instanceof IOPort && (!(model instanceof IOPort) && ((IOPort)port).isInput()  )  ||((model instanceof IOPort) && ((IOPort)port).isOutput()))
 							connections.add(relation);
 					}
 				}
