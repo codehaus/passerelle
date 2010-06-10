@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.lang.reflect.Constructor;
+import java.util.Enumeration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import ptolemy.actor.TypedCompositeActor;
 import ptolemy.actor.TypedIOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.Port;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.kernel.util.StringAttribute;
@@ -29,6 +31,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	private NamedObj model;
 	private NamedObj parent;
 	private NamedObj child;
+
 	public NamedObj getChild() {
 		return child;
 	}
@@ -38,18 +41,25 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	public CreateComponentCommand() {
 		super("CreateComponent");
 	}
+
 	public void setActor(CompositeActor actor) {
 		this.actor = actor;
 	}
-	
+
 	public void setModel(NamedObj model) {
 		this.model = model;
 	}
+
 	public Logger getLogger() {
 		return logger;
 	}
 
 	public boolean canExecute() {
+		if (("com.isencia.passerelle.actor.general.InputIOPort".equals(type) || "com.isencia.passerelle.actor.general.OutputIOPort"
+				.equals(type))
+				&& actor == null) {
+			return false;
+		}
 		return (type != null && parent != null);
 	}
 
@@ -60,40 +70,47 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	public void doExecute() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
 		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
-				"create") {
+				"create",type) {
 			@Override
 			protected void _execute() throws Exception {
 				Class<?> newClass = null;
 				try {
-					CompositeEntity parentModel = actor!=null ? actor :(CompositeEntity) parent;
+					CompositeEntity parentModel = actor != null ? actor
+							: (CompositeEntity) parent;
 					if (model == null) {
 						newClass = CreateComponentCommand.class
 								.getClassLoader().loadClass(type);
-						
-						String name = ModelUtils.findUniqueName(
-								parentModel, newClass
-										.getSimpleName());
+
+						String name = ModelUtils.findUniqueName(parentModel,
+								newClass.getSimpleName());
 
 						Constructor constructor = null;
 						if (type
 								.equals("ptolemy.vergil.kernel.attributes.TextAttribute")) {
 							constructor = newClass.getConstructor(
 									NamedObj.class, String.class);
-							child = (TextAttribute) constructor.newInstance(
-									parentModel, generateUniqueTextAttributeName(
-											name, parentModel, 0,
-											TextAttribute.class));
-							((StringAttribute) child.getAttribute("text")).setExpression("Edit text in parameters in properties view");
+							child = (TextAttribute) constructor
+									.newInstance(parentModel,
+											generateUniqueTextAttributeName(
+													name, parentModel, 0,
+													TextAttribute.class));
+							((StringAttribute) child.getAttribute("text"))
+									.setExpression("Edit text in parameters in properties view");
 
+						} else if (ModelUtils.isInputPort(type)) {
+							child = new TypedIOPort(
+									(CompositeEntity) parentModel,
+									generateUniquePortName(name,
+											(CompositeEntity) parentModel, 0),
+									true, false);
 
-						} else if (type.equals("com.isencia.passerelle.actor.general.InputIOPort")) {
+						} else if (ModelUtils.isOutputPort(type)) {
 							child = new TypedIOPort(
-									(CompositeEntity) parentModel, name,true,false);
-							
-						} else if (type.equals("com.isencia.passerelle.actor.general.OutputIOPort")) {
-							child = new TypedIOPort(
-									(CompositeEntity) parentModel, name,false,true);
-							
+									(CompositeEntity) parentModel,
+									generateUniquePortName(name,
+											(CompositeEntity) parentModel, 0),
+									false, true);
+
 						} else if (type.equals("ptolemy.actor.CompositeActor")) {
 							child = new TypedCompositeActor(
 									(CompositeEntity) parentModel, name);
@@ -102,22 +119,24 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 							constructor = newClass.getConstructor(
 									CompositeEntity.class, String.class);
 
-							child = (NamedObj) constructor.newInstance(parentModel,
-									name);
+							child = (NamedObj) constructor.newInstance(
+									parentModel, name);
 						}
 					} else {
 						String name = null;
 						if (model instanceof TextAttribute) {
-							name = generateUniqueTextAttributeName(model.getName(),
-									parentModel, 0, TextAttribute.class);
+							name = generateUniqueTextAttributeName(model
+									.getName(), parentModel, 0,
+									TextAttribute.class);
 						} else if (model instanceof ComponentEntity) {
 							name = ModelUtils.findUniqueName(
-									(CompositeEntity) parentModel, model.getClass()
-											.getSimpleName());
+									(CompositeEntity) parentModel, model
+											.getClass().getSimpleName());
 
 						}
 						child = (NamedObj) model
-								.clone(((CompositeEntity) parentModel).workspace());
+								.clone(((CompositeEntity) parentModel)
+										.workspace());
 						child.setName(name);
 						ComponentUtility.setContainer(child, parentModel);
 					}
@@ -150,6 +169,27 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
 	}
 
+	private String generateUniquePortName(String name, CompositeEntity parent,
+			int index) {
+		String newName = index != 0 ? (name + "(" + index + ")") : name;
+		boolean contains = false;
+		Enumeration ports = parent.getPorts();
+		while (ports.hasMoreElements()) {
+			String portName = ((Port) ports.nextElement()).getName();
+			if (newName.equals(portName)) {
+				contains = true;
+				break;
+			}
+
+		}
+		if (!contains) {
+			return newName;
+		}
+		index++;
+		return generateUniquePortName(name, parent, index);
+
+	}
+
 	public void redo() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
 		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
@@ -159,7 +199,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 				getLogger().debug("Redo create component");
 				if (child instanceof NamedObj) {
 					ComponentUtility.setContainer(child, parent);
-				
+
 				}
 
 			}

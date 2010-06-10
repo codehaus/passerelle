@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.ui;
 
+import ptolemy.actor.TypedIOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.IllegalActionException;
@@ -18,6 +19,9 @@ public abstract class ComponentUtility {
 			} else if (child instanceof TextAttribute) {
 				((TextAttribute) child)
 						.setContainer((CompositeEntity) container);
+			} else if (child instanceof TypedIOPort) {
+				((TypedIOPort) child)
+				.setContainer((CompositeEntity) container);
 			}
 		} catch (IllegalActionException e) {
 			e.printStackTrace();

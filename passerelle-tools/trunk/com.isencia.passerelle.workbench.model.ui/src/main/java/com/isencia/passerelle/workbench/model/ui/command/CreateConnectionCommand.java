@@ -4,6 +4,7 @@ import org.eclipse.gef.commands.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ptolemy.actor.TypedCompositeActor;
 import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
@@ -49,8 +50,12 @@ public class CreateConnectionCommand extends Command {
 
 	public void doExecute() {
 		if (source != null && target != null) {
-			CompositeEntity temp = (CompositeEntity) source.getContainer()
-					.getContainer();
+			CompositeEntity temp = null;
+			if (source.getContainer() instanceof TypedCompositeActor) {
+				temp = (CompositeEntity) source.getContainer();
+			} else {
+				temp = (CompositeEntity) source.getContainer().getContainer();
+			}
 			if (temp != null) {
 				container = temp;
 			}
@@ -64,8 +69,12 @@ public class CreateConnectionCommand extends Command {
 				@Override
 				protected void _execute() throws Exception {
 					getLogger().debug("Create new connection");
-					connection = (TypedIORelation) container.connect(source,
-							target);
+					try {
+						connection = (TypedIORelation) container.connect(
+								source, target);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			});
 		}
