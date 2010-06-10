@@ -1,24 +1,23 @@
 package com.isencia.passerelle.workbench.model.editor.ui.figure;
 
-import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.swt.graphics.Color;
 
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 
 public class CompoundInputFigure extends CompoundIOFigure {
+	public static final String INPUT_PORT_NAME = "input";
 
 	public CompoundInputFigure(String name) {
-		super(name);
+		super(name,PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.InputIOPort").createImage());
+		addOutput(INPUT_PORT_NAME,INPUT_PORT_NAME);
+		setBackgroundColor(ColorConstants.lightBlue);
 	}
 
 	@Override
 	protected Color getBackGroundcolor() {
-		// TODO Auto-generated method stub
-		return new Color(null, 100, 0, 0);
+		return ColorConstants.white;
 	}
 
-	protected ImageDescriptor getImageDescriptor() {
-		ImageDescriptor icon = PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.InputIOPort");
-		return icon;
-	}
+	
 }

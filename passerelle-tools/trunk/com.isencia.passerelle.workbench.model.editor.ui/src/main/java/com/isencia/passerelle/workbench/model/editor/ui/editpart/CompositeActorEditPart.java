@@ -27,6 +27,7 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.pde.core.ModelChangedEvent;
 import org.eclipse.pde.internal.ui.editor.EditorUtilities;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.ui.PartInitException;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
 import ptolemy.actor.CompositeActor;
+import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
 import ptolemy.actor.TypedCompositeActor;
 import ptolemy.actor.TypedIOPort;
@@ -53,16 +55,17 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNode
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.CompositeActorEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompositeActorFigure;
+import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteConnectionCommand;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
+import com.isencia.passerelle.workbench.model.utils.ModelConstants;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class CompositeActorEditPart extends ContainerEditPart implements
 		NodeEditPart {
 	private MultiPageEditorPart multiPageEditorPart;
-	
 
 	public MultiPageEditorPart getMultiPageEditorPart() {
 		return multiPageEditorPart;
@@ -96,17 +99,20 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 				TypedCompositeActor model = (TypedCompositeActor) getModel();
 
 				CompositeModelEditor editor = new CompositeModelEditor(
-						multiPageEditor, model, multiPageEditor.getEditor().getDiagram());
+						multiPageEditor, model, multiPageEditor.getEditor()
+								.getDiagram());
 				int index = multiPageEditor.getPageIndex(model);
 				if (index == -1) {
 
 					index = multiPageEditor.addPage(model, editor,
 							multiPageEditor.getEditorInput());
-					multiPageEditor.setText(index,WorkbenchUtility.getPath(model));
+					multiPageEditor.setText(index, WorkbenchUtility
+							.getPath(model));
 					multiPageEditor.setActiveEditor(editor);
 
 				}
-				multiPageEditor.setActiveEditor(multiPageEditor.getEditor(index));
+				multiPageEditor.setActiveEditor(multiPageEditor
+						.getEditor(index));
 			}
 		} catch (Exception e) {
 		}
@@ -134,6 +140,8 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		Object source = changerequest.getSource();
 		if (changerequest instanceof ModelChangeRequest) {
 			Class<?> type = ((ModelChangeRequest) changerequest).getType();
+			String childType = ((ModelChangeRequest) changerequest)
+					.getChildType();
 
 			if (getModel() != source
 					&& (DeleteConnectionCommand.class.equals(type)
@@ -142,7 +150,24 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 				refreshSourceConnections();
 				refreshTargetConnections();
 			}
+			if ((CreateComponentCommand.class.equals(type)|| DeleteComponentCommand.class.equals(type))
+					&& (ModelUtils.isPort(childType))) {
+				setFigure(createFigure());
+				getFigure().repaint();
+			}
 		}
+		// if (changerequest instanceof CreateComponentCommand) {
+		// Class<?> type = ((ModelChangeRequest) changerequest).getType();
+		//			
+		// if (getModel() != source
+		// && (DeleteConnectionCommand.class.equals(type)
+		// || DeleteComponentCommand.class.equals(type) ||
+		// CreateConnectionCommand.class
+		// .equals(type))) {
+		// refreshSourceConnections();
+		// refreshTargetConnections();
+		// }
+		// }
 	}
 
 	protected AccessibleEditPart createAccessible() {

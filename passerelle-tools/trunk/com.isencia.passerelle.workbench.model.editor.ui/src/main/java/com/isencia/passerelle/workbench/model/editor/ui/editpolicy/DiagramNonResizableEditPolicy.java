@@ -16,6 +16,8 @@ import org.eclipse.swt.graphics.Color;
  */
 public class DiagramNonResizableEditPolicy extends NonResizableEditPolicy {
 
+	private static final Color background = new Color(null, 30, 30, 30);
+
 	/**
 	 * Creates the figure used for feedback.
 	 * 
@@ -39,9 +41,9 @@ public class DiagramNonResizableEditPolicy extends NonResizableEditPolicy {
 
 		IFigure walker = part.getFigure().getParent();
 
-		while (walker != ((GraphicalEditPart) part.getParent()).getFigure()) {
-			walker.translateToParent(childBounds);
-			walker = walker.getParent();
+		while (walker != ((GraphicalEditPart) part.getParent()).getFigure() && walker != null) {
+				walker.translateToParent(childBounds);
+				walker = walker.getParent();
 		}
 
 		child.setBounds(childBounds);
@@ -69,7 +71,7 @@ public class DiagramNonResizableEditPolicy extends NonResizableEditPolicy {
 		figure = new RectangleFigure();
 		((RectangleFigure) figure).setXOR(true);
 		((RectangleFigure) figure).setFill(true);
-		figure.setBackgroundColor(new Color(null, 30, 30, 30));
+		figure.setBackgroundColor(background);
 		figure.setForegroundColor(ColorConstants.white);
 
 		return figure;

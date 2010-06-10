@@ -106,7 +106,8 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 					// e.result = LogicMessages.Wire_LabelText;
 				}
 			};
-		return acc;
+
+			return acc;
 	}
 
 	/**

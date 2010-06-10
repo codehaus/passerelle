@@ -32,12 +32,16 @@ public class AbstractBaseFigure extends Figure implements INameable {
 		layout.setVertical(true);
 		layout.setSpacing(2);
 		setLayoutManager(layout);
-		setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
+		setBackgroundColor(getBackgtoundColor());
 		nameLabel.setText(name);
 		nameLabel.setOpaque(true);
 		add(nameLabel);
 		setOpaque(false);
 		
+	}
+
+	protected Color getBackgtoundColor() {
+		return DEFAULT_BACKGROUND_COLOR;
 	}
 	
 	public String getName() {

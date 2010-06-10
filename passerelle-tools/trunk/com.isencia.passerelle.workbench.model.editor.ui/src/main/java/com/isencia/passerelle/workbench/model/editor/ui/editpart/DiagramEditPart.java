@@ -36,9 +36,9 @@ import ptolemy.kernel.util.ChangeRequest;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.DiagramXYLayoutEditPolicy;
 
 /**
- * Holds all other ModelEditParts under this. It is activated by
- * ModelEditor, to hold the entire model. It is sort of a blank board where
- * all other EditParts get added.
+ * Holds all other ModelEditParts under this. It is activated by ModelEditor, to
+ * hold the entire model. It is sort of a blank board where all other EditParts
+ * get added.
  */
 public class DiagramEditPart extends ContainerEditPart implements
 		LayerConstants {
@@ -49,7 +49,7 @@ public class DiagramEditPart extends ContainerEditPart implements
 	private MultiPageEditorPart multiPageEditorPart;
 	private CompositeActor actor;
 
-	public DiagramEditPart(MultiPageEditorPart parent,CompositeActor actor) {
+	public DiagramEditPart(MultiPageEditorPart parent, CompositeActor actor) {
 		super(actor);
 		this.multiPageEditorPart = parent;
 		this.actor = actor;
@@ -78,9 +78,9 @@ public class DiagramEditPart extends ContainerEditPart implements
 		installEditPolicy(EditPolicy.SELECTION_FEEDBACK_ROLE, null);
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 				new RootComponentEditPolicy());
-		installEditPolicy(EditPolicy.LAYOUT_ROLE, new
-		 DiagramXYLayoutEditPolicy(
-		 (XYLayout)getContentPane().getLayoutManager(),actor));
+		installEditPolicy(EditPolicy.LAYOUT_ROLE,
+				new DiagramXYLayoutEditPolicy((XYLayout) getContentPane()
+						.getLayoutManager(), actor));
 
 		installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
 	}
@@ -96,6 +96,10 @@ public class DiagramEditPart extends ContainerEditPart implements
 		f.setLayoutManager(new FreeformLayout());
 		f.setBorder(new MarginBorder(5));
 		return f;
+	}
+
+	public void repaint() {
+		getFigure().repaint();
 	}
 
 	@Override
@@ -182,12 +186,13 @@ public class DiagramEditPart extends ContainerEditPart implements
 	}
 
 	public void refreshVisuals() {
-//		refresh();
+		// refresh();
 		refreshChildren();
-//		Animation.markBegin();
-//		ConnectionLayer cLayer = (ConnectionLayer) getLayer(CONNECTION_LAYER);
-//		if ((getViewer().getControl().getStyle() & SWT.MIRRORED) == 0)
-//			cLayer.setAntialias(SWT.ON);
+		// Animation.markBegin();
+		// ConnectionLayer cLayer = (ConnectionLayer)
+		// getLayer(CONNECTION_LAYER);
+		// if ((getViewer().getControl().getStyle() & SWT.MIRRORED) == 0)
+		// cLayer.setAntialias(SWT.ON);
 
 		// if
 		// (getLogicDiagram().getConnectionRouter().equals(LogicDiagram.ROUTER_MANUAL))
@@ -201,7 +206,7 @@ public class DiagramEditPart extends ContainerEditPart implements
 		// else
 		// cLayer.setConnectionRouter(new
 		// ShortestPathConnectionRouter(getFigure()));
-	//	Animation.run(400);
+		// Animation.run(400);
 	}
 
 }
