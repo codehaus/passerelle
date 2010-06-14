@@ -21,6 +21,7 @@ import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.util.ChangeRequest;
+import ptolemy.kernel.util.Nameable;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
@@ -63,11 +64,11 @@ public class DeleteComponentCommand extends Command {
 
 	private void deleteConnections(NamedObj model) {
 
-		if (!(model instanceof Actor)) {
+		if (!((model instanceof Actor)||((model instanceof IOPort)))) {
 			return;
 		}
 
-		Actor actor = (Actor) model;
+		Nameable actor = (Nameable) model;
 
 		Iterator<?> sourceIterator = ModelUtils.getConnectedRelations(actor,
 				ConnectionType.SOURCE).iterator();
@@ -90,7 +91,7 @@ public class DeleteComponentCommand extends Command {
 	}
 
 	private DeleteConnectionCommand generateDeleteConnectionCommand(
-			Actor actor, IORelation relation) {
+			Nameable actor, IORelation relation) {
 		DeleteConnectionCommand cmd = new DeleteConnectionCommand();
 		cmd.setParent((CompositeEntity) actor.getContainer());
 		cmd.setConnection((TypedIORelation) relation);
@@ -113,8 +114,8 @@ public class DeleteComponentCommand extends Command {
 
 	protected void doExecute() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
-		parent.requestChange(new ModelChangeRequest(this.getClass(), child,
-				"delete") {
+		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
+				"delete",child) {
 			@Override
 			protected void _execute() throws Exception {
 				deleteConnections(child);

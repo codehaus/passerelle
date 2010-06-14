@@ -70,7 +70,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	public void doExecute() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
 		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
-				"create",type) {
+				"create",child) {
 			@Override
 			protected void _execute() throws Exception {
 				Class<?> newClass = null;
