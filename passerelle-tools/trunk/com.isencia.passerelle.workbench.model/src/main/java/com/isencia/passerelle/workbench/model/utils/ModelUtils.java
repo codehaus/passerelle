@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ptolemy.actor.Actor;
 import ptolemy.actor.IOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
@@ -107,7 +108,19 @@ public class ModelUtils {
 			}
 		}
 	}
-	
+	public static boolean isPortOfActor(IOPort port, Actor actor){
+		for (Object o:actor.inputPortList()){
+			if (o== port){
+				return true;
+			}
+		}
+		for (Object o:actor.outputPortList()){
+			if (o== port){
+				return true;
+			}
+		}
+		return false;
+	}
 	public static String findUniqueName(CompositeEntity parentModel, String name) {
 		String newName = name;
 		if( parentModel == null)
