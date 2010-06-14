@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.figure;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import org.eclipse.draw2d.AbstractBorder;
@@ -32,6 +33,8 @@ public class ActorFigure extends AbstractNodeFigure {
 	private IFigure body = null;
 	private InputPorts inputPorts = null;
 	private OutputPorts outputPorts = null;
+	private HashMap<String, PortFigure> inputPortMap = new HashMap<String, PortFigure>();
+	private HashMap<String, PortFigure> outputPortMap = new HashMap<String, PortFigure>();
 
 	public ActorFigure(String name, Image image, Clickable clickable) {
 		super(name);
@@ -52,6 +55,7 @@ public class ActorFigure extends AbstractNodeFigure {
 		body.initClickable(clickable);
 		return (body);
 	}
+
 	private class CompositeFigure extends Figure {
 
 		public CompositeFigure(Image image, Clickable clickable) {
@@ -62,7 +66,7 @@ public class ActorFigure extends AbstractNodeFigure {
 
 			inputPorts = new InputPorts();
 			add(inputPorts);
-			 body = generateBody(image, clickable);
+			body = generateBody(image, clickable);
 			add(body);
 
 			outputPorts = new OutputPorts();
@@ -199,8 +203,10 @@ public class ActorFigure extends AbstractNodeFigure {
 		int x = 0;
 		int y = 0;
 		inputPortFigure.setLocation(new Point(x, y));
-		if (inputPorts != null)
+		if (inputPorts != null) {
 			inputPorts.add(inputPortFigure);
+			inputPortMap.put(portName, inputPortFigure);
+		}
 		// TODO update Anchor with correct attributes
 		FixedConnectionAnchor anchor = new FixedConnectionAnchor(
 				inputPortFigure);
@@ -208,6 +214,29 @@ public class ActorFigure extends AbstractNodeFigure {
 		getTargetConnectionAnchors().add(anchor);
 		connectionAnchors.put(portName, anchor);
 		return inputPortFigure;
+	}
+	
+	public void removeInput(String portName) {
+		PortFigure figure = inputPortMap.get(portName);
+		if (figure != null){
+			inputPorts.remove(figure);
+			ConnectionAnchor anchor = getConnectionAnchor(portName);
+			if (anchor!=null){
+				getTargetConnectionAnchors().remove(anchor);
+			}
+			
+		}
+	}
+	public void removeOutput(String portName) {
+		PortFigure figure = outputPortMap.get(portName);
+		if (figure != null){
+			outputPorts.remove(figure);
+			ConnectionAnchor anchor = getConnectionAnchor(portName);
+			if (anchor!=null){
+				getSourceConnectionAnchors().remove(anchor);
+			}
+			
+		}
 	}
 
 	/**
@@ -223,8 +252,10 @@ public class ActorFigure extends AbstractNodeFigure {
 		int x = 0;
 		int y = 0;
 		outputPortFigure.setLocation(new Point(x, y));
-		if (outputPorts != null)
+		if (outputPorts != null) {
 			outputPorts.add(outputPortFigure);
+			outputPortMap.put(portName, outputPortFigure);
+		}
 		FixedConnectionAnchor anchor = new FixedConnectionAnchor(
 				outputPortFigure);
 		anchor.offsetV = ANCHOR_HEIGTH / 2;
@@ -234,4 +265,11 @@ public class ActorFigure extends AbstractNodeFigure {
 		return outputPortFigure;
 	}
 
+	public PortFigure getInputPort(String name) {
+		return inputPortMap.get(name);
+	}
+
+	public PortFigure getOutputPort(String name) {
+		return outputPortMap.get(name);
+	}
 }

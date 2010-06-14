@@ -1,32 +1,53 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FontDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.actions.WorkspaceModifyOperation;
+import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.TypedCompositeActor;
+import ptolemy.moml.MoMLParser;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -39,6 +60,20 @@ import ptolemy.actor.TypedCompositeActor;
  */
 public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		implements IResourceChangeListener {
+	private static Logger logger = LoggerFactory
+	.getLogger(PasserelleModelMultiPageEditor.class);
+	private CompositeActor model = new CompositeActor();
+	protected boolean editorSaving = false;
+
+	private ResourceTracker resourceListener = new ResourceTracker();
+
+	public Logger getLogger() {
+		return logger;
+	}
+	public CompositeActor getDiagram() {
+		return model;
+	}
+
 	@Override
 	public void removePage(int pageIndex) {
 		
@@ -100,7 +135,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 */
 	void createPage() {
 		try {
-			editor = new PasserelleModelEditor(this);
+			editor = new PasserelleModelEditor(this,model);
 
 			int index = addPage(editor, getEditorInput());
 			editor.setIndex(index);
@@ -134,20 +169,20 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		createPage();
 	}
 
-	/**
-	 * The <code>MultiPageEditorPart</code> implementation of this
-	 * <code>IWorkbenchPart</code> method disposes all nested editors.
-	 * Subclasses may extend.
-	 */
-	public void dispose() {
-		ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
-		super.dispose();
-	}
+	
+	public void doSave(final IProgressMonitor monitor) {
+		editorSaving = true;
+		SafeRunner.run(new SafeRunnable() {
+			public void run() throws Exception {
+				CompositeActor diagram = getDiagram();
+				StringWriter writer = new StringWriter();
+				diagram.exportMoML(writer);
+				IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+				file.setContents(new ByteArrayInputStream(writer.toString()
+						.getBytes()), true, false, monitor);
+			}
+		});
 
-	/**
-	 * Saves the multi-page editor's document.
-	 */
-	public void doSave(IProgressMonitor monitor) {
 		getEditor(0).doSave(monitor);
 		for (CompositeActor actor : pages) {
 			int index = getPageIndex(actor);
@@ -156,6 +191,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 				editor.doSave(monitor);
 			}
 		}
+		editorSaving = false;
 	}
 
 	/**
@@ -200,6 +236,56 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 * (non-Javadoc) Method declared on IEditorPart.
 	 */
 	public boolean isSaveAsAllowed() {
+		return true;
+	}
+	protected boolean performSaveAs() {
+		SaveAsDialog dialog = new SaveAsDialog(getSite().getWorkbenchWindow()
+				.getShell());
+		dialog.setOriginalFile(((IFileEditorInput) getEditorInput()).getFile());
+		dialog.open();
+		IPath path = dialog.getResult();
+
+		if (path == null)
+			return false;
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		final IFile file = workspace.getRoot().getFile(path);
+
+		if (!file.exists()) {
+			WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
+				public void execute(final IProgressMonitor monitor) {
+//					saveProperties();
+					try {
+						CompositeActor diagram = getDiagram();
+						StringWriter writer = new StringWriter();
+						diagram.exportMoML(writer);
+						file.create(new ByteArrayInputStream(writer.toString()
+								.getBytes()), true, monitor);
+						writer.close();
+					} catch (Exception e) {
+						getLogger().error(
+								"Error saving model file : " + file.getName(),
+								e);
+					}
+				}
+			};
+			try {
+				new ProgressMonitorDialog(getSite().getWorkbenchWindow()
+						.getShell()).run(false, true, op);
+			} catch (Exception e) {
+				getLogger().error(
+						"Error showing progress monitor during saving of model file : "
+								+ file.getName(), e);
+			}
+		}
+
+		try {
+			superSetInput(new FileEditorInput(file));
+		} catch (Exception e) {
+			getLogger().error(
+					"Error during re-read of saved model file : "
+							+ file.getName(), e);
+		}
 		return true;
 	}
 
@@ -247,6 +333,9 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 			text.setFont(font);
 		}
 	}
+	public void setDiagram(CompositeActor diagram) {
+		model = diagram;
+	}
 
 	// public void createPartControl(Composite parent) {
 	// super.createPartControl(parent);
@@ -255,5 +344,174 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	// IWorkbenchActionConstants.DELETE,
 	// getActionRegistry().getAction(GEFActionConstants.DELETE));
 	// }
+	protected void superSetInput(IEditorInput input) {
+		// The workspace never changes for an editor. So, removing and re-adding
+		// the
+		// resourceListener is not necessary. But it is being done here for the
+		// sake
+		// of proper implementation. Plus, the resourceListener needs to be
+		// added
+		// to the workspace the first time around.
+		if (getEditorInput() != null) {
+			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+			file.getWorkspace().removeResourceChangeListener(resourceListener);
+		}
+
+		super.setInput(input);
+
+		if (getEditorInput() != null) {
+			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+			file.getWorkspace().addResourceChangeListener(resourceListener);
+			setPartName(file.getName());
+		}
+	}
+	protected void setInput(IEditorInput input) {
+		superSetInput(input);
+
+		IFile file = ((IFileEditorInput) input).getFile();
+		InputStream is = null;
+		try {
+			is = file.getContents();
+			MoMLParser moMLParser = new MoMLParser();
+			CompositeActor compositeActor = (CompositeActor) moMLParser.parse(
+					null, is);
+			setDiagram(compositeActor);
+		} catch (Exception e) {
+			getLogger().error(
+					"Error during reading/parsing of model file : "
+							+ file.getName(), e);
+		} finally {
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					// Do Nothing
+				}
+			}
+
+		}
+
+	}
+	class ResourceTracker implements IResourceChangeListener,
+	IResourceDeltaVisitor {
+public void resourceChanged(IResourceChangeEvent event) {
+	IResourceDelta delta = event.getDelta();
+	try {
+		if (delta != null)
+			delta.accept(this);
+	} catch (CoreException exception) {
+		// What should be done here?
+	}
+}
+
+public boolean visit(IResourceDelta delta) {
+	if (delta == null
+			|| !delta.getResource().equals(
+					((IFileEditorInput) getEditorInput()).getFile()))
+		return true;
+
+	if (delta.getKind() == IResourceDelta.REMOVED) {
+		Display display = getSite().getShell().getDisplay();
+		if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) { // if
+			// the
+			// file
+			// was
+			// deleted
+			// NOTE: The case where an open, unsaved file is deleted is
+			// being handled by the
+			// PartListener added to the Workbench in the initialize()
+			// method.
+			display.asyncExec(new Runnable() {
+				public void run() {
+					if (!isDirty())
+						closeEditor(false);
+				}
+			});
+		} else { // else if it was moved or renamed
+			final IFile newFile = ResourcesPlugin.getWorkspace()
+					.getRoot().getFile(delta.getMovedToPath());
+			display.asyncExec(new Runnable() {
+				public void run() {
+					superSetInput(new FileEditorInput(newFile));
+				}
+			});
+		}
+	} else if (delta.getKind() == IResourceDelta.CHANGED) {
+		if (!editorSaving) {
+			// the file was overwritten somehow (could have been
+			// replaced by another
+			// version in the respository)
+			final IFile newFile = ResourcesPlugin.getWorkspace()
+					.getRoot().getFile(delta.getFullPath());
+			Display display = getSite().getShell().getDisplay();
+			display.asyncExec(new Runnable() {
+				public void run() {
+					setInput(new FileEditorInput(newFile));
+//					getCommandStack().flush();
+				}
+			});
+		}
+	}
+	return false;
+}
+}
+	protected void closeEditor(boolean save) {
+		getSite().getPage().closeEditor(PasserelleModelMultiPageEditor.this, save);
+	}
+	public void dispose() {
+		super.dispose();
+		getSite().getWorkbenchWindow().getPartService().removePartListener(
+				partListener);
+		partListener = null;
+		((IFileEditorInput) getEditorInput()).getFile().getWorkspace()
+				.removeResourceChangeListener(resourceListener);
+		super.dispose();
+	}
+	private IPartListener partListener = new IPartListener() {
+		// If an open, unsaved file was deleted, query the user to either do a
+		// "Save As"
+		// or close the editor.
+		public void partActivated(IWorkbenchPart part) {
+			if (part != PasserelleModelMultiPageEditor.this)
+				return;
+			if (!((IFileEditorInput) getEditorInput()).getFile().exists()) {
+				Shell shell = getSite().getShell();
+				// //// String title =
+				// LogicMessages.GraphicalEditor_FILE_DELETED_TITLE_UI;
+				// //// String message =
+				// LogicMessages.GraphicalEditor_FILE_DELETED_WITHOUT_SAVE_INFO;
+				// //// String[] buttons = {
+				// LogicMessages.GraphicalEditor_SAVE_BUTTON_UI,
+				// //// LogicMessages.GraphicalEditor_CLOSE_BUTTON_UI };
+				// // MessageDialog dialog = new MessageDialog(
+				// // shell, title, null, message, MessageDialog.QUESTION,
+				// buttons, 0);
+				// if (dialog.open() == 0) {
+				// if (!performSaveAs())
+				// partActivated(part);
+				// }
+				// else {
+				// closeEditor(false);
+				// }
+			}
+		}
+
+		public void partBroughtToTop(IWorkbenchPart part) {
+		}
+
+		public void partClosed(IWorkbenchPart part) {
+		}
+
+		public void partDeactivated(IWorkbenchPart part) {
+		}
+
+		public void partOpened(IWorkbenchPart part) {
+		}
+	};
+	protected void setSite(IWorkbenchPartSite site) {
+		super.setSite(site);
+		getSite().getWorkbenchWindow().getPartService().addPartListener(
+				partListener);
+	}
 
 }

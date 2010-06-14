@@ -18,13 +18,14 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
 public class OutlineContainerEditPart extends OutlineEditPart {
 	private boolean imageSet;
 	private EditPart context;
-
+	private CompositeActor actor;
 	/**
 	 * Constructor, which initializes this using the model given as input.
 	 */
-	public OutlineContainerEditPart(EditPart context, Object model) {
+	public OutlineContainerEditPart(EditPart context, Object model,CompositeActor actor) {
 		super(model);
 		this.context = context;
+		this.actor = actor;
 	}
 
 	/**
@@ -71,8 +72,13 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 	 */
 	protected List getModelChildren() {
 		ArrayList children = new ArrayList();
-
 		CompositeActor actor = getModelDiagram();
+		if (this.actor == null){
+		    actor = getModelDiagram();
+		}else{
+			actor = this.actor;
+		}
+		
 		children.addAll(actor.attributeList(Parameter.class));
 		children.addAll(actor.attributeList(TextAttribute.class));
 		children.addAll(actor.attributeList(IOPort.class));

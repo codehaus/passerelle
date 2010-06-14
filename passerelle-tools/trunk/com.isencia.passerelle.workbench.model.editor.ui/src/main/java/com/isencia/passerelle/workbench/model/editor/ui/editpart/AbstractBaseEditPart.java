@@ -13,6 +13,7 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
@@ -211,6 +212,7 @@ abstract public class AbstractBaseEditPart extends
 						((INameable) getComponentFigure()).setName(name);
 						getFigure().repaint();
 					}
+					specificTreatment(source);
 				}
 			} else if (SetConstraintCommand.class.equals(type)) {
 				if (source == this.getModel() && source instanceof NamedObj) {
@@ -226,6 +228,9 @@ abstract public class AbstractBaseEditPart extends
 				}
 			} else if (DeleteComponentCommand.class.equals(type)
 					|| CreateConnectionCommand.class.equals(type)) {
+				
+			
+				
 				try {
 					refreshSourceConnections();
 					refreshTargetConnections();
@@ -234,6 +239,10 @@ abstract public class AbstractBaseEditPart extends
 				}
 			}
 		}
+	}
+
+	protected void specificTreatment(Object source) {
+		
 	}
 
 	protected String getName(Object source) {

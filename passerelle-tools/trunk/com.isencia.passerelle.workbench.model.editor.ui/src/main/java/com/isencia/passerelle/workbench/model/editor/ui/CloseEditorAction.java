@@ -9,7 +9,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.CompositeEntity;
 
-import com.isencia.passerelle.workbench.model.editor.ui.editor.CompositeModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 
@@ -41,7 +40,7 @@ public class CloseEditorAction extends SelectionAction {
 
 	@Override
 	public void run() {
-		CompositeModelEditor workbenchPart = (CompositeModelEditor) getWorkbenchPart();
+		PasserelleModelEditor workbenchPart = (PasserelleModelEditor) getWorkbenchPart();
 		CompositeEntity compositeEntity = WorkbenchUtility.containsCompositeEntity(getSelectedObjects());
 		if (compositeEntity !=null && workbenchPart.getParent() instanceof PasserelleModelMultiPageEditor){
 			PasserelleModelMultiPageEditor parent = (PasserelleModelMultiPageEditor)workbenchPart.getParent();

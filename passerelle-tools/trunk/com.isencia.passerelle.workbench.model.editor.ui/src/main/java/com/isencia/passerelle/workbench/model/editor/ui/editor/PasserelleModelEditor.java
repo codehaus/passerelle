@@ -117,11 +117,29 @@ import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		implements ITabbedPropertySheetPageContributor {
 
+	private CompositeActor actor;
+
 	protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
 	protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
 	protected static final String PALETTE_STATE = "Palette state"; //$NON-NLS-1$
 	protected static final int DEFAULT_PALETTE_SIZE = 130;
+
+	public PasserelleModelEditor(MultiPageEditorPart parent,
+			CompositeActor actor, CompositeActor model) {
+		this(parent, model);
+		this.actor = actor;
+
+	}
+
+	public PasserelleModelEditor(MultiPageEditorPart parent,
+			CompositeActor model) {
+		setEditDomain(new DefaultEditDomain(this));
+		this.parent = parent;
+		this.model = model;
+	}
+
 	private int index;
+
 	public int getIndex() {
 		return index;
 	}
@@ -182,11 +200,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		setEditDomain(new DefaultEditDomain(this));
 	}
 
-	public PasserelleModelEditor(MultiPageEditorPart parent) {
-		setEditDomain(new DefaultEditDomain(this));
-		this.parent = parent;
-	}
-
 	public Logger getLogger() {
 		return logger;
 	}
@@ -218,48 +231,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	protected void addAction(IAction action) {
 		getActionRegistry().registerAction(action);
 	}
-
-	private IPartListener partListener = new IPartListener() {
-		// If an open, unsaved file was deleted, query the user to either do a
-		// "Save As"
-		// or close the editor.
-		public void partActivated(IWorkbenchPart part) {
-			if (part != PasserelleModelEditor.this)
-				return;
-			if (!((IFileEditorInput) getEditorInput()).getFile().exists()) {
-				Shell shell = getSite().getShell();
-				// //// String title =
-				// LogicMessages.GraphicalEditor_FILE_DELETED_TITLE_UI;
-				// //// String message =
-				// LogicMessages.GraphicalEditor_FILE_DELETED_WITHOUT_SAVE_INFO;
-				// //// String[] buttons = {
-				// LogicMessages.GraphicalEditor_SAVE_BUTTON_UI,
-				// //// LogicMessages.GraphicalEditor_CLOSE_BUTTON_UI };
-				// // MessageDialog dialog = new MessageDialog(
-				// // shell, title, null, message, MessageDialog.QUESTION,
-				// buttons, 0);
-				// if (dialog.open() == 0) {
-				// if (!performSaveAs())
-				// partActivated(part);
-				// }
-				// else {
-				// closeEditor(false);
-				// }
-			}
-		}
-
-		public void partBroughtToTop(IWorkbenchPart part) {
-		}
-
-		public void partClosed(IWorkbenchPart part) {
-		}
-
-		public void partDeactivated(IWorkbenchPart part) {
-		}
-
-		public void partOpened(IWorkbenchPart part) {
-		}
-	};
 
 	protected void closeEditor(boolean save) {
 		getSite().getPage().closeEditor(PasserelleModelEditor.this, save);
@@ -302,7 +273,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		GraphicalViewerKeyHandler graphicalViewerKeyHandler = new GraphicalViewerKeyHandler(
 				viewer);
 		graphicalViewerKeyHandler.setParent(getCommonKeyHandler());
-		
+
 		graphicalViewerKeyHandler.put(KeyStroke.getPressed('X', SWT.CTRL, 0),
 				getActionRegistry().getAction(ActionFactory.CUT.getId()));
 		viewer.setKeyHandler(graphicalViewerKeyHandler);
@@ -310,8 +281,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		// Zoom with the mouse wheel
 		viewer.setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.CTRL),
 				MouseWheelZoomHandler.SINGLETON);
-
-		loadProperties();
 
 		// Actions
 		IAction showRulers = new ToggleRulerVisibilityAction(
@@ -335,7 +304,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	protected EditPartFactory createEditPartFactory() {
-		return new EditPartFactory(parent);
+		return new EditPartFactory(getParent(), actor);
 	}
 
 	protected CustomPalettePage createPalettePage() {
@@ -364,9 +333,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	public void dispose() {
-		getSite().getWorkbenchWindow().getPartService().removePartListener(
-				partListener);
-		partListener = null;
 		((IFileEditorInput) getEditorInput()).getFile().getWorkspace()
 				.removeResourceChangeListener(resourceListener);
 		super.dispose();
@@ -374,18 +340,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 	public void doSave(final IProgressMonitor progressMonitor) {
 		editorSaving = true;
-		SafeRunner.run(new SafeRunnable() {
-			public void run() throws Exception {
-				saveProperties();
-				CompositeActor diagram = getDiagram();
-				StringWriter writer = new StringWriter();
-				diagram.exportMoML(writer);
-				IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-				file.setContents(new ByteArrayInputStream(writer.toString()
-						.getBytes()), true, false, progressMonitor);
-				getCommandStack().markSaveLocation();
-			}
-		});
+		getCommandStack().markSaveLocation();
 
 		editorSaving = false;
 	}
@@ -452,15 +407,15 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	protected void handleActivationChanged(Event event) {
-//		IAction copy = null;
-//		if (event.type == SWT.Deactivate)
-//			copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
-//		if (getEditorSite().getActionBars().getGlobalActionHandler(
-//				ActionFactory.COPY.getId()) != copy) {
-//			getEditorSite().getActionBars().setGlobalActionHandler(
-//					ActionFactory.COPY.getId(), copy);
-//			getEditorSite().getActionBars().updateActionBars();
-//		}
+		// IAction copy = null;
+		// if (event.type == SWT.Deactivate)
+		// copy = getActionRegistry().getAction(ActionFactory.COPY.getId());
+		// if (getEditorSite().getActionBars().getGlobalActionHandler(
+		// ActionFactory.COPY.getId()) != copy) {
+		// getEditorSite().getActionBars().setGlobalActionHandler(
+		// ActionFactory.COPY.getId(), copy);
+		// getEditorSite().getActionBars().updateActionBars();
+		// }
 	}
 
 	protected void initializeGraphicalViewer() {
@@ -542,7 +497,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		registry.registerAction(closeEditorAction);
 		getSelectionActions().add(closeEditorAction.getId());
 
-
 	}
 
 	protected PasteNodeAction setPasteNodeAction() {
@@ -581,145 +535,14 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		return true;
 	}
 
-	protected void loadProperties() {
-		// Ruler properties
-		/*
-		 * LogicRuler ruler =
-		 * getLogicDiagram().getRuler(PositionConstants.WEST); RulerProvider
-		 * provider = null; if (ruler != null) { provider = new
-		 * LogicRulerProvider(ruler); }
-		 * getGraphicalViewer().setProperty(RulerProvider
-		 * .PROPERTY_VERTICAL_RULER, provider); ruler =
-		 * getLogicDiagram().getRuler(PositionConstants.NORTH); provider = null;
-		 * if (ruler != null) { provider = new LogicRulerProvider(ruler); }
-		 * getGraphicalViewer
-		 * ().setProperty(RulerProvider.PROPERTY_HORIZONTAL_RULER, provider);
-		 * getGraphicalViewer
-		 * ().setProperty(RulerProvider.PROPERTY_RULER_VISIBILITY, new
-		 * Boolean(getLogicDiagram().getRulerVisibility()));
-		 * 
-		 * // Snap to Geometry property
-		 * getGraphicalViewer().setProperty(SnapToGeometry
-		 * .PROPERTY_SNAP_ENABLED, new
-		 * Boolean(getLogicDiagram().isSnapToGeometryEnabled()));
-		 * 
-		 * // Grid properties
-		 * getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_ENABLED,
-		 * new Boolean(getLogicDiagram().isGridEnabled())); // We keep grid
-		 * visibility and enablement in sync
-		 * getGraphicalViewer().setProperty(SnapToGrid.PROPERTY_GRID_VISIBLE,
-		 * new Boolean(getLogicDiagram().isGridEnabled()));
-		 * 
-		 * // Zoom ZoomManager manager = (ZoomManager)getGraphicalViewer()
-		 * .getProperty(ZoomManager.class.toString()); if (manager != null)
-		 * manager.setZoom(getLogicDiagram().getZoom()); // Scroll-wheel Zoom
-		 * getGraphicalViewer
-		 * ().setProperty(MouseWheelHandler.KeyGenerator.getKey(SWT.MOD1),
-		 * MouseWheelZoomHandler.SINGLETON);
-		 */
-
-	}
-
 	protected boolean performSaveAs() {
-		SaveAsDialog dialog = new SaveAsDialog(getSite().getWorkbenchWindow()
-				.getShell());
-		dialog.setOriginalFile(((IFileEditorInput) getEditorInput()).getFile());
-		dialog.open();
-		IPath path = dialog.getResult();
-
-		if (path == null)
-			return false;
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		final IFile file = workspace.getRoot().getFile(path);
-
-		if (!file.exists()) {
-			WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
-				public void execute(final IProgressMonitor monitor) {
-					saveProperties();
-					try {
-						CompositeActor diagram = getDiagram();
-						StringWriter writer = new StringWriter();
-						diagram.exportMoML(writer);
-						file.create(new ByteArrayInputStream(writer.toString()
-								.getBytes()), true, monitor);
-						writer.close();
-					} catch (Exception e) {
-						getLogger().error(
-								"Error saving model file : " + file.getName(),
-								e);
-					}
-				}
-			};
-			try {
-				new ProgressMonitorDialog(getSite().getWorkbenchWindow()
-						.getShell()).run(false, true, op);
-			} catch (Exception e) {
-				getLogger().error(
-						"Error showing progress monitor during saving of model file : "
-								+ file.getName(), e);
-			}
-		}
-
-		try {
-			superSetInput(new FileEditorInput(file));
-			getCommandStack().markSaveLocation();
-		} catch (Exception e) {
-			getLogger().error(
-					"Error during re-read of saved model file : "
-							+ file.getName(), e);
-		}
+		getCommandStack().markSaveLocation();
 		return true;
-	}
-
-	protected void saveProperties() {
-		// getDiagram().setRulerVisibility(((Boolean)getGraphicalViewer()
-		// .getProperty(RulerProvider.PROPERTY_RULER_VISIBILITY)).booleanValue());
-		// getLogicDiagram().setGridEnabled(((Boolean)getGraphicalViewer()
-		// .getProperty(SnapToGrid.PROPERTY_GRID_ENABLED)).booleanValue());
-		// getLogicDiagram().setSnapToGeometry(((Boolean)getGraphicalViewer()
-		// .getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED)).booleanValue());
-		// ZoomManager manager = (ZoomManager)getGraphicalViewer()
-		// .getProperty(ZoomManager.class.toString());
-		// if (manager != null)
-		// getLogicDiagram().setZoom(manager.getZoom());
 	}
 
 	protected void setInput(IEditorInput input) {
 		superSetInput(input);
-
-		IFile file = ((IFileEditorInput) input).getFile();
-		InputStream is = null;
-		try {
-			is = file.getContents();
-			MoMLParser moMLParser = new MoMLParser();
-			CompositeActor compositeActor = (CompositeActor) moMLParser.parse(
-					null, is);
-			setDiagram(compositeActor);
-		} catch (Exception e) {
-			getLogger().error(
-					"Error during reading/parsing of model file : "
-							+ file.getName(), e);
-		} finally {
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					// Do Nothing
-				}
-			}
-
-		}
-
-		if (!editorSaving) {
-			if (getGraphicalViewer() != null) {
-				getGraphicalViewer().setContents(getDiagram());
-				loadProperties();
-			}
-			if (outlinePage != null) {
-				outlinePage.setContents(getDiagram());
-			}
-		}
+		setDiagram(model);
 	}
 
 	public void setDiagram(CompositeActor diagram) {
@@ -746,12 +569,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			file.getWorkspace().addResourceChangeListener(resourceListener);
 			setPartName(file.getName());
 		}
-	}
-
-	protected void setSite(IWorkbenchPartSite site) {
-		super.setSite(site);
-		getSite().getWorkbenchWindow().getPartService().addPartListener(
-				partListener);
 	}
 
 	class OutlinePage extends ContentOutlinePage implements IAdaptable {
@@ -784,7 +601,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 		protected void configureOutlineViewer() {
 			getViewer().setEditDomain(getEditDomain());
-			getViewer().setEditPartFactory(new OutlinePartFactory());
+			getViewer().setEditPartFactory(new OutlinePartFactory(actor));
 			ContextMenuProvider provider = new PasserelleContextMenuProvider(
 					getViewer(), getActionRegistry());
 			getViewer().setContextMenu(provider);

@@ -1,14 +1,11 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
-import org.eclipse.draw2d.ChangeEvent;
-import org.eclipse.draw2d.ChangeListener;
 import org.eclipse.draw2d.Clickable;
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -27,11 +24,8 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.pde.core.ModelChangedEvent;
-import org.eclipse.pde.internal.ui.editor.EditorUtilities;
 import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +39,11 @@ import ptolemy.actor.TypedIOPort;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
+import ptolemy.kernel.util.NamedObj;
+import ptolemy.moml.filter.AddIcon;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.WorkbenchUtility;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.CompositeModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
@@ -60,7 +55,6 @@ import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteConnectionCommand;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
-import com.isencia.passerelle.workbench.model.utils.ModelConstants;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class CompositeActorEditPart extends ContainerEditPart implements
@@ -98,7 +92,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 				TypedCompositeActor model = (TypedCompositeActor) getModel();
 
-				CompositeModelEditor editor = new CompositeModelEditor(
+				PasserelleModelEditor editor = new PasserelleModelEditor(
 						multiPageEditor, model, multiPageEditor.getEditor()
 								.getDiagram());
 				int index = multiPageEditor.getPageIndex(model);
@@ -150,24 +144,42 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 				refreshSourceConnections();
 				refreshTargetConnections();
 			}
-			if ((CreateComponentCommand.class.equals(type)|| DeleteComponentCommand.class.equals(type))
-					&& (ModelUtils.isPort(childType))) {
-				setFigure(createFigure());
+			NamedObj child = ((ModelChangeRequest) changerequest).getChild();
+			NamedObj container = ((ModelChangeRequest) changerequest)
+					.getContainer();
+			if ((CreateComponentCommand.class.equals(type))
+					&& child instanceof IOPort
+					&& ModelUtils.isPortOfActor((IOPort) child,
+							(Actor) getModel())) {
+				updateFigure();
 				getFigure().repaint();
+			} else if (getModel() == container
+					&& (DeleteComponentCommand.class.equals(type) && child instanceof IOPort)) {
+				deletePort((IOPort) child);
+				getFigure().repaint();
+
 			}
 		}
-		// if (changerequest instanceof CreateComponentCommand) {
-		// Class<?> type = ((ModelChangeRequest) changerequest).getType();
-		//			
-		// if (getModel() != source
-		// && (DeleteConnectionCommand.class.equals(type)
-		// || DeleteComponentCommand.class.equals(type) ||
-		// CreateConnectionCommand.class
-		// .equals(type))) {
-		// refreshSourceConnections();
-		// refreshTargetConnections();
-		// }
-		// }
+	}
+
+	private void deletePort(IOPort port) {
+		if (port.isInput()) {
+			((CompositeActorFigure) getFigure()).removeInput(port.getName());
+		} else {
+			((CompositeActorFigure) getFigure()).removeOutput(port.getName());
+
+		}
+	}
+
+	protected boolean containsPort(CompositeActor actor, IOPort port) {
+		Object o = port.getContainer();
+		Object s = port.getSource();
+		for (Object p : actor.portList()) {
+			if (p.equals(port)) {
+				return true;
+			}
+		}
+		return true;
 	}
 
 	protected AccessibleEditPart createAccessible() {
@@ -244,6 +256,56 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 			}
 		}
 		return actorFigure;
+	}
+
+	protected void deleteFigure(IOPort port) {
+		CompositeActorFigure actorFigure = (CompositeActorFigure) getFigure();
+
+		Actor actorModel = getActorModel();
+		if (port.isInput() && actorFigure.getInputPort(port.getName()) != null) {
+			actorFigure.addInput(port.getName(), port.getDisplayName());
+		} else if (!port.isInput()
+				&& actorFigure.getOutputPort(port.getName()) != null) {
+			actorFigure.addInput(port.getName(), port.getDisplayName());
+		}
+		// Add SourceConnectionAnchors
+		List<TypedIOPort> outputPortList = actorModel.outputPortList();
+		if (outputPortList != null) {
+			for (TypedIOPort outputPort : outputPortList) {
+				if (actorFigure.getOutputPort(outputPort.getName()) == null) {
+					actorFigure.addOutput(outputPort.getName(), outputPort
+							.getDisplayName());
+				}
+			}
+		}
+
+	}
+
+	protected void updateFigure() {
+		CompositeActorFigure actorFigure = (CompositeActorFigure) getFigure();
+
+		Actor actorModel = getActorModel();
+
+		List<TypedIOPort> inputPortList = actorModel.inputPortList();
+		if (inputPortList != null) {
+			for (TypedIOPort inputPort : inputPortList) {
+				if (actorFigure.getInputPort(inputPort.getName()) == null) {
+					actorFigure.addInput(inputPort.getName(), inputPort
+							.getDisplayName());
+				}
+			}
+		}
+		// Add SourceConnectionAnchors
+		List<TypedIOPort> outputPortList = actorModel.outputPortList();
+		if (outputPortList != null) {
+			for (TypedIOPort outputPort : outputPortList) {
+				if (actorFigure.getOutputPort(outputPort.getName()) == null) {
+					actorFigure.addOutput(outputPort.getName(), outputPort
+							.getDisplayName());
+				}
+			}
+		}
+
 	}
 
 	/**
@@ -448,6 +510,31 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	 */
 	final protected String mapConnectionAnchorToTerminal(ConnectionAnchor c) {
 		return getComponentFigure().getConnectionAnchorName(c);
+	}
+
+	protected void specificTreatment(Object source) {
+		if (source instanceof CompositeActor) {
+			updatePageName((CompositeActor) getModel());
+			updateCompositeActors((CompositeActor) getModel());
+		}
+	}
+
+	private void updateCompositeActors(CompositeActor actor) {
+		Enumeration enumeration = actor.getEntities();
+		while (enumeration.hasMoreElements()) {
+			Object o = enumeration.nextElement();
+			if (o instanceof CompositeActor) {
+				updatePageName((CompositeActor) o);
+				updateCompositeActors((CompositeActor) o);
+			}
+		}
+	}
+
+	private void updatePageName(CompositeActor actor) {
+		PasserelleModelMultiPageEditor parent = (PasserelleModelMultiPageEditor) multiPageEditorPart;
+		int index = parent.getPageIndex(actor);
+
+		parent.setText(index, WorkbenchUtility.getPath(actor));
 	}
 
 }
