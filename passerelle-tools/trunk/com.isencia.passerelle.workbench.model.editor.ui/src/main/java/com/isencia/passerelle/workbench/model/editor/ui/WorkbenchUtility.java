@@ -30,18 +30,17 @@ public abstract class WorkbenchUtility {
 				&& ((EditPart) o).getParent() instanceof DiagramEditPart) {
 			CompositeActor actor = ((DiagramEditPart) ((EditPart) o)
 					.getParent()).getActor();
-			if (actor != null && actor.getContainer() != null) {
-				return (CompositeEntity) actor.getContainer();
-			}
+			return (CompositeEntity) actor;
 		}
 		return null;
 	}
-	public static String getPath(NamedObj model){
+
+	public static String getPath(NamedObj model) {
 		StringBuffer sb = new StringBuffer();
 		List<String> names = new ArrayList<String>();
-		addModelToPath(model,names);
-		if (names.size() > 1){
-			for (int i = 0; i < names.size()-1;i++){
+		addModelToPath(model, names);
+		if (names.size() > 1) {
+			for (int i = 0; i < names.size() - 1; i++) {
 				sb.append(names.get(i));
 				sb.append(".");
 			}
@@ -49,13 +48,15 @@ public abstract class WorkbenchUtility {
 		sb.append(model.getDisplayName());
 		return sb.toString();
 	}
-	private static  void addModelToPath(NamedObj model,List<String> names){
-		if (model.getContainer() != null){
+
+	private static void addModelToPath(NamedObj model, List<String> names) {
+		if (model.getContainer() != null) {
 			names.add(model.getContainer().getDisplayName());
-			addModelToPath(model.getContainer(),names);
+			addModelToPath(model.getContainer(), names);
 		}
-		
+
 	}
+
 	public static CompositeEntity containsCompositeEntity(List selectedObjects) {
 
 		if (selectedObjects != null) {
