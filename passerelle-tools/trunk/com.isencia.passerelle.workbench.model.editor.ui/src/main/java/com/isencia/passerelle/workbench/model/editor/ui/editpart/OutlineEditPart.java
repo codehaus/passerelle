@@ -35,7 +35,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 public class OutlineEditPart extends
 		org.eclipse.gef.editparts.AbstractTreeEditPart implements
 		ValueListener, ChangeListener {
-	private HashMap<String,Image> modelImages = new HashMap<String,Image>();
+	private static HashMap<String,Image> modelImages = new HashMap<String,Image>();
 	private static Logger logger = LoggerFactory
 			.getLogger(OutlineEditPart.class);
 

@@ -5,15 +5,15 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
-
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
+import org.eclipse.swt.graphics.Image;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.data.expr.Parameter;
-import ptolemy.kernel.util.NamedObj;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
+
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 
 /**
  * Tree EditPart for the Container.
@@ -21,13 +21,18 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
 public class OutlineContainerEditPart extends OutlineEditPart {
 	private boolean imageSet;
 	private EditPart context;
+	private static Image image = CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR
+			.createImage();
+	private PasserelleModelMultiPageEditor editor;
 
 	/**
 	 * Constructor, which initializes this using the model given as input.
 	 */
-	public OutlineContainerEditPart(EditPart context, Object model) {
+	public OutlineContainerEditPart(EditPart context, Object model,
+			PasserelleModelMultiPageEditor editor) {
 		super(model);
 		this.context = context;
+		this.editor = editor;
 	}
 
 	/**
@@ -58,12 +63,7 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 	@Override
 	protected void refreshVisuals() {
 		super.refreshVisuals();
-		if (!imageSet) {
-			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR
-					.createImage());
-			imageSet = true;
-		}
-
+		setWidgetImage(image);
 	}
 
 	/**
@@ -74,11 +74,19 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 	 */
 	protected List getModelChildren() {
 		ArrayList children = new ArrayList();
-		
+
 		CompositeActor actor = getModelDiagram();
-//		if (page != null && page.getActor()!=null) {
-//			actor = page.getActor();
-//		}
+		if (editor != null) {
+			PasserelleModelEditor page = (PasserelleModelEditor) editor
+					.getEditor(editor.getActivePage());
+			if (page.getActor() != null
+					&& !containsActor(page.getActor(), actor))
+				actor = page.getActor();
+		}
+
+		// if (page != null && page.getActor()!=null) {
+		// actor = page.getActor();
+		// }
 
 		children.addAll(actor.attributeList(Parameter.class));
 		children.addAll(actor.attributeList(TextAttribute.class));
@@ -99,4 +107,17 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 		return children;
 	}
 
+	public boolean containsActor(CompositeActor parent, CompositeActor child) {
+		Enumeration entities = parent.getEntities();
+		while (entities.hasMoreElements()) {
+			Object el = entities.nextElement();
+			if (el == child) {
+				return true;
+			}
+			if (el instanceof CompositeActor) {
+				return containsActor((CompositeActor) el, child);
+			}
+		}
+		return false;
+	}
 }

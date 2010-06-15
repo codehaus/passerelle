@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -16,16 +18,41 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SafeRunner;
+import org.eclipse.draw2d.LightweightSystem;
+import org.eclipse.draw2d.MarginBorder;
+import org.eclipse.draw2d.Viewport;
+import org.eclipse.draw2d.parts.ScrollableThumbnail;
+import org.eclipse.draw2d.parts.Thumbnail;
+import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.EditPartViewer;
+import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.RootEditPart;
+import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
+import org.eclipse.gef.editparts.ZoomManager;
+import org.eclipse.gef.ui.parts.ContentOutlinePage;
+import org.eclipse.gef.ui.parts.TreeViewer;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FontDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
@@ -41,13 +68,20 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.eclipse.ui.part.PageBook;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.TypedCompositeActor;
 import ptolemy.moml.MoMLParser;
+
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.OutlinePartFactory;
+import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -60,23 +94,45 @@ import ptolemy.moml.MoMLParser;
  */
 public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		implements IResourceChangeListener {
+
+
+	private RefreshCommand RefreshCommand;
+	protected OutlinePage outlinePage;
+
+	private RefreshCommand getRefreshCommand() {
+		if (RefreshCommand == null) {
+			return RefreshCommand = new RefreshCommand();
+		}
+		return RefreshCommand;
+	}
+
 	private static Logger logger = LoggerFactory
-	.getLogger(PasserelleModelMultiPageEditor.class);
+			.getLogger(PasserelleModelMultiPageEditor.class);
 	private CompositeActor model = new CompositeActor();
 	protected boolean editorSaving = false;
+
+
+	public Object getAdapter(Class type) {
+		if (type == IContentOutlinePage.class) {
+			outlinePage = new OutlinePage(new TreeViewer());
+			return outlinePage;
+		}
+			return super.getAdapter(type);
+	}
 
 	private ResourceTracker resourceListener = new ResourceTracker();
 
 	public Logger getLogger() {
 		return logger;
 	}
+
 	public CompositeActor getDiagram() {
 		return model;
 	}
 
 	@Override
 	public void removePage(int pageIndex) {
-		
+
 		super.removePage(pageIndex);
 		pages.remove(pageIndex);
 	}
@@ -135,7 +191,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 */
 	void createPage() {
 		try {
-			editor = new PasserelleModelEditor(this,model);
+			editor = new PasserelleModelEditor(this, model);
 
 			int index = addPage(editor, getEditorInput());
 			editor.setIndex(index);
@@ -169,7 +225,6 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		createPage();
 	}
 
-	
 	public void doSave(final IProgressMonitor monitor) {
 		editorSaving = true;
 		SafeRunner.run(new SafeRunnable() {
@@ -238,6 +293,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	public boolean isSaveAsAllowed() {
 		return true;
 	}
+
 	protected boolean performSaveAs() {
 		SaveAsDialog dialog = new SaveAsDialog(getSite().getWorkbenchWindow()
 				.getShell());
@@ -254,7 +310,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		if (!file.exists()) {
 			WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
 				public void execute(final IProgressMonitor monitor) {
-//					saveProperties();
+					// saveProperties();
 					try {
 						CompositeActor diagram = getDiagram();
 						StringWriter writer = new StringWriter();
@@ -294,6 +350,12 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 */
 	protected void pageChange(int newPageIndex) {
 		super.pageChange(newPageIndex);
+		getRefreshCommand().setModel(getDiagram());
+		getRefreshCommand().execute();
+		if (outlinePage != null)
+			outlinePage.switchThumbnail(newPageIndex);
+
+
 	}
 
 	/**
@@ -333,6 +395,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 			text.setFont(font);
 		}
 	}
+
 	public void setDiagram(CompositeActor diagram) {
 		model = diagram;
 	}
@@ -365,6 +428,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 			setPartName(file.getName());
 		}
 	}
+
 	protected void setInput(IEditorInput input) {
 		superSetInput(input);
 
@@ -392,74 +456,78 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		}
 
 	}
+
 	class ResourceTracker implements IResourceChangeListener,
-	IResourceDeltaVisitor {
-public void resourceChanged(IResourceChangeEvent event) {
-	IResourceDelta delta = event.getDelta();
-	try {
-		if (delta != null)
-			delta.accept(this);
-	} catch (CoreException exception) {
-		// What should be done here?
-	}
-}
-
-public boolean visit(IResourceDelta delta) {
-	if (delta == null
-			|| !delta.getResource().equals(
-					((IFileEditorInput) getEditorInput()).getFile()))
-		return true;
-
-	if (delta.getKind() == IResourceDelta.REMOVED) {
-		Display display = getSite().getShell().getDisplay();
-		if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) { // if
-			// the
-			// file
-			// was
-			// deleted
-			// NOTE: The case where an open, unsaved file is deleted is
-			// being handled by the
-			// PartListener added to the Workbench in the initialize()
-			// method.
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (!isDirty())
-						closeEditor(false);
-				}
-			});
-		} else { // else if it was moved or renamed
-			final IFile newFile = ResourcesPlugin.getWorkspace()
-					.getRoot().getFile(delta.getMovedToPath());
-			display.asyncExec(new Runnable() {
-				public void run() {
-					superSetInput(new FileEditorInput(newFile));
-				}
-			});
+			IResourceDeltaVisitor {
+		public void resourceChanged(IResourceChangeEvent event) {
+			IResourceDelta delta = event.getDelta();
+			try {
+				if (delta != null)
+					delta.accept(this);
+			} catch (CoreException exception) {
+				// What should be done here?
+			}
 		}
-	} else if (delta.getKind() == IResourceDelta.CHANGED) {
-		if (!editorSaving) {
-			// the file was overwritten somehow (could have been
-			// replaced by another
-			// version in the respository)
-			final IFile newFile = ResourcesPlugin.getWorkspace()
-					.getRoot().getFile(delta.getFullPath());
-			Display display = getSite().getShell().getDisplay();
-			display.asyncExec(new Runnable() {
-				public void run() {
-					setInput(new FileEditorInput(newFile));
-//					getCommandStack().flush();
+
+		public boolean visit(IResourceDelta delta) {
+			if (delta == null
+					|| !delta.getResource().equals(
+							((IFileEditorInput) getEditorInput()).getFile()))
+				return true;
+
+			if (delta.getKind() == IResourceDelta.REMOVED) {
+				Display display = getSite().getShell().getDisplay();
+				if ((IResourceDelta.MOVED_TO & delta.getFlags()) == 0) { // if
+					// the
+					// file
+					// was
+					// deleted
+					// NOTE: The case where an open, unsaved file is deleted is
+					// being handled by the
+					// PartListener added to the Workbench in the initialize()
+					// method.
+					display.asyncExec(new Runnable() {
+						public void run() {
+							if (!isDirty())
+								closeEditor(false);
+						}
+					});
+				} else { // else if it was moved or renamed
+					final IFile newFile = ResourcesPlugin.getWorkspace()
+							.getRoot().getFile(delta.getMovedToPath());
+					display.asyncExec(new Runnable() {
+						public void run() {
+							superSetInput(new FileEditorInput(newFile));
+						}
+					});
 				}
-			});
+			} else if (delta.getKind() == IResourceDelta.CHANGED) {
+				if (!editorSaving) {
+					// the file was overwritten somehow (could have been
+					// replaced by another
+					// version in the respository)
+					final IFile newFile = ResourcesPlugin.getWorkspace()
+							.getRoot().getFile(delta.getFullPath());
+					Display display = getSite().getShell().getDisplay();
+					display.asyncExec(new Runnable() {
+						public void run() {
+							setInput(new FileEditorInput(newFile));
+							// getCommandStack().flush();
+						}
+					});
+				}
+			}
+			return false;
 		}
 	}
-	return false;
-}
-}
+
 	protected void closeEditor(boolean save) {
-		getSite().getPage().closeEditor(PasserelleModelMultiPageEditor.this, save);
+		getSite().getPage().closeEditor(PasserelleModelMultiPageEditor.this,
+				save);
 	}
+
 	public void dispose() {
-		
+
 		getSite().getWorkbenchWindow().getPartService().removePartListener(
 				partListener);
 		partListener = null;
@@ -467,6 +535,7 @@ public boolean visit(IResourceDelta delta) {
 				.removeResourceChangeListener(resourceListener);
 		super.dispose();
 	}
+
 	private IPartListener partListener = new IPartListener() {
 		// If an open, unsaved file was deleted, query the user to either do a
 		// "Save As"
@@ -508,10 +577,212 @@ public boolean visit(IResourceDelta delta) {
 		public void partOpened(IWorkbenchPart part) {
 		}
 	};
+
 	protected void setSite(IWorkbenchPartSite site) {
 		super.setSite(site);
 		getSite().getWorkbenchWindow().getPartService().addPartListener(
 				partListener);
+	}
+
+	class OutlinePage extends ContentOutlinePage implements IAdaptable {
+
+		private PageBook pageBook;
+		private Control outline;
+		private Canvas overview;
+		private IAction showOutlineAction, showOverviewAction;
+		static final int ID_OUTLINE = 0;
+		static final int ID_OVERVIEW = 1;
+		private Thumbnail thumbnail;
+		private DisposeListener disposeListener;
+		private int index;
+		private LightweightSystem lws;
+		private Map<PasserelleModelEditor, Thumbnail> thumbnails = new HashMap<PasserelleModelEditor, Thumbnail>();
+		private PasserelleModelEditor editor;
+
+		public OutlinePage(EditPartViewer viewer) {
+			super(viewer);
+		}
+
+		public void init(IPageSite pageSite) {
+			super.init(pageSite);
+			editor = (PasserelleModelEditor) getEditor(0);
+			// ActionRegistry registry = getActionRegistry();
+			// IActionBars bars = pageSite.getActionBars();
+			// String id = ActionFactory.UNDO.getId();
+			// bars.setGlobalActionHandler(id, registry.getAction(id));
+			// id = ActionFactory.REDO.getId();
+			// bars.setGlobalActionHandler(id, registry.getAction(id));
+			// id = ActionFactory.DELETE.getId();
+			// bars.setGlobalActionHandler(id, registry.getAction(id));
+			// bars.updateActionBars();
+		}
+
+		protected void configureOutlineViewer() {
+			getViewer().setEditDomain(editor.getEditDomain());
+			getViewer()
+					.setEditPartFactory(
+							new OutlinePartFactory(
+									PasserelleModelMultiPageEditor.this));
+			ContextMenuProvider provider = new PasserelleContextMenuProvider(
+					getViewer(), editor.getActionRegistry());
+			getViewer().setContextMenu(provider);
+			getSite()
+					.registerContextMenu(
+							"com.isencia.passerelle.workbench.model.editor.ui.editor.outline.contextmenu", //$NON-NLS-1$  
+							provider, getSite().getSelectionProvider());
+			getViewer().setKeyHandler(editor.getCommonKeyHandler());
+			IToolBarManager tbm = getSite().getActionBars().getToolBarManager();
+			showOutlineAction = new Action() {
+				public void run() {
+					showPage(ID_OUTLINE);
+				}
+			};
+			showOutlineAction.setImageDescriptor(Activator
+					.getImageDescriptor("icons/outline.gif"));
+			// showOutlineAction.setToolTipText(LogicMessages.LogicEditor_outline_show_outline);
+			tbm.add(showOutlineAction);
+			showOverviewAction = new Action() {
+				public void run() {
+					showPage(ID_OVERVIEW);
+				}
+			};
+			showOverviewAction.setImageDescriptor(Activator
+					.getImageDescriptor("icons/overview.gif")); //$NON-NLS-1$
+			// showOverviewAction.setToolTipText(LogicMessages.LogicEditor_outline_show_overview);
+			tbm.add(showOverviewAction);
+			showPage(ID_OVERVIEW);
+		}
+
+		public void createControl(Composite parent) {
+			pageBook = new PageBook(parent, SWT.NONE);
+			outline = getViewer().createControl(pageBook);
+			overview = new Canvas(pageBook, SWT.NONE);
+			pageBook.showPage(outline);
+			configureOutlineViewer();
+			hookOutlineViewer();
+			initializeOutlineViewer();
+			// IActionBars bars = getSite().getActionBars();
+			// ActionRegistry ar = getActionRegistry();
+			// bars.setGlobalActionHandler(ActionFactory.COPY.getId(), ar
+			// .getAction(ActionFactory.COPY.getId()));
+			// bars.setGlobalActionHandler(ActionFactory.PASTE.getId(), ar
+			// .getAction(ActionFactory.PASTE.getId()));
+		}
+
+		public void dispose() {
+			unhookOutlineViewer();
+			if (thumbnail != null) {
+				thumbnail.deactivate();
+				thumbnail = null;
+			}
+			super.dispose();
+			outlinePage = null;
+		}
+
+		public Object getAdapter(Class type) {
+			if (type == ZoomManager.class)
+				return editor.getGraphicalViewer().getProperty(
+						ZoomManager.class.toString());
+			return null;
+		}
+
+		public Control getControl() {
+			return pageBook;
+		}
+
+		protected void hookOutlineViewer() {
+			editor.getSelectionSynchronizer().addViewer(getViewer());
+		}
+
+		protected void initializeOutlineViewer() {
+			setContents(getDiagram());
+		}
+
+		public void switchThumbnail(int newPageIndex) {
+//				index = getActivePage();
+
+				editor = (PasserelleModelEditor) getEditor(newPageIndex);
+				thumbnail = thumbnails.get(editor);
+				GraphicalViewer viewer = editor.getGraphicalViewer();
+				if (lws == null) {
+					lws = new LightweightSystem(overview);
+				}
+				if (thumbnail != null) {
+					lws.setContents(thumbnail);
+				} else {
+
+					thumbnail = createThumbnail(lws, viewer);
+					thumbnails.put(editor, thumbnail);
+				}
+
+		}
+
+		protected void initializeOverview() {
+			editor = (PasserelleModelEditor) getEditor(0);
+			thumbnail = thumbnails.get(editor);
+			lws = new LightweightSystem(overview);
+
+			GraphicalViewer viewer = editor.getGraphicalViewer();
+			thumbnail = createThumbnail(lws, viewer);
+			thumbnails.put(editor, thumbnail);
+
+		}
+
+		private Thumbnail createThumbnail(LightweightSystem lws,
+				GraphicalViewer viewer) {
+			if (editor != null)
+				viewer = editor.getGraphicalViewer();
+			RootEditPart rep = viewer.getRootEditPart();
+
+			if (rep instanceof ScalableFreeformRootEditPart) {
+				ScalableFreeformRootEditPart root = (ScalableFreeformRootEditPart) rep;
+				thumbnail = new ScrollableThumbnail((Viewport) root.getFigure());
+				thumbnail.setBorder(new MarginBorder(3));
+				thumbnail.setSource(root
+						.getLayer(LayerConstants.PRINTABLE_LAYERS));
+				lws.setContents(thumbnail);
+
+				disposeListener = new DisposeListener() {
+					public void widgetDisposed(DisposeEvent e) {
+						if (thumbnail != null) {
+							thumbnail.deactivate();
+							thumbnail = null;
+						}
+					}
+				};
+				editor.getEditor().addDisposeListener(disposeListener);
+				return thumbnail;
+			}
+			return null;
+		}
+
+		public void setContents(Object contents) {
+			getViewer().setContents(contents);
+		}
+
+		protected void showPage(int id) {
+			if (id == ID_OUTLINE) {
+				showOutlineAction.setChecked(true);
+				showOverviewAction.setChecked(false);
+				pageBook.showPage(outline);
+				if (thumbnail != null)
+					thumbnail.setVisible(false);
+			} else if (id == ID_OVERVIEW) {
+				if (thumbnail == null)
+					initializeOverview();
+				showOutlineAction.setChecked(false);
+				showOverviewAction.setChecked(true);
+				pageBook.showPage(overview);
+				thumbnail.setVisible(true);
+			}
+		}
+
+		protected void unhookOutlineViewer() {
+			editor.getSelectionSynchronizer().removeViewer(getViewer());
+			if (disposeListener != null && editor.getEditor() != null
+					&& !editor.getEditor().isDisposed())
+				editor.getEditor().removeDisposeListener(disposeListener);
+		}
 	}
 
 }
