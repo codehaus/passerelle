@@ -70,7 +70,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	public void doExecute() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
 		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
-				"create",child) {
+				"create") {
 			@Override
 			protected void _execute() throws Exception {
 				Class<?> newClass = null;
@@ -128,6 +128,11 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 							name = generateUniqueTextAttributeName(model
 									.getName(), parentModel, 0,
 									TextAttribute.class);
+						} else if (model instanceof TypedIOPort) {
+							name = generateUniquePortName(model
+									.getName(),
+									(CompositeEntity) parentModel, 0);
+
 						} else if (model instanceof ComponentEntity) {
 							name = ModelUtils.findUniqueName(
 									(CompositeEntity) parentModel, model
@@ -144,6 +149,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
 						ModelUtils.setLocation(child, location);
 					}
+					setChild(child);
 				} catch (Exception e) {
 					getLogger().error("Unable to create component", e);
 				}
