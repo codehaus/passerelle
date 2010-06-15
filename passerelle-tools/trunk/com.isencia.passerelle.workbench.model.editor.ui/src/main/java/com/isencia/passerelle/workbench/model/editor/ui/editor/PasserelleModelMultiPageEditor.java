@@ -459,7 +459,7 @@ public boolean visit(IResourceDelta delta) {
 		getSite().getPage().closeEditor(PasserelleModelMultiPageEditor.this, save);
 	}
 	public void dispose() {
-		super.dispose();
+		
 		getSite().getWorkbenchWindow().getPartService().removePartListener(
 				partListener);
 		partListener = null;
