@@ -3,17 +3,28 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
+
 import ptolemy.actor.CompositeActor;
 
 public class OutlinePartFactory implements EditPartFactory {
-	public OutlinePartFactory(CompositeActor actor) {
+	private PasserelleModelMultiPageEditor editor;
+
+	public OutlinePartFactory(PasserelleModelMultiPageEditor editor) {
 		super();
-		this.actor = actor;
+		this.editor = editor;
 	}
-	private CompositeActor actor;
+
 	public EditPart createEditPart(EditPart context, Object model) {
+		if (context == null && editor != null) {
+			PasserelleModelEditor page = (PasserelleModelEditor) editor
+					.getEditor(editor.getActivePage());
+			if (page.getActor() != null)
+				model = page.getActor();
+		}
 		if (model instanceof CompositeActor)
-			return new OutlineContainerEditPart(context, model,actor);
+			return new OutlineContainerEditPart(context, model);
 		return new OutlineEditPart(model);
 	}
 

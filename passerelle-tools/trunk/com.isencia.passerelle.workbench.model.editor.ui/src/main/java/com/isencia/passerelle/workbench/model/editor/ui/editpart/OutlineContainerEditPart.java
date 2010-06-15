@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.eclipse.gef.EditPart;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
+
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.data.expr.Parameter;
@@ -18,14 +21,13 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
 public class OutlineContainerEditPart extends OutlineEditPart {
 	private boolean imageSet;
 	private EditPart context;
-	private CompositeActor actor;
+
 	/**
 	 * Constructor, which initializes this using the model given as input.
 	 */
-	public OutlineContainerEditPart(EditPart context, Object model,CompositeActor actor) {
+	public OutlineContainerEditPart(EditPart context, Object model) {
 		super(model);
 		this.context = context;
-		this.actor = actor;
 	}
 
 	/**
@@ -72,22 +74,20 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 	 */
 	protected List getModelChildren() {
 		ArrayList children = new ArrayList();
-		CompositeActor actor = getModelDiagram();
-		if (this.actor == null){
-		    actor = getModelDiagram();
-		}else{
-			actor = this.actor;
-		}
 		
+		CompositeActor actor = getModelDiagram();
+//		if (page != null && page.getActor()!=null) {
+//			actor = page.getActor();
+//		}
+
 		children.addAll(actor.attributeList(Parameter.class));
 		children.addAll(actor.attributeList(TextAttribute.class));
 		children.addAll(actor.attributeList(IOPort.class));
 		children.addAll(actor.inputPortList());
 		children.addAll(actor.outputPortList());
-		Enumeration enumeration = actor.getEntities();
-		while (enumeration.hasMoreElements()) {
-			children.add(enumeration.nextElement());
-		}
+		List entities = actor.entityList();
+		if (entities != null)
+			children.addAll(entities);
 		// Only show children 1 level deep
 		boolean showChildren = !(context != null && context.getParent() != null);
 		if (!showChildren)
@@ -95,9 +95,6 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 
 		if (actor.isOpaque())
 			children.add(actor.getDirector());
-		List entities = actor.entityList();
-		if (entities != null)
-			children.addAll(entities);
 
 		return children;
 	}
