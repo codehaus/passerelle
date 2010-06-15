@@ -2,12 +2,12 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 public class OutlineEditPart extends
 		org.eclipse.gef.editparts.AbstractTreeEditPart implements
 		ValueListener, ChangeListener {
-	private Set<String> modelImages = new HashSet<String>();
+	private HashMap<String,Image> modelImages = new HashMap<String,Image>();
 	private static Logger logger = LoggerFactory
 			.getLogger(OutlineEditPart.class);
 
@@ -215,9 +215,13 @@ public class OutlineEditPart extends
 		getLogger().error("Error during execution of ChangeRequest", exception);
 	}
 	protected void setWidgetImage(ImageDescriptor image,NamedObj obj) {
-		if (!modelImages.contains(obj.getClass().getName())){
-			setWidgetImage(image.createImage());
-			modelImages.add(obj.getClass().getName());
+		if (modelImages.get(obj.getClass().getName())==null){
+			Image createImage = image.createImage();
+			setWidgetImage(createImage);
+			modelImages.put(obj.getClass().getName(),createImage);
+		}else{
+//			modelImages.get(obj.getClass().getName()).
+			setWidgetImage(modelImages.get(obj.getClass().getName()));
 		}
 	}
 }
