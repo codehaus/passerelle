@@ -119,6 +119,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 	private CompositeActor actor;
 
+	public CompositeActor getActor() {
+		return actor;
+	}
+
 	protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
 	protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
 	protected static final String PALETTE_STATE = "Palette state"; //$NON-NLS-1$
@@ -601,7 +605,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 		protected void configureOutlineViewer() {
 			getViewer().setEditDomain(getEditDomain());
-			getViewer().setEditPartFactory(new OutlinePartFactory(actor));
+			getViewer().setEditPartFactory(
+					new OutlinePartFactory(
+							(PasserelleModelMultiPageEditor) getParent()));
 			ContextMenuProvider provider = new PasserelleContextMenuProvider(
 					getViewer(), getActionRegistry());
 			getViewer().setContextMenu(provider);
