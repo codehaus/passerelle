@@ -30,7 +30,14 @@ public abstract class ModelChangeRequest extends ChangeRequest {
 	}
 
 	public NamedObj getContainer() {
+		if (child != null && child.getContainer() != null) {
+			return child.getContainer();
+		}
 		return container;
+	}
+
+	public void setChild(NamedObj child) {
+		this.child = child;
 	}
 
 	public ModelChangeRequest(Class<?> type, Object source, String description) {
