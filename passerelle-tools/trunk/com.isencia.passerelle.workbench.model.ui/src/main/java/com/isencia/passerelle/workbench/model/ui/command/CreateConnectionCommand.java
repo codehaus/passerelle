@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.TypedCompositeActor;
+import ptolemy.actor.TypedIOPort;
 import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
@@ -51,10 +52,14 @@ public class CreateConnectionCommand extends Command {
 	public void doExecute() {
 		if (source != null && target != null) {
 			CompositeEntity temp = null;
-			if (source.getContainer() instanceof TypedCompositeActor) {
+			if (!(source instanceof TypedIOPort)
+					&& source.getContainer() instanceof TypedCompositeActor) {
 				temp = (CompositeEntity) source.getContainer();
 			} else {
-				temp = (CompositeEntity) source.getContainer().getContainer();
+				if (source.getContainer() != null) {
+					temp = (CompositeEntity) source.getContainer()
+							.getContainer();
+				}
 			}
 			if (temp != null) {
 				container = temp;
