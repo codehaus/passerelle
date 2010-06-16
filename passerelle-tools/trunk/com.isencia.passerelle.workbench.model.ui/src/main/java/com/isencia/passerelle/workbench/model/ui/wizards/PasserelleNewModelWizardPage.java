@@ -1,9 +1,11 @@
 package com.isencia.passerelle.workbench.model.ui.wizards;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
@@ -94,6 +96,7 @@ public class PasserelleNewModelWizardPage extends WizardPage {
 	 */
 
 	private void initialize() {
+		IContainer container = null;
 		if (selection != null && selection.isEmpty() == false
 				&& selection instanceof IStructuredSelection) {
 			IStructuredSelection ssel = (IStructuredSelection) selection;
@@ -101,7 +104,7 @@ public class PasserelleNewModelWizardPage extends WizardPage {
 				return;
 			Object obj = ssel.getFirstElement();
 			if (obj instanceof IResource) {
-				IContainer container;
+
 				if (obj instanceof IContainer)
 					container = (IContainer) obj;
 				else
@@ -109,7 +112,28 @@ public class PasserelleNewModelWizardPage extends WizardPage {
 				containerText.setText(container.getFullPath().toString());
 			}
 		}
-		fileText.setText("new_model.moml");
+
+		fileText.setText(generateUniqueFileName(container));
+	}
+
+	private String generateUniqueFileName(IContainer container) {
+		StringBuffer buffer = new StringBuffer("new_model");
+		if (container != null) {
+			checkFileExists(container, buffer, 1);
+		}
+		buffer.append(".moml");
+		return buffer.toString();
+	}
+
+	private void checkFileExists(IContainer container, StringBuffer buffer,
+			int index) {
+		IFile file = container.getFile(new Path(buffer.toString() + ".moml"));
+		if (file.exists()) {
+			buffer.append("(");
+			buffer.append(index++);
+			buffer.append(")");
+			checkFileExists(container, buffer, index);
+		}
 	}
 
 	/**
