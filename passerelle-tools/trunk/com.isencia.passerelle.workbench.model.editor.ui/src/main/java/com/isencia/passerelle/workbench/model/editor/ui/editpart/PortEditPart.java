@@ -23,6 +23,7 @@ import ptolemy.kernel.util.NamedObj;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundIOFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundInputFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundOutputFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 /**
@@ -59,9 +60,9 @@ public class PortEditPart extends ActorEditPart {
 	@Override
 	protected IFigure createFigure() {
 		if (isInput)
-			return new CompoundInputFigure(((IOPort) getModel()).getName());
+			return new CompoundInputFigure(((IOPort) getModel()).getName(),createImage(PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.InputIOPort")));
 		else
-			return new CompoundOutputFigure(((IOPort) getModel()).getName());
+			return new CompoundOutputFigure(((IOPort) getModel()).getName(),createImage(PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.OutputIOPort")));
 	}
 
 	public CompoundIOFigure getComponentFigure() {

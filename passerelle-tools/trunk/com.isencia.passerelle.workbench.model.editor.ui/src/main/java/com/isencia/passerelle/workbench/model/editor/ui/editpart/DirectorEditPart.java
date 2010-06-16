@@ -47,7 +47,7 @@ public class DirectorEditPart extends AbstractBaseEditPart {
 	protected IFigure createFigure() {
 		Director directorModel = getDirectorModel();
 
-		return new DirectorFigure(directorModel.getDisplayName()!=null?directorModel.getDisplayName():"Director",IMAGE_DESCRIPTOR_DIRECTOR.createImage());
+		return new DirectorFigure(directorModel.getDisplayName()!=null?directorModel.getDisplayName():"Director",createImage(IMAGE_DESCRIPTOR_DIRECTOR));
 	}
 
 	/**

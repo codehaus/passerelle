@@ -2,7 +2,6 @@ package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
 import java.util.ArrayList;
 import java.util.EventObject;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -39,7 +38,6 @@ import org.eclipse.gef.ui.actions.StackAction;
 import org.eclipse.gef.ui.actions.ToggleGridAction;
 import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
-import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteViewer;
@@ -53,6 +51,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -79,6 +78,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
@@ -299,8 +299,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		getGraphicalControl().addListener(SWT.Deactivate, listener);
 	}
 
+	protected EditPartFactory editPartFactory;
+
 	protected EditPartFactory createEditPartFactory() {
-		return new EditPartFactory(getParent(), container);
+		return editPartFactory = new EditPartFactory(getParent(), container);
 	}
 
 	protected CustomPalettePage createPalettePage() {
@@ -331,6 +333,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	public void dispose() {
 		((IFileEditorInput) getEditorInput()).getFile().getWorkspace()
 				.removeResourceChangeListener(resourceListener);
+		for (AbstractBaseEditPart part : editPartFactory.getParts()) {
+			for (Image image : part.getImages())
+				image.dispose();
+		}
 		super.dispose();
 	}
 
@@ -646,21 +652,21 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		}
 	}
 
-//	protected void updateActions(List actionIds) {
-//		super.updateActions(actionIds);
-//		int activePage = getParent().getActivePage();
-//		ActionRegistry registry = getActionRegistry();
-//		if (activePage != -1) {
-//			PasserelleModelEditor editor = (PasserelleModelEditor) getParent()
-//					.getEditor(activePage);
-//			registry = editor.getActionRegistry();
-//		}
-//		Iterator iter = actionIds.iterator();
-//
-//		while (iter.hasNext()) {
-//			IAction action = registry.getAction(iter.next());
-//			if (action instanceof UpdateAction)
-//				((UpdateAction) action).update();
-//		}
-//	}
+	// protected void updateActions(List actionIds) {
+	// super.updateActions(actionIds);
+	// int activePage = getParent().getActivePage();
+	// ActionRegistry registry = getActionRegistry();
+	// if (activePage != -1) {
+	// PasserelleModelEditor editor = (PasserelleModelEditor) getParent()
+	// .getEditor(activePage);
+	// registry = editor.getActionRegistry();
+	// }
+	// Iterator iter = actionIds.iterator();
+	//
+	// while (iter.hasNext()) {
+	// IAction action = registry.getAction(iter.next());
+	// if (action instanceof UpdateAction)
+	// ((UpdateAction) action).update();
+	// }
+	// }
 }

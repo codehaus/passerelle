@@ -1,11 +1,16 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +31,11 @@ import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundInputFigu
 import com.isencia.passerelle.workbench.model.editor.ui.figure.InputPortFigure;
 
 public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
+	private Set<AbstractBaseEditPart> parts = new HashSet<AbstractBaseEditPart>();
+
+	public Set<AbstractBaseEditPart> getParts() {
+		return parts;
+	}
 
 	public MultiPageEditorPart getParent() {
 		return parent;
@@ -41,7 +51,8 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		this.parent = parent;
 	}
 
-	public EditPartFactory(PasserelleModelMultiPageEditor parent, CompositeActor actor) {
+	public EditPartFactory(PasserelleModelMultiPageEditor parent,
+			CompositeActor actor) {
 		super();
 		this.parent = parent;
 		this.actor = actor;
@@ -63,7 +74,7 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		} else if (model instanceof TextAttribute) {
 			child = new CommentEditPart();
 		} else if (model instanceof IOPort) {
-			if (((IOPort)model).isInput())
+			if (((IOPort) model).isInput())
 				child = new PortEditPart(true);
 			else
 				child = new PortEditPart(false);
@@ -78,6 +89,7 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 			} else {
 				child = new CompositeActorEditPart(!(context != null && context
 						.getParent() != null), parent);
+
 			}
 		} else if (model instanceof TypedAtomicActor) {
 			if (model instanceof Source)
@@ -93,6 +105,9 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		} else {
 			getLogger().error(
 					"Unable to create EditPart, requested model not supported");
+		}
+		if (child instanceof AbstractBaseEditPart) {
+			parts.add((AbstractBaseEditPart) child);
 		}
 		return child;
 	}

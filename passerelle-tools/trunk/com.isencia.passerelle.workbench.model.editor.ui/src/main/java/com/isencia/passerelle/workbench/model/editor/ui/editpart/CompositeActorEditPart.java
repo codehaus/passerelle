@@ -2,8 +2,10 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.draw2d.Clickable;
@@ -25,7 +27,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +42,6 @@ import ptolemy.kernel.Port;
 import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.NamedObj;
-import ptolemy.moml.filter.AddIcon;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.WorkbenchUtility;
@@ -207,8 +208,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	 * @return Figure.
 	 */
 	protected IFigure createFigure() {
-		ImageFigure drillDownImageFigure = new ImageFigure(
-				CompositeActorEditPart.IMAGE_DESCRIPTOR_DRILLDOWN.createImage());
+		ImageFigure drillDownImageFigure = new ImageFigure(createImage(IMAGE_DESCRIPTOR_DRILLDOWN));
 		drillDownImageFigure.setAlignment(PositionConstants.SOUTH);
 		drillDownImageFigure.setBorder(new MarginBorder(0, 0, 5, 0));
 
@@ -237,8 +237,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 		Actor actorModel = getActorModel();
 		CompositeActorFigure actorFigure = new CompositeActorFigure(actorModel
-				.getDisplayName(), IMAGE_DESCRIPTOR_COMPOSITEACTOR
-				.createImage(), button);
+				.getDisplayName(), createImage(IMAGE_DESCRIPTOR_COMPOSITEACTOR), button);
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
 		if (inputPortList != null) {

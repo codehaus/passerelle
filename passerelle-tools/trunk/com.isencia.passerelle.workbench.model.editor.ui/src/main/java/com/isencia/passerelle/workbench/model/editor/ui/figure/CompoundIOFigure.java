@@ -1,15 +1,5 @@
 package com.isencia.passerelle.workbench.model.editor.ui.figure;
 
-import org.eclipse.draw2d.BorderLayout;
-import org.eclipse.draw2d.Clickable;
-import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ImageFigure;
-import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.Orientable;
-import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.draw2d.Triangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;

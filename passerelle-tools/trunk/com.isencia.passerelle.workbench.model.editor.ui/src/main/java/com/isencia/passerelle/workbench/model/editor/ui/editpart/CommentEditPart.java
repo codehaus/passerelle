@@ -9,6 +9,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import ptolemy.kernel.util.Attribute;
@@ -107,7 +108,7 @@ public class CommentEditPart extends AbstractNodeEditPart {
 		if (attribute instanceof StringAttribute) {
 			name = ((StringAttribute) attribute).getExpression();
 		}
-		return new CommentFigure(name, IMAGE_COMMENT.createImage());
+		return new CommentFigure(name, createImage(IMAGE_COMMENT));
 	}
 
 	public CommentFigure getCommentFigure() {

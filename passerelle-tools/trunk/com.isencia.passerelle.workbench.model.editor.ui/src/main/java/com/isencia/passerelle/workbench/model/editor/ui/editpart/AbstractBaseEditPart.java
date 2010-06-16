@@ -1,5 +1,8 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -9,18 +12,18 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartListener;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.NodeListener;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.INameable;
-import com.isencia.passerelle.workbench.model.editor.ui.figure.AbstractBaseFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
@@ -37,6 +40,17 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 abstract public class AbstractBaseEditPart extends
 		org.eclipse.gef.editparts.AbstractGraphicalEditPart implements
 		ChangeListener {
+	protected Set<Image> images = new HashSet<Image>();
+
+	public Set<Image> getImages() {
+		return images;
+	}
+
+	protected Image createImage(ImageDescriptor imageDescriptor) {
+		Image image = imageDescriptor.createImage();
+		images.add(image);
+		return image;
+	}
 
 	public AbstractBaseEditPart() {
 		super();
@@ -228,9 +242,7 @@ abstract public class AbstractBaseEditPart extends
 				}
 			} else if (DeleteComponentCommand.class.equals(type)
 					|| CreateConnectionCommand.class.equals(type)) {
-				
-			
-				
+
 				try {
 					refreshSourceConnections();
 					refreshTargetConnections();
@@ -242,7 +254,7 @@ abstract public class AbstractBaseEditPart extends
 	}
 
 	protected void specificTreatment(Object source) {
-		
+
 	}
 
 	protected String getName(Object source) {

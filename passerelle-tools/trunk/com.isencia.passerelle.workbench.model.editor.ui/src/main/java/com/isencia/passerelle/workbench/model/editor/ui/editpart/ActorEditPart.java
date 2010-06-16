@@ -18,6 +18,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +91,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 					refreshSourceConnections();
 					refreshTargetConnections();
 				} catch (Exception e) {
-				
+
 				}
 			}
 		}
@@ -126,12 +127,8 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 */
 	protected IFigure createFigure() {
 		Actor actorModel = getActorModel();
-		ImageDescriptor imageDescriptor = PaletteBuilder.getIcon(actorModel.getClass().getName());
-		if (imageDescriptor == null){
-			imageDescriptor = IMAGE_DESCRIPTOR_ACTOR;
-		}
 		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(),
-				imageDescriptor.createImage());
+				createImage(IMAGE_DESCRIPTOR_ACTOR));
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
 		if (inputPortList != null) {
