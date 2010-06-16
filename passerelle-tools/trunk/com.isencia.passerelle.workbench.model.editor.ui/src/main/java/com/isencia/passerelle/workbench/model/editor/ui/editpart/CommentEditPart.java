@@ -2,14 +2,16 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
+import org.eclipse.gef.RequestConstants;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import ptolemy.kernel.util.Attribute;
@@ -32,7 +34,8 @@ import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 public class CommentEditPart extends AbstractNodeEditPart {
 
 	public final static ImageDescriptor IMAGE_COMMENT = Activator
-			.getImageDescriptor("com.isencia.passerelle.actor","icons/comment.png");
+			.getImageDescriptor("com.isencia.passerelle.actor",
+					"icons/comment.png");
 
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
@@ -95,6 +98,8 @@ public class CommentEditPart extends AbstractNodeEditPart {
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 				new ComponentNodeDeletePolicy());
+//		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
+//				new CommentDirectEditPolicy());
 	}
 
 	/**
@@ -167,4 +172,14 @@ public class CommentEditPart extends AbstractNodeEditPart {
 		return null;
 	}
 
+	private LogicLabelEditManager manager;
+
+	public void performRequest(Request request) {
+//		if (request.getType() == RequestConstants.REQ_DIRECT_EDIT) {
+//			if (manager == null)
+//				manager = new LogicLabelEditManager(this, TextCellEditor.class,
+//						new LabelCellEditorLocator());
+//			manager.show();
+//		}
+	}
 }
