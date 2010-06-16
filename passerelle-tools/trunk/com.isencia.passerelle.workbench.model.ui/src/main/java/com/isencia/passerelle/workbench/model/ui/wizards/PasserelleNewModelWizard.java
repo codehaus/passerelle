@@ -101,7 +101,8 @@ public class PasserelleNewModelWizard extends Wizard implements INewWizard {
 		try {
 			InputStream stream = openContentStream();
 			if (file.exists()) {
-				file.setContents(stream, true, true, monitor);
+				throwCoreException("File \"" + fileName + "\" already exists in container");
+//				file.setContents(stream, true, true, monitor);
 			} else {
 				file.create(stream, true, monitor);
 			}
