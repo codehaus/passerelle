@@ -66,8 +66,7 @@ public class SetConstraintCommand extends org.eclipse.gef.commands.Command {
 	}
 
 	public void undo() {
-		// Perform Change in a ChangeRequest so that all Listeners are notified
-		model.requestChange(new ModelChangeRequest(this.getClass(), model, "setLocation"){
+		model.requestChange(new ModelChangeRequest(this.getClass(), model, "refresh"){
 			@Override
 			protected void _execute() throws Exception {
 				ModelUtils.setLocation(model, oldPos);

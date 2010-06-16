@@ -13,19 +13,19 @@ import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.ComponentPort;
-import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.Relation;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class PasteNodeCommand extends Command {
-	private CompositeEntity actor;
+	private IPasserelleMultiPageEditor editor;
 
-	public PasteNodeCommand() {
+	public PasteNodeCommand(IPasserelleMultiPageEditor editor) {
 		super();
-
+		this.editor = editor;
 	}
 
 	private HashMap<Object, org.eclipse.gef.commands.Command> list = new HashMap<Object, org.eclipse.gef.commands.Command>();
@@ -64,6 +64,7 @@ public class PasteNodeCommand extends Command {
 		if (!canExecute())
 			return;
 		ArrayList bList = (ArrayList) Clipboard.getDefault().getContents();
+		CompositeActor selectedContainer = editor.getSelectedContainer();
 
 		Iterator<Object> it = bList.iterator();
 		list.clear();
@@ -72,16 +73,9 @@ public class PasteNodeCommand extends Command {
 				Object o = it.next();
 				if (o instanceof NamedObj) {
 					NamedObj child = (NamedObj) o;
-					CreateComponentCommand createCommand = null;
-					if (actor instanceof CompositeActor) {
-						createCommand = new CreateComponentCommand();
-						createCommand.setActor((CompositeActor) actor);
-						createCommand.setModel(child);
-					} else {
-						createCommand = new CreateComponentCommand();
-						createCommand.setModel(child);
-					}
-					createCommand.setParent(getParent(actor));
+					CreateComponentCommand createCommand = new CreateComponentCommand(editor);
+					createCommand.setModel(child);
+					createCommand.setParent(selectedContainer);
 					createCommand.setChildType(child.getClass().getName());
 					double[] location = ModelUtils.getLocation(child);
 					createCommand.setLocation(new double[] { location[0] + 100,
@@ -107,7 +101,7 @@ public class PasteNodeCommand extends Command {
 					if (source != null && destination != null) {
 						CreateConnectionCommand connection = new CreateConnectionCommand(
 								source, destination);
-						connection.setContainer(actor);
+						connection.setContainer(selectedContainer);
 						connection.execute();
 						list.put(rel, connection);
 					}
@@ -144,10 +138,6 @@ public class PasteNodeCommand extends Command {
 			}
 		}
 		return null;
-	}
-
-	public void setActor(CompositeEntity actor) {
-		this.actor = actor;
 	}
 
 	private ComponentPort searchPort(NamedObj node, String name) {

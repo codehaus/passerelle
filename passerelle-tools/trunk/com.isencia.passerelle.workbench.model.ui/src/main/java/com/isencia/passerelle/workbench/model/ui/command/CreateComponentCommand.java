@@ -18,6 +18,7 @@ import ptolemy.kernel.util.StringAttribute;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
+import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
@@ -27,23 +28,19 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			.getLogger(CreateComponentCommand.class);
 
 	private String type;
-	private CompositeActor actor;
 	private NamedObj model;
 	private NamedObj parent;
 	private NamedObj child;
-
+	private IPasserelleMultiPageEditor editor;
 	public NamedObj getChild() {
 		return child;
 	}
 
 	private double[] location;
 
-	public CreateComponentCommand() {
+	public CreateComponentCommand(IPasserelleMultiPageEditor editor) {
 		super("CreateComponent");
-	}
-
-	public void setActor(CompositeActor actor) {
-		this.actor = actor;
+		this.editor = editor;
 	}
 
 	public void setModel(NamedObj model) {
@@ -57,7 +54,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	public boolean canExecute() {
 		if (("com.isencia.passerelle.actor.general.InputIOPort".equals(type) || "com.isencia.passerelle.actor.general.OutputIOPort"
 				.equals(type))
-				&& actor == null) {
+				&& parent!=null &&parent.getContainer() == null) {
 			return false;
 		}
 		return (type != null && parent != null);
@@ -74,9 +71,9 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			@Override
 			protected void _execute() throws Exception {
 				Class<?> newClass = null;
+				
 				try {
-					CompositeEntity parentModel = actor != null ? actor
-							: (CompositeEntity) parent;
+					CompositeEntity parentModel =(CompositeEntity)parent;
 					if (model == null) {
 						newClass = CreateComponentCommand.class
 								.getClassLoader().loadClass(type);
@@ -150,6 +147,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 						ModelUtils.setLocation(child, location);
 					}
 					setChild(child);
+				
 				} catch (Exception e) {
 					getLogger().error("Unable to create component", e);
 				}
@@ -203,6 +201,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			@Override
 			protected void _execute() throws Exception {
 				getLogger().debug("Redo create component");
+				editor.selectPage((CompositeActor)parent);
 				if (child instanceof NamedObj) {
 					ComponentUtility.setContainer(child, parent);
 
@@ -226,6 +225,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 				"create") {
 			@Override
 			protected void _execute() throws Exception {
+				editor.selectPage((CompositeActor)parent);
 				if (child instanceof NamedObj) {
 					ComponentUtility.setContainer(child, null);
 				}
