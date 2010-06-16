@@ -79,9 +79,9 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 		if (editor != null) {
 			PasserelleModelEditor page = (PasserelleModelEditor) editor
 					.getEditor(editor.getActivePage());
-			if (page.getActor() != null
-					&& !containsActor(page.getActor(), actor))
-				actor = page.getActor();
+			if (page.getContainer() != null
+					&& !containsActor(page.getContainer(), actor))
+				actor = page.getContainer();
 		}
 
 		// if (page != null && page.getActor()!=null) {

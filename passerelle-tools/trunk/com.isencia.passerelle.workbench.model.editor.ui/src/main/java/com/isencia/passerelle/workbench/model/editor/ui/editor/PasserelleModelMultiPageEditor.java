@@ -28,16 +28,21 @@ import org.eclipse.draw2d.Viewport;
 import org.eclipse.draw2d.parts.ScrollableThumbnail;
 import org.eclipse.draw2d.parts.Thumbnail;
 import org.eclipse.gef.ContextMenuProvider;
+import org.eclipse.gef.DefaultEditDomain;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.RootEditPart;
+import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
+import org.eclipse.gef.ui.palette.PaletteViewer;
+import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -81,6 +86,8 @@ import ptolemy.moml.MoMLParser;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.OutlinePartFactory;
+import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
+import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
 
 /**
@@ -93,11 +100,19 @@ import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
  * </ul>
  */
 public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
-		implements IResourceChangeListener {
-
+		implements IPasserelleMultiPageEditor, IResourceChangeListener {
 
 	private RefreshCommand RefreshCommand;
 	protected OutlinePage outlinePage;
+
+	
+	public IPasserelleEditor getSelectedPage() {
+		return (IPasserelleEditor) getEditor(getActivePage());
+	}
+
+	public DefaultEditDomain getDefaultEditDomain() {
+			return new DefaultEditDomain(this);
+	}
 
 	private RefreshCommand getRefreshCommand() {
 		if (RefreshCommand == null) {
@@ -111,13 +126,12 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	private CompositeActor model = new CompositeActor();
 	protected boolean editorSaving = false;
 
-
 	public Object getAdapter(Class type) {
 		if (type == IContentOutlinePage.class) {
 			outlinePage = new OutlinePage(new TreeViewer());
 			return outlinePage;
 		}
-			return super.getAdapter(type);
+		return super.getAdapter(type);
 	}
 
 	private ResourceTracker resourceListener = new ResourceTracker();
@@ -158,7 +172,6 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 
 	public int addPage(TypedCompositeActor model, IEditorPart editor,
 			IEditorInput input) throws PartInitException {
-
 		int index = super.addPage(editor, input);
 		pages.add(model);
 		return index;
@@ -255,6 +268,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 * correspond to the nested editor's.
 	 */
 	public void doSaveAs() {
+		performSaveAs();
 		for (CompositeActor actor : pages) {
 			int index = getPageIndex(actor);
 			if (index != -1 && index != 0) {
@@ -354,7 +368,6 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		getRefreshCommand().execute();
 		if (outlinePage != null)
 			outlinePage.switchThumbnail(newPageIndex);
-
 
 	}
 
@@ -699,21 +712,21 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		}
 
 		public void switchThumbnail(int newPageIndex) {
-//				index = getActivePage();
+			// index = getActivePage();
 
-				editor = (PasserelleModelEditor) getEditor(newPageIndex);
-				thumbnail = thumbnails.get(editor);
-				GraphicalViewer viewer = editor.getGraphicalViewer();
-				if (lws == null) {
-					lws = new LightweightSystem(overview);
-				}
-				if (thumbnail != null) {
-					lws.setContents(thumbnail);
-				} else {
+			editor = (PasserelleModelEditor) getEditor(newPageIndex);
+			thumbnail = thumbnails.get(editor);
+			GraphicalViewer viewer = editor.getGraphicalViewer();
+			if (lws == null) {
+				lws = new LightweightSystem(overview);
+			}
+			if (thumbnail != null) {
+				lws.setContents(thumbnail);
+			} else {
 
-					thumbnail = createThumbnail(lws, viewer);
-					thumbnails.put(editor, thumbnail);
-				}
+				thumbnail = createThumbnail(lws, viewer);
+				thumbnails.put(editor, thumbnail);
+			}
 
 		}
 
@@ -783,6 +796,24 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 					&& !editor.getEditor().isDisposed())
 				editor.getEditor().removeDisposeListener(disposeListener);
 		}
+	}
+
+	@Override
+	public CompositeActor getSelectedContainer() {
+		IPasserelleEditor editor = getSelectedPage();
+		if (editor != null && editor.getContainer() != null) {
+			return editor.getContainer();
+		}
+		return getDiagram();
+	}
+
+	@Override
+	public void selectPage(CompositeActor actor) {
+		int index = getPageIndex(actor);
+		if (index != -1)
+			setActivePage(index);
+		else
+			setActivePage(0);
 	}
 
 }

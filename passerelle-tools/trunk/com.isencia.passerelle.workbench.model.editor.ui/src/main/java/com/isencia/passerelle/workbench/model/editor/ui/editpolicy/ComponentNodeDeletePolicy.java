@@ -21,13 +21,10 @@ import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 public class ComponentNodeDeletePolicy extends
 		org.eclipse.gef.editpolicies.ComponentEditPolicy {
 	private PasserelleModelMultiPageEditor multiPageEditor;
-	private DeleteComponentCommand deleteComponentCommand;
-	private DeleteComponentCommand getDeleteComponentCommand(){
-		if (deleteComponentCommand == null){
-			return deleteComponentCommand = new DeleteComponentCommand();
-		}
-		return deleteComponentCommand;
+	private DeleteComponentCommand getDeleteComponentCommand() {
+		return new DeleteComponentCommand();
 	}
+
 	public ComponentNodeDeletePolicy() {
 
 	}
@@ -41,14 +38,14 @@ public class ComponentNodeDeletePolicy extends
 		NamedObj child = (NamedObj) getHost().getModel();
 		Object parent = getHost().getParent().getModel();
 		DeleteComponentCommand deleteCmd = getDeleteComponentCommand();
-		if (multiPageEditor != null && child instanceof CompositeActor){
+		if (multiPageEditor != null && child instanceof CompositeActor) {
 			deleteCmd.setMultiPageEditor(multiPageEditor);
 			deleteCmd.emptyIndexList();
 			addCompositeActorIndex(child, deleteCmd);
 		}
 		deleteCmd.setParent((CompositeEntity) parent);
 		deleteCmd.setChild(child);
-		
+
 		return deleteCmd;
 	}
 

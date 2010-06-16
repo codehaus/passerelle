@@ -20,6 +20,7 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.actor.Sink;
 import com.isencia.passerelle.actor.Source;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundInputFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.InputPortFigure;
@@ -32,15 +33,15 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 
 	private static Logger logger = LoggerFactory
 			.getLogger(EditPartFactory.class);
-	protected MultiPageEditorPart parent;
+	protected PasserelleModelMultiPageEditor parent;
 	private CompositeActor actor;
 
-	public EditPartFactory(MultiPageEditorPart parent) {
+	public EditPartFactory(PasserelleModelMultiPageEditor parent) {
 		super();
 		this.parent = parent;
 	}
 
-	public EditPartFactory(MultiPageEditorPart parent, CompositeActor actor) {
+	public EditPartFactory(PasserelleModelMultiPageEditor parent, CompositeActor actor) {
 		super();
 		this.parent = parent;
 		this.actor = actor;

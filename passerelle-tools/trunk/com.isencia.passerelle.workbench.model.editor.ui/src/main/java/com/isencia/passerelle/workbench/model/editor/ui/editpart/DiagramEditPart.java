@@ -33,6 +33,7 @@ import org.eclipse.ui.part.MultiPageEditorPart;
 import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.util.ChangeRequest;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.DiagramXYLayoutEditPolicy;
 
 /**
@@ -46,10 +47,10 @@ public class DiagramEditPart extends ContainerEditPart implements
 		return actor;
 	}
 
-	private MultiPageEditorPart multiPageEditorPart;
+	private PasserelleModelMultiPageEditor multiPageEditorPart;
 	private CompositeActor actor;
 
-	public DiagramEditPart(MultiPageEditorPart parent, CompositeActor actor) {
+	public DiagramEditPart(PasserelleModelMultiPageEditor parent,CompositeActor actor) {
 		super(actor);
 		this.multiPageEditorPart = parent;
 		this.actor = actor;
@@ -80,7 +81,7 @@ public class DiagramEditPart extends ContainerEditPart implements
 				new RootComponentEditPolicy());
 		installEditPolicy(EditPolicy.LAYOUT_ROLE,
 				new DiagramXYLayoutEditPolicy((XYLayout) getContentPane()
-						.getLayoutManager(), actor));
+						.getLayoutManager(), multiPageEditorPart));
 
 		installEditPolicy("Snap Feedback", new SnapFeedbackPolicy()); //$NON-NLS-1$
 	}

@@ -2,6 +2,7 @@ package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
 import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
@@ -12,25 +13,16 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.FigureCanvas;
-import org.eclipse.draw2d.LightweightSystem;
-import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.draw2d.Viewport;
-import org.eclipse.draw2d.parts.ScrollableThumbnail;
-import org.eclipse.draw2d.parts.Thumbnail;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
-import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
-import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
-import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -47,26 +39,20 @@ import org.eclipse.gef.ui.actions.StackAction;
 import org.eclipse.gef.ui.actions.ToggleGridAction;
 import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
+import org.eclipse.gef.ui.actions.UpdateAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
-import org.eclipse.gef.ui.parts.ContentOutlinePage;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
-import org.eclipse.gef.ui.parts.TreeViewer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -80,8 +66,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
-import org.eclipse.ui.part.PageBook;
-import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
@@ -90,19 +74,18 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 
-import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.OutlinePartFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
+import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
 
 public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
-		implements ITabbedPropertySheetPageContributor {
+		implements IPasserelleEditor, ITabbedPropertySheetPageContributor {
 
 	@Override
 	public SelectionSynchronizer getSelectionSynchronizer() {
@@ -116,10 +99,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		return super.getGraphicalViewer();
 	}
 
-	private CompositeActor actor;
+	private CompositeActor container;
 
-	public CompositeActor getActor() {
-		return actor;
+	public CompositeActor getContainer() {
+		return container;
 	}
 
 	private RefreshCommand RefreshCommand;
@@ -139,15 +122,16 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	public PasserelleModelEditor(PasserelleModelMultiPageEditor parent,
 			CompositeActor actor, CompositeActor model) {
 		this(parent, model);
-		this.actor = actor;
+		this.container = actor;
 
 	}
 
 	public PasserelleModelEditor(PasserelleModelMultiPageEditor parent,
 			CompositeActor model) {
-		setEditDomain(new DefaultEditDomain(this));
 		this.parent = parent;
 		this.model = model;
+		setEditDomain(parent.getDefaultEditDomain());
+
 	}
 
 	private int index;
@@ -316,7 +300,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	protected EditPartFactory createEditPartFactory() {
-		return new EditPartFactory(getParent(), actor);
+		return new EditPartFactory(getParent(), container);
 	}
 
 	protected CustomPalettePage createPalettePage() {
@@ -362,7 +346,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	public Object getAdapter(Class type) {
-			if (type == ZoomManager.class)
+		if (type == ZoomManager.class)
 			return getGraphicalViewer().getProperty(
 					ZoomManager.class.toString());
 
@@ -427,8 +411,8 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	protected void handleActivationChanged(Event event) {
-//		getRefreshCommand().setModel(getDiagram());
-//		getRefreshCommand().execute();
+		// getRefreshCommand().setModel(getDiagram());
+		// getRefreshCommand().execute();
 	}
 
 	protected void initializeGraphicalViewer() {
@@ -506,9 +490,18 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		PasteNodeAction pasteAction = setPasteNodeAction();
 		registry.registerAction(pasteAction);
 		getSelectionActions().add(pasteAction.getId());
-		CloseEditorAction closeEditorAction = new CloseEditorAction(this);
+		CloseEditorAction closeEditorAction = new CloseEditorAction(this,
+				getParent());
 		registry.registerAction(closeEditorAction);
 		getSelectionActions().add(closeEditorAction.getId());
+
+		// action = new UndoAction(this);
+		// registry.registerAction(action);
+		// getStackActions().add(action.getId());
+		//		
+		// action = new RedoAction(this);
+		// registry.registerAction(action);
+		// getStackActions().add(action.getId());
 
 	}
 
@@ -584,7 +577,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		}
 	}
 
-
 	// This class listens to changes to the file system in the workspace, and
 	// makes changes accordingly.
 	// 1) An open, saved file gets deleted -> close the editor
@@ -654,4 +646,21 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		}
 	}
 
+//	protected void updateActions(List actionIds) {
+//		super.updateActions(actionIds);
+//		int activePage = getParent().getActivePage();
+//		ActionRegistry registry = getActionRegistry();
+//		if (activePage != -1) {
+//			PasserelleModelEditor editor = (PasserelleModelEditor) getParent()
+//					.getEditor(activePage);
+//			registry = editor.getActionRegistry();
+//		}
+//		Iterator iter = actionIds.iterator();
+//
+//		while (iter.hasNext()) {
+//			IAction action = registry.getAction(iter.next());
+//			if (action instanceof UpdateAction)
+//				((UpdateAction) action).update();
+//		}
+//	}
 }

@@ -2,22 +2,23 @@ package com.isencia.passerelle.workbench.model.editor.ui;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 
-import ptolemy.actor.CompositeActor;
-import ptolemy.kernel.CompositeEntity;
-
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 
 public class CloseEditorAction extends SelectionAction {
-	public CloseEditorAction(PasserelleModelEditor part) {
+	private PasserelleModelMultiPageEditor parent;
+	public CloseEditorAction(IEditorPart part,PasserelleModelMultiPageEditor parent) {
 		super(part);
+		this.parent = parent;
 		setLazyEnablementCalculation(true);
 	}
+
 	private final String icon = "icons/close_view.gif";
+
 	@Override
 	protected void init() {
 		super.init();
@@ -35,20 +36,12 @@ public class CloseEditorAction extends SelectionAction {
 
 	@Override
 	protected boolean calculateEnabled() {
-		return WorkbenchUtility.containsCompositeEntity(getSelectedObjects())!=null;
+		return WorkbenchUtility.containsCompositeEntity(getSelectedObjects()) != null;
 	}
 
 	@Override
 	public void run() {
-		PasserelleModelEditor workbenchPart = (PasserelleModelEditor) getWorkbenchPart();
-		CompositeEntity compositeEntity = WorkbenchUtility.containsCompositeEntity(getSelectedObjects());
-		if (compositeEntity !=null && workbenchPart.getParent() instanceof PasserelleModelMultiPageEditor){
-			PasserelleModelMultiPageEditor parent = (PasserelleModelMultiPageEditor)workbenchPart.getParent();
-			int index = parent.getPageIndex((CompositeActor)compositeEntity);
-			workbenchPart.getParent().removePage(index);
-		}
-	
-
+		parent.removePage(parent.getActivePage());
 	}
 
 	@Override

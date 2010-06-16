@@ -25,36 +25,29 @@ import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
 
 public class DiagramXYLayoutEditPolicy extends
 		org.eclipse.gef.editpolicies.XYLayoutEditPolicy {
 
-	private SetConstraintCommand setConstraintCommand;
-
 	private SetConstraintCommand getSetConstraintCommand() {
-		if (setConstraintCommand == null) {
-			return setConstraintCommand = new SetConstraintCommand();
-		}
-		return setConstraintCommand;
+		return new SetConstraintCommand();
 	}
-	private CreateComponentCommand createComponentCommand;
-	
+
 	private CreateComponentCommand getCreateComponentCommand() {
-		if (createComponentCommand == null) {
-			return createComponentCommand = new CreateComponentCommand();
-		}
-		return createComponentCommand;
+		return new CreateComponentCommand(editor);
 	}
 
 	private static Logger logger;
-	private CompositeActor actor;
+	private PasserelleModelMultiPageEditor editor;
 
-	public DiagramXYLayoutEditPolicy(XYLayout layout, CompositeActor actor) {
+	public DiagramXYLayoutEditPolicy(XYLayout layout,
+			PasserelleModelMultiPageEditor editor) {
 		super();
 		setXyLayout(layout);
-		this.actor = actor;
+		this.editor = editor;
 	}
 
 	Logger getLogger() {
@@ -100,7 +93,7 @@ public class DiagramXYLayoutEditPolicy extends
 	 */
 	protected Command createChangeConstraintCommand(
 			ChangeBoundsRequest request, EditPart child, Object constraint) {
-		SetConstraintCommand cmd= getSetConstraintCommand();
+		SetConstraintCommand cmd = getSetConstraintCommand();
 		cmd.setModel((NamedObj) child.getModel());
 		Rectangle rectangle = (Rectangle) constraint;
 		Point location = rectangle.getLocation();
@@ -226,8 +219,7 @@ public class DiagramXYLayoutEditPolicy extends
 		CreateComponentCommand create = null;
 		try {
 			create = getCreateComponentCommand();
-			create.setActor(actor);
-			create.setParent((ComponentEntity) getHost().getModel());
+			create.setParent(editor.getSelectedContainer());
 			String type = (String) request.getNewObject();
 			create.setChildType(type);
 			Rectangle constraint = (Rectangle) getConstraintFor(request);

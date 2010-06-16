@@ -12,13 +12,8 @@ import com.isencia.passerelle.workbench.model.ui.command.DeleteConnectionCommand
 public class RelationDeletePolicy extends
 		org.eclipse.gef.editpolicies.ConnectionEditPolicy {
 
-	private DeleteConnectionCommand deleteConnectionCommand;
-
 	private DeleteConnectionCommand getDeleteConnectionCommand() {
-		if (deleteConnectionCommand == null) {
-			return deleteConnectionCommand = new DeleteConnectionCommand();
-		}
-		return deleteConnectionCommand;
+		return new DeleteConnectionCommand();
 	}
 
 	protected Command getDeleteCommand(GroupRequest request) {
