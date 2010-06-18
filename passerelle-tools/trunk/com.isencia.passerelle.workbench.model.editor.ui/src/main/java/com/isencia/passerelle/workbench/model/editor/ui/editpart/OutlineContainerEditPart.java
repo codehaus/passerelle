@@ -115,7 +115,9 @@ public class OutlineContainerEditPart extends OutlineEditPart {
 				return true;
 			}
 			if (el instanceof CompositeActor) {
-				return containsActor((CompositeActor) el, child);
+				if (containsActor((CompositeActor) el, child)){
+					return true;
+				}
 			}
 		}
 		return false;

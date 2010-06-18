@@ -102,7 +102,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	private CompositeActor container;
 
 	public CompositeActor getContainer() {
-		return container;
+		if (container != null)
+			return container;
+		return model;
 	}
 
 	private RefreshCommand RefreshCommand;

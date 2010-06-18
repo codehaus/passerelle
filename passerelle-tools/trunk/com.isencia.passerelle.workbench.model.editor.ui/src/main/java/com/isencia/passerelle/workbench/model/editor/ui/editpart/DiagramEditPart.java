@@ -56,7 +56,7 @@ public class DiagramEditPart extends ContainerEditPart implements
 		this.actor = actor;
 	}
 
-	public MultiPageEditorPart getMultiPageEditorPart() {
+	public PasserelleModelMultiPageEditor getMultiPageEditorPart() {
 		return multiPageEditorPart;
 	}
 

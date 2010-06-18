@@ -2,10 +2,8 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.draw2d.Clickable;
@@ -27,7 +25,6 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,13 +57,13 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class CompositeActorEditPart extends ContainerEditPart implements
 		NodeEditPart {
-	private MultiPageEditorPart multiPageEditorPart;
+	private PasserelleModelMultiPageEditor multiPageEditorPart;
 
-	public MultiPageEditorPart getMultiPageEditorPart() {
+	public PasserelleModelMultiPageEditor getMultiPageEditorPart() {
 		return multiPageEditorPart;
 	}
 
-	public void setMultiPageEditorPart(MultiPageEditorPart multiPageEditorPart) {
+	public void setMultiPageEditorPart(PasserelleModelMultiPageEditor multiPageEditorPart) {
 		this.multiPageEditorPart = multiPageEditorPart;
 	}
 
@@ -124,7 +121,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	}
 
 	public CompositeActorEditPart(boolean showChildren,
-			MultiPageEditorPart multiPageEditorPart) {
+			PasserelleModelMultiPageEditor multiPageEditorPart) {
 		super(showChildren);
 		this.multiPageEditorPart = multiPageEditorPart;
 	}
@@ -154,7 +151,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 			if (source instanceof TypedIOPort
 					&& getModel().equals(((TypedIOPort) source).getContainer())){
 				Class<?> commandClazz = null;
-				if(changerequest.getDescription().equals("redo-delete")){
+				if(changerequest.getDescription().equals("undo-delete")){
 					updateFigure( CreateComponentCommand.class,
 							(NamedObj) source, (NamedObj) getModel());
 				}
@@ -215,7 +212,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 				new ComponentNodeDeletePolicy(
 						(PasserelleModelMultiPageEditor) getMultiPageEditorPart()));
 		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
-				new CompositeActorEditPolicy());
+				new CompositeActorEditPolicy(multiPageEditorPart));
 	}
 
 	/**

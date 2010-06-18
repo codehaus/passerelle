@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ptolemy.actor.Actor;
 import ptolemy.kernel.ComponentPort;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.CompositeActorEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
@@ -28,13 +29,18 @@ public class CompositeActorEditPolicy extends GraphicalNodeEditPolicy {
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(CompositeActorEditPolicy.class);
-
-	private CreateConnectionCommand getCreateConnectionCommand() {
-		return new CreateConnectionCommand();
+	private PasserelleModelMultiPageEditor editor;
+	public PasserelleModelMultiPageEditor getEditor() {
+		return editor;
 	}
 
-	public CompositeActorEditPolicy() {
+	private CreateConnectionCommand getCreateConnectionCommand() {
+		return new CreateConnectionCommand(editor);
+	}
+
+	public CompositeActorEditPolicy(PasserelleModelMultiPageEditor editor) {
 		super();
+		this.editor = editor;
 	}
 
 	public Logger getLogger() {
