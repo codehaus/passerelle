@@ -10,14 +10,26 @@ import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
+import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 
 public class CreateConnectionCommand extends Command {
-	public CreateConnectionCommand(ComponentPort source, ComponentPort target) {
+
+	private IPasserelleMultiPageEditor editor;
+
+	public CreateConnectionCommand(ComponentPort source, ComponentPort target,IPasserelleMultiPageEditor editor) {
 		super();
 		this.source = source;
 		this.target = target;
+		this.editor = editor;
+	}
+
+	public CreateConnectionCommand(IPasserelleMultiPageEditor editor) {
+		super();
+		this.editor = editor;
+
 	}
 
 	private final static Logger logger = LoggerFactory
@@ -37,9 +49,7 @@ public class CreateConnectionCommand extends Command {
 	protected ComponentPort source;
 	protected ComponentPort target;
 
-	public CreateConnectionCommand() {
-		super("CreateConnectionCommand");
-	}
+	
 
 	public boolean canExecute() {
 		return (source != null && target != null);
@@ -51,16 +61,7 @@ public class CreateConnectionCommand extends Command {
 
 	public void doExecute() {
 		if (source != null && target != null) {
-			CompositeEntity temp = null;
-			if (!(source instanceof TypedIOPort)
-					&& source.getContainer() instanceof TypedCompositeActor) {
-				temp = (CompositeEntity) source.getContainer();
-			} else {
-				if (source.getContainer() != null) {
-					temp = (CompositeEntity) source.getContainer()
-							.getContainer();
-				}
-			}
+			CompositeEntity temp = getContainer(source, target);
 			if (temp != null) {
 				container = temp;
 			}
@@ -83,6 +84,15 @@ public class CreateConnectionCommand extends Command {
 				}
 			});
 		}
+	}
+
+	private CompositeEntity getContainer(NamedObj source, NamedObj target) {
+
+		if (editor!=null && (source instanceof TypedIOPort || target instanceof TypedIOPort)){
+			return editor.getSelectedPage().getContainer();
+		}
+			
+		return (CompositeEntity) source.getContainer();
 	}
 
 	public String getLabel() {

@@ -100,7 +100,7 @@ public class PasteNodeCommand extends Command {
 					ComponentPort source = searchPort(rel.getSource());
 					if (source != null && destination != null) {
 						CreateConnectionCommand connection = new CreateConnectionCommand(
-								source, destination);
+								source, destination,editor);
 						connection.setContainer(selectedContainer);
 						connection.execute();
 						list.put(rel, connection);

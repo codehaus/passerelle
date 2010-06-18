@@ -6,4 +6,5 @@ public interface IPasserelleMultiPageEditor {
 	CompositeActor getSelectedContainer();
 	IPasserelleEditor getSelectedPage();
 	void selectPage(CompositeActor actor);
+	void removePage(int pageIndex);
 }

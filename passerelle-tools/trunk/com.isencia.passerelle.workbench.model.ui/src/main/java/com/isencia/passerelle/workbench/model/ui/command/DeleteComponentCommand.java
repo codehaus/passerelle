@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
-import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +24,14 @@ import ptolemy.kernel.util.Nameable;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
+import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils.ConnectionType;
 
 public class DeleteComponentCommand extends Command {
-	private MultiPageEditorPart multiPageEditor;
-	public void setMultiPageEditor(MultiPageEditorPart multiPageEditor) {
+	private IPasserelleMultiPageEditor multiPageEditor;
+	public void setMultiPageEditor(IPasserelleMultiPageEditor multiPageEditor) {
 		this.multiPageEditor = multiPageEditor;
 	}
 
@@ -165,7 +165,7 @@ public class DeleteComponentCommand extends Command {
 			if (!source.isEmpty() && !destination.isEmpty()) {
 				CreateConnectionCommand connection = new CreateConnectionCommand(
 						(ComponentPort) source.get(0),
-						(ComponentPort) destination.get(0));
+						(ComponentPort) destination.get(0),multiPageEditor);
 				connection.setContainer(parent);
 				connection.execute();
 			}
