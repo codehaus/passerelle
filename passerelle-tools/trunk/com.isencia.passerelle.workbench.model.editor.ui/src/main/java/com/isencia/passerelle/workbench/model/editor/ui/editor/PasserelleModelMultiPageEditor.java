@@ -716,6 +716,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 
 			editor = (PasserelleModelEditor) getEditor(newPageIndex);
 			thumbnail = thumbnails.get(editor);
+			thumbnail.setVisible(true);
 			GraphicalViewer viewer = editor.getGraphicalViewer();
 			if (lws == null) {
 				lws = new LightweightSystem(overview);
@@ -764,6 +765,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 					}
 				};
 				editor.getEditor().addDisposeListener(disposeListener);
+				
 				return thumbnail;
 			}
 			return null;

@@ -133,6 +133,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		super.changeExecuted(changerequest);
 
 		Object source = changerequest.getSource();
+
 		if (changerequest instanceof ModelChangeRequest) {
 			Class<?> type = ((ModelChangeRequest) changerequest).getType();
 			String childType = ((ModelChangeRequest) changerequest)
@@ -148,18 +149,33 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 			NamedObj child = ((ModelChangeRequest) changerequest).getChild();
 			NamedObj container = ((ModelChangeRequest) changerequest)
 					.getContainer();
-			if ((CreateComponentCommand.class.equals(type))
-					&& child instanceof IOPort
-					&& ModelUtils.isPortOfActor((IOPort) child,
-							(Actor) getModel())) {
-				updateFigure();
-				getFigure().repaint();
-			} else if (getModel() == container
-					&& (DeleteComponentCommand.class.equals(type) && child instanceof IOPort)) {
-				deletePort((IOPort) child);
-				getFigure().repaint();
-
+			updateFigure(type, child, container);
+		} else {
+			if (source instanceof TypedIOPort
+					&& getModel().equals(((TypedIOPort) source).getContainer())){
+				Class<?> commandClazz = null;
+				if(changerequest.getDescription().equals("redo-delete")){
+					updateFigure( CreateComponentCommand.class,
+							(NamedObj) source, (NamedObj) getModel());
+				}
+				
+				
 			}
+		}
+
+	}
+
+	private void updateFigure(Class<?> type, NamedObj child, NamedObj container) {
+		if ((CreateComponentCommand.class.equals(type))
+				&& child instanceof IOPort
+				&& ModelUtils.isPortOfActor((IOPort) child, (Actor) getModel())) {
+			 updateFigure();
+			 getFigure().repaint();
+		} else if (getModel() == container
+				&& (DeleteComponentCommand.class.equals(type) && child instanceof IOPort)) {
+			 deletePort((IOPort) child);
+			 getFigure().repaint();
+
 		}
 	}
 
@@ -208,7 +224,8 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	 * @return Figure.
 	 */
 	protected IFigure createFigure() {
-		ImageFigure drillDownImageFigure = new ImageFigure(createImage(IMAGE_DESCRIPTOR_DRILLDOWN));
+		ImageFigure drillDownImageFigure = new ImageFigure(
+				createImage(IMAGE_DESCRIPTOR_DRILLDOWN));
 		drillDownImageFigure.setAlignment(PositionConstants.SOUTH);
 		drillDownImageFigure.setBorder(new MarginBorder(0, 0, 5, 0));
 
@@ -237,7 +254,8 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 		Actor actorModel = getActorModel();
 		CompositeActorFigure actorFigure = new CompositeActorFigure(actorModel
-				.getDisplayName(), createImage(IMAGE_DESCRIPTOR_COMPOSITEACTOR), button);
+				.getDisplayName(),
+				createImage(IMAGE_DESCRIPTOR_COMPOSITEACTOR), button);
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
 		if (inputPortList != null) {

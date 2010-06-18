@@ -220,6 +220,7 @@ public class ActorFigure extends AbstractNodeFigure {
 		PortFigure figure = inputPortMap.get(portName);
 		if (figure != null){
 			inputPorts.remove(figure);
+			inputPortMap.remove(portName);
 			ConnectionAnchor anchor = getConnectionAnchor(portName);
 			if (anchor!=null){
 				getTargetConnectionAnchors().remove(anchor);
@@ -231,6 +232,7 @@ public class ActorFigure extends AbstractNodeFigure {
 		PortFigure figure = outputPortMap.get(portName);
 		if (figure != null){
 			outputPorts.remove(figure);
+			outputPortMap.remove(portName);
 			ConnectionAnchor anchor = getConnectionAnchor(portName);
 			if (anchor!=null){
 				getSourceConnectionAnchors().remove(anchor);
