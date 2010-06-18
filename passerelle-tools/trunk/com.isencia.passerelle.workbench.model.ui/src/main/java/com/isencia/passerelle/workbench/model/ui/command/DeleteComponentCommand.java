@@ -71,7 +71,7 @@ public class DeleteComponentCommand extends Command {
 		Nameable actor = (Nameable) model;
 
 		Iterator<?> sourceIterator = ModelUtils.getConnectedRelations(actor,
-				ConnectionType.SOURCE).iterator();
+				ConnectionType.SOURCE,true).iterator();
 		while (sourceIterator.hasNext()) {
 			IORelation relation = (IORelation) sourceIterator.next();
 			DeleteConnectionCommand cmd = generateDeleteConnectionCommand(
@@ -80,7 +80,7 @@ public class DeleteComponentCommand extends Command {
 			delecteConnectionCommands.add(cmd);
 		}
 		Iterator<?> targetIterator = ModelUtils.getConnectedRelations(actor,
-				ConnectionType.TARGET).iterator();
+				ConnectionType.TARGET,true).iterator();
 		while (targetIterator.hasNext()) {
 			IORelation relation = (IORelation) targetIterator.next();
 			DeleteConnectionCommand cmd = generateDeleteConnectionCommand(
