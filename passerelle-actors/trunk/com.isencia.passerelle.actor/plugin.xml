@@ -60,6 +60,21 @@
             id="ptolemy.vergil.kernel.attributes.TextAttribute"
             name="Comment">
       </actor>
+      <actor
+            class="com.isencia.passerelle.actor.general.InputIOPort"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            icon="icons/input.gif"
+            id="Input"
+            name="Input">
+      </actor>
+      <actor
+            class="com.isencia.passerelle.actor.general.OutputIOPort"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            icon="icons/output.gif"
+            id="Output"
+            name="Output">
+      </actor>
+      
    </extension>
    <extension
          point="com.isencia.passerelle.engine.actorGroups">
