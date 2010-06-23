@@ -11,7 +11,6 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.gef.AccessibleAnchorProvider;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.ConnectionEditPart;
-import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
@@ -36,6 +35,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ActorEditPoli
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.PortFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
@@ -117,7 +117,9 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 				new ComponentNodeDeletePolicy());
 		if (getParent() instanceof DiagramEditPart)
-			installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new ActorEditPolicy(((DiagramEditPart)getParent()).getMultiPageEditorPart()));
+			installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE,
+					new ActorEditPolicy(((DiagramEditPart) getParent())
+							.getMultiPageEditorPart()));
 	}
 
 	/**
@@ -127,8 +129,14 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 */
 	protected IFigure createFigure() {
 		Actor actorModel = getActorModel();
+		ImageDescriptor imageDescriptor = PaletteBuilder.getIcon(actorModel
+				.getClass().getName());
+		if (imageDescriptor == null) {
+			imageDescriptor = IMAGE_DESCRIPTOR_ACTOR;
+		}
+
 		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(),
-				createImage(IMAGE_DESCRIPTOR_ACTOR));
+				createImage(imageDescriptor));
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
 		if (inputPortList != null) {
