@@ -32,6 +32,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	private NamedObj parent;
 	private NamedObj child;
 	private IPasserelleMultiPageEditor editor;
+
 	public NamedObj getChild() {
 		return child;
 	}
@@ -54,7 +55,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	public boolean canExecute() {
 		if (("com.isencia.passerelle.actor.general.InputIOPort".equals(type) || "com.isencia.passerelle.actor.general.OutputIOPort"
 				.equals(type))
-				&& parent!=null &&parent.getContainer() == null) {
+				&& parent != null && parent.getContainer() == null) {
 			return false;
 		}
 		return (type != null && parent != null);
@@ -71,16 +72,21 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			@Override
 			protected void _execute() throws Exception {
 				Class<?> newClass = null;
-				
-				try {
-					CompositeEntity parentModel =(CompositeEntity)parent;
-					if (model == null) {
-						newClass = CreateComponentCommand.class
-								.getClassLoader().loadClass(type);
 
+				try {
+					CompositeEntity parentModel = (CompositeEntity) parent;
+					if (model == null) {
+						if (type
+								.equals("com.isencia.passerelle.actor.general.InputIOPort")
+								|| type
+										.equals("com.isencia.passerelle.actor.general.OutputIOPort")) {
+							newClass = TypedIOPort.class;
+						} else {
+							newClass = CreateComponentCommand.class
+									.getClassLoader().loadClass(type);
+						}
 						String name = ModelUtils.findUniqueName(parentModel,
 								newClass.getSimpleName());
-
 						Constructor constructor = null;
 						if (type
 								.equals("ptolemy.vergil.kernel.attributes.TextAttribute")) {
@@ -93,7 +99,6 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 													TextAttribute.class));
 							((StringAttribute) child.getAttribute("text"))
 									.setExpression("Edit text in parameters in properties view");
-
 						} else if (ModelUtils.isInputPort(type)) {
 							child = new TypedIOPort(
 									(CompositeEntity) parentModel,
@@ -107,7 +112,6 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 									generateUniquePortName(name,
 											(CompositeEntity) parentModel, 0),
 									false, true);
-
 						} else if (type.equals("ptolemy.actor.CompositeActor")) {
 							child = new TypedCompositeActor(
 									(CompositeEntity) parentModel, name);
@@ -126,8 +130,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 									.getName(), parentModel, 0,
 									TextAttribute.class);
 						} else if (model instanceof TypedIOPort) {
-							name = generateUniquePortName(model
-									.getName(),
+							name = generateUniquePortName(model.getName(),
 									(CompositeEntity) parentModel, 0);
 
 						} else if (model instanceof ComponentEntity) {
@@ -147,7 +150,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 						ModelUtils.setLocation(child, location);
 					}
 					setChild(child);
-				
+
 				} catch (Exception e) {
 					getLogger().error("Unable to create component", e);
 				}
@@ -201,7 +204,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 			@Override
 			protected void _execute() throws Exception {
 				getLogger().debug("Redo create component");
-				editor.selectPage((CompositeActor)parent);
+				editor.selectPage((CompositeActor) parent);
 				if (child instanceof NamedObj) {
 					ComponentUtility.setContainer(child, parent);
 
@@ -225,7 +228,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 				"create") {
 			@Override
 			protected void _execute() throws Exception {
-				editor.selectPage((CompositeActor)parent);
+				editor.selectPage((CompositeActor) parent);
 				if (child instanceof NamedObj) {
 					ComponentUtility.setContainer(child, null);
 				}
