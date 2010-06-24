@@ -801,7 +801,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 				editor.getEditor().removeDisposeListener(disposeListener);
 		}
 	}
-
+	// get the container of the page where the user is on this moment
 	@Override
 	public CompositeActor getSelectedContainer() {
 		IPasserelleEditor editor = getSelectedPage();

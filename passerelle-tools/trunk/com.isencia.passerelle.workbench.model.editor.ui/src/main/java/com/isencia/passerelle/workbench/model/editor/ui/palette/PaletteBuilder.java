@@ -87,11 +87,14 @@ public class PaletteBuilder {
 					if (imageDescriptor == null){
 						imageDescriptor = Activator.getImageDescriptor(icon);
 					}
+					if (classAttribute.equals("ptolemy.actor.TypedIOPort")){
+						actorIconMap.put(nameAttribute,imageDescriptor);
+					}
 					actorIconMap.put(classAttribute,imageDescriptor);
 					CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
 							nameAttribute,
 							nameAttribute,
-							new ClassTypeFactory(classAttribute),
+							new ClassTypeFactory(classAttribute,nameAttribute),
 							imageDescriptor, //$NON-NLS-1$
 							imageDescriptor//$NON-NLS-1$
 						);
@@ -205,12 +208,13 @@ public class PaletteBuilder {
 	
 	public static class ClassTypeFactory implements CreationFactory {
 
-		public ClassTypeFactory(String type) {
+		public ClassTypeFactory(String type,String name) {
 			this.type = type;
+			this.name = name;
 		}
 
 		public Object getNewObject() {
-			return type;
+			return name;
 		}
 
 		public Object getObjectType() {
@@ -218,5 +222,6 @@ public class PaletteBuilder {
 		}
 
 		private String type;
+		private String name;
 	}
 }

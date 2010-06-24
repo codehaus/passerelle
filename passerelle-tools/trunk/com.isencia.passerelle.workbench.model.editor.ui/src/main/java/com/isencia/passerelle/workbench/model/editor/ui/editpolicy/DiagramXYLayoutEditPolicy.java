@@ -219,9 +219,12 @@ public class DiagramXYLayoutEditPolicy extends
 		CreateComponentCommand create = null;
 		try {
 			create = getCreateComponentCommand();
+			
 			create.setParent(editor.getSelectedContainer());
-			String type = (String) request.getNewObject();
-			create.setChildType(type);
+			String name = (String) request.getNewObject();
+			String clazz = (String) request.getNewObjectType();
+			create.setClazz(clazz);
+			create.setName(name);
 			Rectangle constraint = (Rectangle) getConstraintFor(request);
 			create.setLocation(new double[] {
 					constraint.getLocation().preciseX(),
