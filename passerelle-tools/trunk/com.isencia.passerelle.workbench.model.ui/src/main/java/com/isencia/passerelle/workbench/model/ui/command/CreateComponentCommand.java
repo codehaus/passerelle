@@ -24,10 +24,16 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
+	private static final String DEFAULT_OUTPUT_PORT = "OutputPort";
+
+	private static final String DEFAULT_INPUT_PORT = "InputPort";
+
 	private static Logger logger = LoggerFactory
 			.getLogger(CreateComponentCommand.class);
 
-	private String type;
+	private String clazz;
+	private String name;
+
 	private NamedObj model;
 	private NamedObj parent;
 	private NamedObj child;
@@ -53,12 +59,12 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 	}
 
 	public boolean canExecute() {
-		if (("com.isencia.passerelle.actor.general.InputIOPort".equals(type) || "com.isencia.passerelle.actor.general.OutputIOPort"
-				.equals(type))
+		if (("com.isencia.passerelle.actor.general.InputIOPort".equals(clazz) || "com.isencia.passerelle.actor.general.OutputIOPort"
+				.equals(clazz))
 				&& parent != null && parent.getContainer() == null) {
 			return false;
 		}
-		return (type != null && parent != null);
+		return (clazz != null && parent != null);
 	}
 
 	public void execute() {
@@ -71,78 +77,43 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 				"create") {
 			@Override
 			protected void _execute() throws Exception {
-				Class<?> newClass = null;
-
 				try {
 					CompositeEntity parentModel = (CompositeEntity) parent;
+					String componentName = null;
 					if (model == null) {
-						if (type
-								.equals("com.isencia.passerelle.actor.general.InputIOPort")
-								|| type
-										.equals("com.isencia.passerelle.actor.general.OutputIOPort")) {
-							newClass = TypedIOPort.class;
-						} else {
-							newClass = CreateComponentCommand.class
-									.getClassLoader().loadClass(type);
+						Class<?> newClass = CreateComponentCommand.class
+								.getClassLoader().loadClass(clazz);
+						componentName = ModelUtils.findUniqueName(parentModel,
+								newClass,
+								name.equalsIgnoreCase("INPUT") ? DEFAULT_INPUT_PORT
+										: DEFAULT_OUTPUT_PORT);
+						Class constructorClazz = CompositeEntity.class;
+						if (newClass.getSimpleName().equals("TypedIOPort")){
+							constructorClazz = ComponentEntity.class;
+						}else if (newClass.getSimpleName().equals("TextAttribute")){
+							constructorClazz =  NamedObj.class;
 						}
-						String name = ModelUtils.findUniqueName(parentModel,
-								newClass.getSimpleName());
-						Constructor constructor = null;
-						if (type
-								.equals("ptolemy.vergil.kernel.attributes.TextAttribute")) {
-							constructor = newClass.getConstructor(
-									NamedObj.class, String.class);
-							child = (TextAttribute) constructor
-									.newInstance(parentModel,
-											generateUniqueTextAttributeName(
-													name, parentModel, 0,
-													TextAttribute.class));
-							((StringAttribute) child.getAttribute("text"))
-									.setExpression("Edit text in parameters in properties view");
-						} else if (ModelUtils.isInputPort(type)) {
-							child = new TypedIOPort(
-									(CompositeEntity) parentModel,
-									generateUniquePortName(name,
-											(CompositeEntity) parentModel, 0),
-									true, false);
+						Constructor constructor = newClass.getConstructor(
+								constructorClazz, String.class);
 
-						} else if (ModelUtils.isOutputPort(type)) {
-							child = new TypedIOPort(
-									(CompositeEntity) parentModel,
-									generateUniquePortName(name,
-											(CompositeEntity) parentModel, 0),
-									false, true);
-						} else if (type.equals("ptolemy.actor.CompositeActor")) {
-							child = new TypedCompositeActor(
-									(CompositeEntity) parentModel, name);
-
-						} else {
-							constructor = newClass.getConstructor(
-									CompositeEntity.class, String.class);
-
-							child = (NamedObj) constructor.newInstance(
-									parentModel, name);
+						child = (NamedObj) constructor.newInstance(parentModel,
+								componentName);
+						if (child instanceof TypedIOPort) {
+							boolean isInput = name.equalsIgnoreCase("INPUT");
+							((TypedIOPort) child).setInput(isInput);
+							((TypedIOPort) child).setOutput(!isInput);
 						}
 					} else {
-						String name = null;
-						if (model instanceof TextAttribute) {
-							name = generateUniqueTextAttributeName(model
-									.getName(), parentModel, 0,
-									TextAttribute.class);
-						} else if (model instanceof TypedIOPort) {
-							name = generateUniquePortName(model.getName(),
-									(CompositeEntity) parentModel, 0);
-
-						} else if (model instanceof ComponentEntity) {
-							name = ModelUtils.findUniqueName(
-									(CompositeEntity) parentModel, model
-											.getClass().getSimpleName());
-
+						if (model instanceof TypedIOPort) {
+							name = ((TypedIOPort) model).isInput() ? DEFAULT_INPUT_PORT
+									: DEFAULT_OUTPUT_PORT;
 						}
+						componentName = ModelUtils.findUniqueName(parentModel,
+								model.getClass(), name);
 						child = (NamedObj) model
 								.clone(((CompositeEntity) parentModel)
 										.workspace());
-						child.setName(name);
+						child.setName(componentName);
 						ComponentUtility.setContainer(child, parentModel);
 					}
 					if (location != null) {
@@ -157,44 +128,6 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
 			}
 		});
-	}
-
-	private String generateUniqueTextAttributeName(String name,
-			NamedObj parent, int index, Class clazz) {
-		try {
-			String newName = index != 0 ? (name + "(" + index + ")") : name;
-			if (parent.getAttribute(newName, clazz) == null) {
-				return newName;
-			} else {
-				index++;
-				return generateUniqueTextAttributeName(name, parent, index,
-						clazz);
-			}
-		} catch (IllegalActionException e) {
-			return name;
-		}
-
-	}
-
-	private String generateUniquePortName(String name, CompositeEntity parent,
-			int index) {
-		String newName = index != 0 ? (name + "(" + index + ")") : name;
-		boolean contains = false;
-		Enumeration ports = parent.getPorts();
-		while (ports.hasMoreElements()) {
-			String portName = ((Port) ports.nextElement()).getName();
-			if (newName.equals(portName)) {
-				contains = true;
-				break;
-			}
-
-		}
-		if (!contains) {
-			return newName;
-		}
-		index++;
-		return generateUniquePortName(name, parent, index);
-
 	}
 
 	public void redo() {
@@ -214,8 +147,12 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 		});
 	}
 
-	public void setChildType(String type) {
-		this.type = type;
+	public void setClazz(String clazz) {
+		this.clazz = clazz;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setParent(NamedObj newParent) {

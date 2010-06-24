@@ -76,7 +76,7 @@ public class PasteNodeCommand extends Command {
 					CreateComponentCommand createCommand = new CreateComponentCommand(editor);
 					createCommand.setModel(child);
 					createCommand.setParent(selectedContainer);
-					createCommand.setChildType(child.getClass().getName());
+					createCommand.setClazz(child.getClass().getSimpleName());
 					double[] location = ModelUtils.getLocation(child);
 					createCommand.setLocation(new double[] { location[0] + 100,
 							location[1] + 100 });
