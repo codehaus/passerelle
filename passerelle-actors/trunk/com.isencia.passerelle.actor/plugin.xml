@@ -47,7 +47,7 @@
             name="Synchronizer">
       </actor>
       <actor
-            class="ptolemy.actor.CompositeActor"
+            class="ptolemy.actor.TypedCompositeActor"
             group="com.isencia.passerelle.actor.actorgroup.utilities"
             icon="icons/comp.gif"
             id="ptolemy.actor.CompositeActor"
@@ -61,14 +61,14 @@
             name="Comment">
       </actor>
       <actor
-            class="com.isencia.passerelle.actor.general.InputIOPort"
+            class="ptolemy.actor.TypedIOPort"
             group="com.isencia.passerelle.actor.actorgroup.general"
             icon="icons/input.gif"
             id="Input"
             name="Input">
       </actor>
       <actor
-            class="com.isencia.passerelle.actor.general.OutputIOPort"
+            class="ptolemy.actor.TypedIOPort"
             group="com.isencia.passerelle.actor.actorgroup.general"
             icon="icons/output.gif"
             id="Output"
