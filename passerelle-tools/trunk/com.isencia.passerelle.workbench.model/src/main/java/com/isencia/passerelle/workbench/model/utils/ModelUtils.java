@@ -2,6 +2,7 @@ package com.isencia.passerelle.workbench.model.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -159,7 +160,8 @@ public class ModelUtils {
 		return false;
 	}
 
-	public static String findUniqueName(CompositeEntity parentModel, String name) {
+	public static String findUniqueActorName(CompositeEntity parentModel,
+			String name) {
 		String newName = name;
 		if (parentModel == null)
 			return newName;
@@ -175,5 +177,57 @@ public class ModelUtils {
 		}
 
 		return newName;
+	}
+
+	private static String generateUniqueTextAttributeName(String name,
+			NamedObj parent, int index, Class clazz) {
+		try {
+			String newName = index != 0 ? (name + "(" + index + ")") : name;
+			if (parent.getAttribute(newName, clazz) == null) {
+				return newName;
+			} else {
+				index++;
+				return generateUniqueTextAttributeName(name, parent, index,
+						clazz);
+			}
+		} catch (IllegalActionException e) {
+			return name;
+		}
+
+	}
+
+	private static String generateUniquePortName(String name,
+			CompositeEntity parent, int index) {
+		String newName = index != 0 ? (name + "(" + index + ")") : name;
+		boolean contains = false;
+		Enumeration ports = parent.getPorts();
+		while (ports.hasMoreElements()) {
+			String portName = ((Port) ports.nextElement()).getName();
+			if (newName.equals(portName)) {
+				contains = true;
+				break;
+			}
+
+		}
+		if (!contains) {
+			return newName;
+		}
+		index++;
+		return generateUniquePortName(name, parent, index);
+
+	}
+
+	public static String findUniqueName(CompositeEntity parentModel,
+			Class clazz, String startName) {
+		if (clazz.getSimpleName().equals("TextAttribute")) {
+			return generateUniqueTextAttributeName(clazz.getSimpleName(),
+					parentModel, 0, clazz);
+		} else if (clazz.getSimpleName().equals("TypedIOPort")) {
+			return generateUniquePortName(
+					startName,
+					parentModel, 0);
+		} else {
+			return findUniqueActorName(parentModel, clazz.getSimpleName());
+		}
 	}
 }
