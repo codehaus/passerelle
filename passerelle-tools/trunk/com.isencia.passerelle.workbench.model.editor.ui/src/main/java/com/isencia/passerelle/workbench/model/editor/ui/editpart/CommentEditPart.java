@@ -136,7 +136,7 @@ public class CommentEditPart extends AbstractNodeEditPart {
 
 	protected IPropertySource getPropertySource() {
 		if (propertySource == null) {
-			propertySource = new CommentPropertySource(getEntity());
+			propertySource = new CommentPropertySource(getEntity(),getFigure());
 		}
 		return propertySource;
 	}

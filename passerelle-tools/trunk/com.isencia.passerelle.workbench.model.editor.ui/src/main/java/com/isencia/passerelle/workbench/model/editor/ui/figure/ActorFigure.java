@@ -34,6 +34,14 @@ public class ActorFigure extends AbstractNodeFigure {
 	private InputPorts inputPorts = null;
 	private OutputPorts outputPorts = null;
 	private HashMap<String, PortFigure> inputPortMap = new HashMap<String, PortFigure>();
+	public HashMap<String, PortFigure> getInputPortMap() {
+		return inputPortMap;
+	}
+
+	public HashMap<String, PortFigure> getOutputPortMap() {
+		return outputPortMap;
+	}
+
 	private HashMap<String, PortFigure> outputPortMap = new HashMap<String, PortFigure>();
 
 	public ActorFigure(String name, Image image, Clickable clickable) {

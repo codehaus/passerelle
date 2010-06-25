@@ -272,28 +272,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		return actorFigure;
 	}
 
-	protected void deleteFigure(IOPort port) {
-		CompositeActorFigure actorFigure = (CompositeActorFigure) getFigure();
-
-		Actor actorModel = getActorModel();
-		if (port.isInput() && actorFigure.getInputPort(port.getName()) != null) {
-			actorFigure.addInput(port.getName(), port.getDisplayName());
-		} else if (!port.isInput()
-				&& actorFigure.getOutputPort(port.getName()) != null) {
-			actorFigure.addInput(port.getName(), port.getDisplayName());
-		}
-		// Add SourceConnectionAnchors
-		List<TypedIOPort> outputPortList = actorModel.outputPortList();
-		if (outputPortList != null) {
-			for (TypedIOPort outputPort : outputPortList) {
-				if (actorFigure.getOutputPort(outputPort.getName()) == null) {
-					actorFigure.addOutput(outputPort.getName(), outputPort
-							.getDisplayName());
-				}
-			}
-		}
-
-	}
 
 	protected void updateFigure() {
 		CompositeActorFigure actorFigure = (CompositeActorFigure) getFigure();

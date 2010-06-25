@@ -199,7 +199,7 @@ abstract public class AbstractBaseEditPart extends
 
 	protected IPropertySource getPropertySource() {
 		if (propertySource == null) {
-			propertySource = new EntityPropertySource(getEntity());
+			propertySource = new EntityPropertySource(getEntity(),getFigure());
 		}
 		return propertySource;
 	}
