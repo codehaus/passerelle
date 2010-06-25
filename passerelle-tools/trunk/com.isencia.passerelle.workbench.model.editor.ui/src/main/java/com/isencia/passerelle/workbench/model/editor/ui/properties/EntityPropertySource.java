@@ -45,14 +45,14 @@ public class EntityPropertySource implements IPropertySource {
 
 		this.figure = figure;
 
-		if (entity instanceof Actor) {
-			try {
-				((Actor) entity).initialize();
-			} catch (Exception e) {
-			}
-			optionsFactory = ((Actor) entity).getOptionsFactory();
-
-		}
+//		if (entity instanceof Actor) {
+//			try {
+//				((Actor) entity).initialize();
+//			} catch (Exception e) {
+//			}
+//			optionsFactory = ((Actor) entity).getOptionsFactory();
+//
+//		}
 	}
 
 	public Object getEditableValue() {
@@ -71,8 +71,9 @@ public class EntityPropertySource implements IPropertySource {
 		for (Parameter parameter : parameterList) {
 			if (optionsFactory != null
 					&& !optionsMap.containsKey(parameter.getName())) {
-				Map options = optionsFactory.getOptionsForParameter(parameter
-						.getName(), false);
+				Map options =new HashMap();
+//				Map options = optionsFactory.getOptionsForParameter(parameter
+//						.getName(), false);
 
 				if (options != null && !options.isEmpty()) {
 					List<String> optionList = new ArrayList<String>();
