@@ -74,6 +74,18 @@
             id="Output"
             name="Output">
       </actor>
+      <actor
+            class="com.isencia.passerelle.actor.io.FileWriter"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            id="FileWriter"
+            name="FileWriter">
+      </actor>
+      <actor
+            class="com.isencia.passerelle.actor.net.SocketClientSender"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            id="SocketClientSender"
+            name="SocketClientSender">
+      </actor>
       
    </extension>
    <extension
