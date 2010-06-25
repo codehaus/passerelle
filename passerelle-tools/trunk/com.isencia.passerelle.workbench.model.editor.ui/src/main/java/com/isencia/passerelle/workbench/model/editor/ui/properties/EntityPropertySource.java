@@ -32,6 +32,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FilePickerPro
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FloatPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.IntegerPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
+import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 
 public class EntityPropertySource implements IPropertySource {
@@ -48,7 +49,7 @@ public class EntityPropertySource implements IPropertySource {
 //		if (entity instanceof Actor) {
 //			try {
 //				((Actor) entity).initialize();
-//			} catch (Exception e) {
+//			} catch (ExcepTdeltion e) {
 //			}
 //			optionsFactory = ((Actor) entity).getOptionsFactory();
 //
@@ -144,28 +145,35 @@ public class EntityPropertySource implements IPropertySource {
 				}
 				if (entity.getClass().getSimpleName().equals("Synchronizer")
 						&& attribute.getName().equals("Extra nr of ports")) {
-					try {
-
-						if (!oldValue.equals(value)) {
-
-							int newNr = Integer.parseInt(value.toString());
-							int oldNr = Integer.parseInt(oldValue);
-
-							if (newNr > oldNr) {
-								entity.attributeChanged(attribute);
-								updateFigure((ActorFigure) figure,
-										(Actor) entity);
-							} else {
-								deletePort((ActorFigure) figure,
-										(Actor) entity, oldNr, newNr);
-							}
-							figure.repaint();
-						}
-					} catch (Exception e) {
-
-					}
+					changeNumberOfPortsOnFigure(value, attribute, oldValue);
 				}
 
+			}
+
+			private void changeNumberOfPortsOnFigure(final Object value,
+					Parameter attribute, String oldValue) {
+				try {
+
+					if (!oldValue.equals(value)) {
+
+						int newNr = Integer.parseInt(value.toString());
+						int oldNr = Integer.parseInt(oldValue);
+
+						if (newNr > oldNr) {
+							entity.attributeChanged(attribute);
+							updateFigure((ActorFigure) figure,
+									(Actor) entity);
+						} else {
+							deletePort((ActorFigure) figure,
+									(Actor) entity, oldNr, newNr);
+							
+						}
+						figure.repaint();
+					}
+					
+				} catch (Exception e) {
+
+				}
 			}
 		});
 
@@ -201,13 +209,13 @@ public class EntityPropertySource implements IPropertySource {
 
 		for (int i = oldNr - 1; i >= newNr; --i) {
 			actorFigure.removeInput("input" + i);
-
+			ComponentUtility.deleteConnections(actorModel.getPort("input" + i).getContainer());
 		}
 		List<TypedIOPort> outputPortList = actorModel.outputPortList();
 
 		for (int i = oldNr - 1; i >= newNr; --i) {
 			actorFigure.removeOutput("output" + i);
-
+			ComponentUtility.deleteConnections(actorModel.getPort("output" + i).getContainer());
 		}
 	}
 
