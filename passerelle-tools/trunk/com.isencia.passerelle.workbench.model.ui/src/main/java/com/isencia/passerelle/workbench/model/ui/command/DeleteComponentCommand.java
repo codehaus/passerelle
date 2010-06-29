@@ -62,42 +62,6 @@ public class DeleteComponentCommand extends Command {
 		return logger;
 	}
 
-	private void deleteConnections(NamedObj model) {
-
-		if (!((model instanceof Actor)||((model instanceof IOPort)))) {
-			return;
-		}
-
-		Nameable actor = (Nameable) model;
-
-		Iterator<?> sourceIterator = ModelUtils.getConnectedRelations(actor,
-				ConnectionType.SOURCE,true).iterator();
-		while (sourceIterator.hasNext()) {
-			IORelation relation = (IORelation) sourceIterator.next();
-			DeleteConnectionCommand cmd = generateDeleteConnectionCommand(
-					actor, relation);
-			cmd.execute();
-			delecteConnectionCommands.add(cmd);
-		}
-		Iterator<?> targetIterator = ModelUtils.getConnectedRelations(actor,
-				ConnectionType.TARGET,true).iterator();
-		while (targetIterator.hasNext()) {
-			IORelation relation = (IORelation) targetIterator.next();
-			DeleteConnectionCommand cmd = generateDeleteConnectionCommand(
-					actor, relation);
-			cmd.execute();
-			delecteConnectionCommands.add(cmd);
-		}
-	}
-
-	private DeleteConnectionCommand generateDeleteConnectionCommand(
-			Nameable actor, IORelation relation) {
-		DeleteConnectionCommand cmd = new DeleteConnectionCommand();
-		cmd.setParent((CompositeEntity) actor.getContainer());
-		cmd.setConnection((TypedIORelation) relation);
-		cmd.setLinkedPorts(((TypedIORelation) relation).linkedPortList());
-		return cmd;
-	}
 
 	/*
 	 * private void detachFromGuides(LogicSubpart part) { if
@@ -118,7 +82,7 @@ public class DeleteComponentCommand extends Command {
 				"delete",child) {
 			@Override
 			protected void _execute() throws Exception {
-				deleteConnections(child);
+				delecteConnectionCommands = ComponentUtility.deleteConnections(child);
 				// detachFromGuides(child);
 				container = child.getContainer();
 				ComponentUtility.setContainer(child, null);
