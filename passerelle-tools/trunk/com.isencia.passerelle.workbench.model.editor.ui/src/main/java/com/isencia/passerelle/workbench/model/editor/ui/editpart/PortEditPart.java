@@ -60,9 +60,9 @@ public class PortEditPart extends ActorEditPart {
 	@Override
 	protected IFigure createFigure() {
 		if (isInput)
-			return new CompoundInputFigure(((IOPort) getModel()).getName(),createImage(PaletteBuilder.getIcon("Input")));
+			return new CompoundInputFigure(((IOPort) getModel()).getName());
 		else
-			return new CompoundOutputFigure(((IOPort) getModel()).getName(),createImage(PaletteBuilder.getIcon("Output")));
+			return new CompoundOutputFigure(((IOPort) getModel()).getName());
 	}
 
 	public CompoundIOFigure getComponentFigure() {

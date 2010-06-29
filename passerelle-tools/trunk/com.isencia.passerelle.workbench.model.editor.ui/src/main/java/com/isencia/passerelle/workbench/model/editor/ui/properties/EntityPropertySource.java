@@ -3,6 +3,7 @@ package com.isencia.passerelle.workbench.model.editor.ui.properties;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,23 +38,25 @@ import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 
 public class EntityPropertySource implements IPropertySource {
 	private NamedObj entity;
-	private IOptionsFactory optionsFactory;
 	private IFigure figure;
-	private Map<String, String[]> optionsMap = new HashMap<String, String[]>();
 
 	public EntityPropertySource(NamedObj entity, IFigure figure) {
 		this.entity = entity;
 
 		this.figure = figure;
 
-//		if (entity instanceof Actor) {
-//			try {
-//				((Actor) entity).initialize();
-//			} catch (ExcepTdeltion e) {
-//			}
-//			optionsFactory = ((Actor) entity).getOptionsFactory();
-//
-//		}
+		initializeOptions(entity);
+	}
+
+	private void initializeOptions(NamedObj entity) {
+		if (entity instanceof Actor) {
+			try {
+				((Actor) entity).initialize();
+			} catch (Exception e) {
+			}
+			configureParameters((Actor) entity);
+
+		}
 	}
 
 	public Object getEditableValue() {
@@ -70,22 +73,6 @@ public class EntityPropertySource implements IPropertySource {
 		Collection<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>();
 		List<Parameter> parameterList = entity.attributeList(Parameter.class);
 		for (Parameter parameter : parameterList) {
-			if (optionsFactory != null
-					&& !optionsMap.containsKey(parameter.getName())) {
-				Map options =new HashMap();
-//				Map options = optionsFactory.getOptionsForParameter(parameter
-//						.getName(), false);
-
-				if (options != null && !options.isEmpty()) {
-					List<String> optionList = new ArrayList<String>();
-					for (Object e : options.entrySet()) {
-						optionList.add(((Option) ((Entry) e).getValue())
-								.getLabel());
-					}
-					optionsMap.put(parameter.getName(), optionList
-							.toArray(new String[optionList.size()]));
-				}
-			}
 			addPropertyDescriptor(descriptors, parameter, parameter.getType());
 		}
 		// shouldn't be editable
@@ -100,12 +87,22 @@ public class EntityPropertySource implements IPropertySource {
 				.toArray(new IPropertyDescriptor[] {});
 	}
 
+	private void configureParameters(Actor actor) {
+		if (actor.getOptionsFactory() != null) {
+			List parameters = actor.attributeList(Parameter.class);
+			for (Iterator iter = parameters.iterator(); iter.hasNext();) {
+				Parameter p = (Parameter) iter.next();
+				actor.getOptionsFactory().setOptionsForParameter(p);
+			}
+		}
+	}
+
 	public Object getPropertyValue(Object id) {
 		Parameter attribute = (Parameter) entity.getAttribute((String) id);
-		if (attribute instanceof ColorAttribute){
-			return new  org.eclipse.swt.graphics.RGB(0,10,10);
-		} else if  (optionsMap.containsKey(attribute.getName())) {
-			String[] options = optionsMap.get(attribute.getName());
+		if (attribute instanceof ColorAttribute) {
+			return new org.eclipse.swt.graphics.RGB(0, 10, 10);
+		} else if (hasOptions(attribute)) {
+			String[] options = ((Parameter)attribute).getChoices();
 			for (int i = 0; i < options.length; i++) {
 				if (options[i].equals(attribute.getExpression()))
 					return i;
@@ -136,9 +133,9 @@ public class EntityPropertySource implements IPropertySource {
 				Parameter attribute = (Parameter) entity
 						.getAttribute((String) id);
 				String oldValue = attribute.getExpression();
-				if (optionsMap.containsKey(attribute.getName())) {
+				if (hasOptions(attribute)) {
 					attribute
-							.setExpression(optionsMap.get(attribute.getName())[(Integer) value]);
+							.setExpression(((Parameter)attribute).getChoices()[(Integer) value]);
 				} else {
 					attribute.setExpression(value.toString());
 
@@ -161,16 +158,15 @@ public class EntityPropertySource implements IPropertySource {
 
 						if (newNr > oldNr) {
 							entity.attributeChanged(attribute);
-							updateFigure((ActorFigure) figure,
-									(Actor) entity);
+							updateFigure((ActorFigure) figure, (Actor) entity);
 						} else {
-							deletePort((ActorFigure) figure,
-									(Actor) entity, oldNr, newNr);
-							
+							deletePort((ActorFigure) figure, (Actor) entity,
+									oldNr, newNr);
+
 						}
 						figure.repaint();
 					}
-					
+
 				} catch (Exception e) {
 
 				}
@@ -209,36 +205,36 @@ public class EntityPropertySource implements IPropertySource {
 
 		for (int i = oldNr - 1; i >= newNr; --i) {
 			actorFigure.removeInput("input" + i);
-			ComponentUtility.deleteConnections(actorModel.getPort("input" + i).getContainer());
+			ComponentUtility.deleteConnections(actorModel.getPort("input" + i)
+					.getContainer());
 		}
 		List<TypedIOPort> outputPortList = actorModel.outputPortList();
 
 		for (int i = oldNr - 1; i >= newNr; --i) {
 			actorFigure.removeOutput("output" + i);
-			ComponentUtility.deleteConnections(actorModel.getPort("output" + i).getContainer());
+			ComponentUtility.deleteConnections(actorModel.getPort("output" + i)
+					.getContainer());
 		}
 	}
 
 	protected void addPropertyDescriptor(
 			Collection<PropertyDescriptor> descriptors, Attribute parameter,
 			Type type) {
-		if (parameter instanceof ColorAttribute){
+		if (parameter instanceof ColorAttribute) {
 			descriptors.add(new ColorPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName()));
-		} else if (parameter instanceof FileParameter){
-			descriptors.add(new FilePickerPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
-		} else if (optionsMap.containsKey(parameter.getName())) {
-
+		} else if (parameter instanceof FileParameter) {
+			descriptors.add(new FilePickerPropertyDescriptor(parameter
+					.getName(), parameter.getDisplayName()));
+		} else if (hasOptions(parameter)) {
 			descriptors.add(new ComboBoxPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName(), optionsMap.get(parameter
-							.getName())));
+					parameter.getDisplayName(), ((Parameter) parameter).getChoices()));
 		} else if (BaseType.INT.equals(type)) {
-			
+
 			descriptors.add(new IntegerPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName()));
 		} else if (BaseType.FLOAT.equals(type)) {
-			
+
 			descriptors.add(new FloatPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName()));
 		} else if (BaseType.BOOLEAN.equals(type)) {
@@ -250,5 +246,11 @@ public class EntityPropertySource implements IPropertySource {
 			descriptors.add(new TextPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName()));
 		}
+	}
+
+	private boolean hasOptions(Attribute parameter) {
+		return parameter instanceof Parameter
+				&& ((Parameter) parameter).getChoices() != null
+				&& ((Parameter) parameter).getChoices().length > 0;
 	}
 }
