@@ -26,6 +26,14 @@ Passerelle (actor) dvp
 5. From the project com.isencia.passerelle.gettingstarted, set the passerelle-dev-target.target as PDE target platform
 6. Switch on automatic building. There should be no compilation errors.
 
+Passerelle (eclipse-based) workbench dvp
+----------------------------------------
+4. Check out the projects using the included team project set passerelle-workbench-dev-projectset.psf
+5. From the project com.isencia.passerelle.gettingstarted, set the passerelle-workbench-dev-target.target as PDE target platform
+6. Switch on automatic building. There should be no compilation errors.
+7. com.isencia.passerelle.workbench/launch contains a launch definition to start the Passerelle workbench as an eclipse application
+   from inside your development workspace.
+   
 Passerelle HMI dvp
 ---------------------   
 4. Check out the projects using the included team project set passerelle-swing-hmi-dev-projectset.psf
