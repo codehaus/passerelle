@@ -22,12 +22,11 @@ Require-Bundle: org.eclipse.ui,
  com.isencia.passerelle.workbench.model;bundle-version="1.0.1",
  ptolemy.core;bundle-version="7.0.1",
  com.microstar;bundle-version="1.2.0",
- ptolemy.gui;bundle-version="7.0.1"
+ ptolemy.gui;bundle-version="7.0.1",
+ org.eclipse.gef
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.isencia.passerelle.workbench.model.ui,
  com.isencia.passerelle.workbench.model.ui.command
-Import-Package: org.eclipse.gef,
- org.eclipse.gef.commands,
- org.slf4j;version="1.5.8"
+Import-Package: org.slf4j;version="1.5.8"
 DynamicImport-Package: *
