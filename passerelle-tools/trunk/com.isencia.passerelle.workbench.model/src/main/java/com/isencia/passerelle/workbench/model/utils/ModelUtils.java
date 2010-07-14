@@ -3,7 +3,9 @@ package com.isencia.passerelle.workbench.model.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import ptolemy.kernel.util.Location;
 import ptolemy.kernel.util.NameDuplicationException;
 import ptolemy.kernel.util.Nameable;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.moml.Vertex;
 
 public class ModelUtils {
 
@@ -44,19 +47,52 @@ public class ModelUtils {
 		return ModelConstants.INPUT_IOPORT.equals(type);
 	}
 
-	public static List<Relation> getConnectedRelations(Nameable model,
+	public static Set<Relation> getConnectedRelations(Nameable model,
 			ConnectionType connectionType) {
 
 		return getConnectedRelations(model, connectionType, false);
 
 	}
 
-	public static List<Relation> getConnectedRelations(Nameable model,
+	public static boolean containsVertex(Relation model) {
+		Enumeration attributes = model.getAttributes();
+		while (attributes.hasMoreElements()) {
+			Object temp = attributes.nextElement();
+			if (temp instanceof Vertex) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Vertex getVertex(Relation model) {
+		Enumeration attributes = model.getAttributes();
+		while (attributes.hasMoreElements()) {
+			Object temp = attributes.nextElement();
+			if (temp instanceof Vertex) {
+				return (Vertex) temp;
+			}
+		}
+		return null;
+	}
+
+	public static List<IOPort> getPorts(Relation relation, NamedObj obj) {
+		List<IOPort> ports = new ArrayList<IOPort>();
+		for (Object o : relation.linkedPortList()) {
+			if (((Port) o).getContainer().equals(obj)) {
+				ports.add((IOPort) o);
+
+			}
+		}
+		return ports;
+	}
+
+	public static Set<Relation> getConnectedRelations(Nameable model,
 			ConnectionType connectionType, boolean fullList) {
-		ArrayList<Relation> connections = new ArrayList<Relation>();
+		Set<Relation> connections = new HashSet<Relation>();
 		if (model.getContainer() == null
 				|| !(model.getContainer() instanceof CompositeEntity))
-			return Collections.EMPTY_LIST;
+			return Collections.EMPTY_SET;
 		CompositeEntity composite = (CompositeEntity) model.getContainer();
 		List<Relation> relationList = new ArrayList<Relation>();
 		relationList.addAll(composite.relationList());
@@ -69,31 +105,36 @@ public class ModelUtils {
 			}
 		}
 		if (relationList == null || relationList.size() == 0)
-			return Collections.EMPTY_LIST;
+			return Collections.EMPTY_SET;
 
 		for (Relation relation : relationList) {
-			List<Port> linkedObjectsList = relation.linkedObjectsList();
+			List linkedObjectsList = relation.linkedObjectsList();
 			if (linkedObjectsList == null || linkedObjectsList.size() == 0)
 				continue;
-			for (Port port : linkedObjectsList) {
-				if (port.getContainer().equals(model)
-						|| (model instanceof IOPort && (port
-								.equals(((IOPort) model))))) {
-					if (connectionType.equals(ConnectionType.SOURCE)) {
-						if (port instanceof IOPort
-								&& (!(model instanceof IOPort) && ((IOPort) port)
-										.isOutput())
-								|| ((model instanceof IOPort) && ((IOPort) port)
-										.isInput()))
-							connections.add(relation);
-					} else {
-						if (port instanceof IOPort
-								&& (!(model instanceof IOPort) && ((IOPort) port)
-										.isInput())
-								|| ((model instanceof IOPort) && ((IOPort) port)
-										.isOutput()))
-							connections.add(relation);
+			for (Object o : linkedObjectsList) {
+				if (o instanceof Port) {
+					Port port = (Port) o;
+					if (port.getContainer().equals(model)
+							|| (model instanceof IOPort && (port
+									.equals(((IOPort) model))))) {
+						if (connectionType.equals(ConnectionType.SOURCE)) {
+							if (port instanceof IOPort
+									&& (!(model instanceof IOPort) && ((IOPort) port)
+											.isOutput())
+									|| ((model instanceof IOPort) && ((IOPort) port)
+											.isInput()))
+								connections.add(relation);
+						} else {
+							if (port instanceof IOPort
+									&& (!(model instanceof IOPort) && ((IOPort) port)
+											.isInput())
+									|| ((model instanceof IOPort) && ((IOPort) port)
+											.isOutput()))
+								connections.add(relation);
+						}
 					}
+				} else if (o instanceof Relation) {
+					connections.add(relation);
 				}
 			}
 
@@ -196,6 +237,13 @@ public class ModelUtils {
 
 	}
 
+	private static String generateUniqueVertexName(String name,
+			NamedObj parent, int index, Class clazz) {
+
+		return "Vertex" + System.currentTimeMillis();
+
+	}
+
 	private static String generateUniquePortName(String name,
 			CompositeEntity parent, int index) {
 		String newName = index != 0 ? (name + "(" + index + ")") : name;
@@ -219,13 +267,14 @@ public class ModelUtils {
 
 	public static String findUniqueName(CompositeEntity parentModel,
 			Class clazz, String startName) {
-		if (clazz.getSimpleName().equals("TextAttribute")) {
+		if (clazz.getSimpleName().equals("Vertex")) {
+			return generateUniqueVertexName(clazz.getSimpleName(), parentModel,
+					0, clazz);
+		} else if (clazz.getSimpleName().equals("TextAttribute")) {
 			return generateUniqueTextAttributeName(clazz.getSimpleName(),
 					parentModel, 0, clazz);
 		} else if (clazz.getSimpleName().equals("TypedIOPort")) {
-			return generateUniquePortName(
-					startName,
-					parentModel, 0);
+			return generateUniquePortName(startName, parentModel, 0);
 		} else {
 			return findUniqueActorName(parentModel, clazz.getSimpleName());
 		}

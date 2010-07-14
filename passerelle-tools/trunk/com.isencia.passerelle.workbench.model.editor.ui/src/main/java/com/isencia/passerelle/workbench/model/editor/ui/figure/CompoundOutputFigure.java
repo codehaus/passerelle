@@ -9,11 +9,9 @@ import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.PointList;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
-import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.IBody;
 
 public class CompoundOutputFigure extends CompoundIOFigure {
@@ -94,10 +92,11 @@ public class CompoundOutputFigure extends CompoundIOFigure {
 
 	}
 
-	protected IFigure generateBody(Image image, Clickable clickable) {
+	protected IFigure generateBody(Image image, Clickable[] clickables) {
 		Body body = new Body();
 		body.setBorder(new LineBorder());
-		body.initClickable(clickable);
+		for (Clickable clickable : clickables)
+			body.initClickable(clickable);
 		return (body);
 	}
 }

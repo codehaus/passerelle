@@ -24,6 +24,9 @@ public abstract class AbstractNodeFigure extends AbstractBaseFigure {
     public AbstractNodeFigure(String name) {
     	super(name);
     }
+    public AbstractNodeFigure(String name,boolean withLabel) {
+    	super(name,withLabel);
+    }
 
 	public ConnectionAnchor connectionAnchorAt(Point p) {
 		ConnectionAnchor closest = null;

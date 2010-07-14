@@ -10,6 +10,7 @@ import org.eclipse.swt.graphics.Image;
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.data.expr.Parameter;
+import ptolemy.moml.Vertex;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;

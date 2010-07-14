@@ -1,21 +1,18 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.lang.reflect.Constructor;
-import java.util.Enumeration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
-import ptolemy.actor.TypedCompositeActor;
 import ptolemy.actor.TypedIOPort;
+import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
-import ptolemy.kernel.Port;
-import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.NamedObj;
-import ptolemy.kernel.util.StringAttribute;
-import ptolemy.vergil.kernel.attributes.TextAttribute;
+import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
@@ -83,25 +80,36 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 					if (model == null) {
 						Class<?> newClass = CreateComponentCommand.class
 								.getClassLoader().loadClass(clazz);
-						componentName = ModelUtils.findUniqueName(parentModel,
-								newClass,
-								name.equalsIgnoreCase("INPUT") ? DEFAULT_INPUT_PORT
-										: DEFAULT_OUTPUT_PORT);
+						componentName = ModelUtils
+								.findUniqueName(
+										parentModel,
+										newClass,
+										name.equalsIgnoreCase("INPUT") ? DEFAULT_INPUT_PORT
+												: DEFAULT_OUTPUT_PORT);
 						Class constructorClazz = CompositeEntity.class;
-						if (newClass.getSimpleName().equals("TypedIOPort")){
+						if (newClass.getSimpleName().equals("TypedIOPort")) {
 							constructorClazz = ComponentEntity.class;
-						}else if (newClass.getSimpleName().equals("TextAttribute")){
-							constructorClazz =  NamedObj.class;
+						} else if (newClass.getSimpleName().equals(
+								"TextAttribute")) {
+							constructorClazz = NamedObj.class;
 						}
-						Constructor constructor = newClass.getConstructor(
-								constructorClazz, String.class);
+						if (newClass.getSimpleName().equals("Vertex")) {
+							TypedIORelation rel = new TypedIORelation(
+									parentModel, componentName);
+							child = new Vertex(rel, "Vertex");
 
-						child = (NamedObj) constructor.newInstance(parentModel,
-								componentName);
-						if (child instanceof TypedIOPort) {
-							boolean isInput = name.equalsIgnoreCase("INPUT");
-							((TypedIOPort) child).setInput(isInput);
-							((TypedIOPort) child).setOutput(!isInput);
+						} else {
+							Constructor constructor = newClass.getConstructor(
+									constructorClazz, String.class);
+
+							child = (NamedObj) constructor.newInstance(
+									parentModel, componentName);
+							if (child instanceof TypedIOPort) {
+								boolean isInput = name
+										.equalsIgnoreCase("INPUT");
+								((TypedIOPort) child).setInput(isInput);
+								((TypedIOPort) child).setOutput(!isInput);
+							}
 						}
 					} else {
 						if (model instanceof TypedIOPort) {
@@ -110,10 +118,17 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 						}
 						componentName = ModelUtils.findUniqueName(parentModel,
 								model.getClass(), name);
-						child = (NamedObj) model
-								.clone(((CompositeEntity) parentModel)
-										.workspace());
-						child.setName(componentName);
+						if (model instanceof Vertex) {
+							TypedIORelation rel = new TypedIORelation(
+									parentModel, componentName);
+							child = new Vertex(rel, "Vertex");
+							
+						} else {
+							child = (NamedObj) model
+									.clone(((CompositeEntity) parentModel)
+											.workspace());
+							child.setName(componentName);
+						}
 						ComponentUtility.setContainer(child, parentModel);
 					}
 					if (location != null) {

@@ -4,45 +4,42 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ptolemy.actor.Actor;
 import ptolemy.actor.IOPort;
-import ptolemy.actor.IORelation;
 import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.util.ChangeRequest;
-import ptolemy.kernel.util.Nameable;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
-import com.isencia.passerelle.workbench.model.utils.ModelUtils;
-import com.isencia.passerelle.workbench.model.utils.ModelUtils.ConnectionType;
 
 public class DeleteComponentCommand extends Command {
 	private IPasserelleMultiPageEditor multiPageEditor;
+
 	public void setMultiPageEditor(IPasserelleMultiPageEditor multiPageEditor) {
 		this.multiPageEditor = multiPageEditor;
 	}
 
 	private List<Integer> indexList = new ArrayList<Integer>();
-	public void addIndex(Integer index){
+
+	public void addIndex(Integer index) {
 		indexList.add(index);
 	}
-	public void emptyIndexList(){
+
+	public void emptyIndexList() {
 		indexList.removeAll(indexList);
 	}
-	
 
 	private static Logger logger = LoggerFactory
 			.getLogger(DeleteComponentCommand.class);
@@ -52,7 +49,7 @@ public class DeleteComponentCommand extends Command {
 	private CompositeEntity parent;
 	// private LogicGuide vGuide, hGuide;
 	private int vAlign, hAlign;
-	private List<DeleteConnectionCommand> delecteConnectionCommands = new ArrayList<DeleteConnectionCommand>();
+	private List<Command> delecteConnectionCommands = new ArrayList<Command>();
 
 	public DeleteComponentCommand() {
 		super("Delete");
@@ -61,7 +58,6 @@ public class DeleteComponentCommand extends Command {
 	public Logger getLogger() {
 		return logger;
 	}
-
 
 	/*
 	 * private void detachFromGuides(LogicSubpart part) { if
@@ -79,17 +75,25 @@ public class DeleteComponentCommand extends Command {
 	protected void doExecute() {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
 		parent.requestChange(new ModelChangeRequest(this.getClass(), parent,
-				"delete",child) {
+				"delete", child) {
 			@Override
 			protected void _execute() throws Exception {
-				delecteConnectionCommands = ComponentUtility.deleteConnections(child);
-				// detachFromGuides(child);
-				container = child.getContainer();
-				ComponentUtility.setContainer(child, null);
-				for(Integer index:indexList){
-					Comparator comparator = Collections.reverseOrder();
-					Collections.sort(indexList,comparator);
-					multiPageEditor.removePage(index);
+				if (child instanceof Vertex) {
+					Vertex vertex = (Vertex) child;
+					((TypedIORelation) vertex.getContainer())
+							.setContainer(null);
+					container = ((TypedIORelation) vertex.getContainer()).getContainer();
+				} else {
+					delecteConnectionCommands = ComponentUtility
+							.deleteConnections(child);
+					// detachFromGuides(child);
+					container = child.getContainer();
+					ComponentUtility.setContainer(child, null);
+					for (Integer index : indexList) {
+						Comparator comparator = Collections.reverseOrder();
+						Collections.sort(indexList, comparator);
+						multiPageEditor.removePage(index);
+					}
 				}
 
 			}
@@ -119,7 +123,7 @@ public class DeleteComponentCommand extends Command {
 		//
 		// sourceConnections.clear();
 		// targetConnections.clear();
-		for (DeleteConnectionCommand cmd : delecteConnectionCommands) {
+		for (Command cmd : delecteConnectionCommands) {
 			cmd.undo();
 		}
 	}
@@ -129,7 +133,7 @@ public class DeleteComponentCommand extends Command {
 			if (!source.isEmpty() && !destination.isEmpty()) {
 				CreateConnectionCommand connection = new CreateConnectionCommand(
 						(ComponentPort) source.get(0),
-						(ComponentPort) destination.get(0),multiPageEditor);
+						(ComponentPort) destination.get(0), multiPageEditor);
 				connection.setContainer(parent);
 				connection.execute();
 			}
@@ -172,8 +176,15 @@ public class DeleteComponentCommand extends Command {
 			@Override
 			protected void _execute() throws Exception {
 				try {
-					ComponentUtility.setContainer(child, container);
-					restoreConnections(child);
+					if (child instanceof Vertex) {
+						Vertex vertex = (Vertex) child;
+						((TypedIORelation) vertex.getContainer())
+								.setContainer((CompositeEntity)container);
+					} else {
+
+						ComponentUtility.setContainer(child, container);
+						restoreConnections(child);
+					}
 				} catch (Exception e) {
 					getLogger()
 							.error("Unable to undo deletion of component", e);
@@ -184,5 +195,4 @@ public class DeleteComponentCommand extends Command {
 
 	}
 
-	
 }

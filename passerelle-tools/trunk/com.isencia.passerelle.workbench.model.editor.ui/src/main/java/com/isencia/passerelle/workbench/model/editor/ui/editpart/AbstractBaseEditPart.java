@@ -22,6 +22,7 @@ import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.editor.ui.INameable;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;

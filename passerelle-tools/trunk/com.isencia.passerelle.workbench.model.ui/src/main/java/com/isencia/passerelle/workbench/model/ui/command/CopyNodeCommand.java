@@ -7,22 +7,22 @@ import java.util.Iterator;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
-import com.isencia.passerelle.workbench.model.ui.Relation;
-
 import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
-import ptolemy.kernel.util.NamedObj;
+
+import com.isencia.passerelle.workbench.model.ui.RelationModel;
+import com.isencia.passerelle.workbench.model.ui.VertexRelation;
 
 public class CopyNodeCommand extends Command {
 	private ArrayList<Object> list = new ArrayList<Object>();
 
-	public boolean addElement(NamedObj NamedObj) {
+	public boolean addElement(Object NamedObj) {
 		if (!list.contains(NamedObj)) {
 			if (NamedObj instanceof IORelation) {
-				list.add(new Relation(((IORelation)NamedObj)
+				list.add(new RelationModel(((IORelation)NamedObj)
 						.linkedSourcePorts(),((IORelation)NamedObj).linkedDestinationPorts()));
-
+				
 			} else {
 				return list.add(NamedObj);
 			}

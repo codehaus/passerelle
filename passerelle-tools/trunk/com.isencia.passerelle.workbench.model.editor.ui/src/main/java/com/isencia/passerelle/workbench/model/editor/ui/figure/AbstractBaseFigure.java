@@ -1,5 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.figure;
 
+import javax.transaction.xa.Xid;
+
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Label;
@@ -10,8 +12,6 @@ import org.eclipse.swt.graphics.Color;
 import com.isencia.passerelle.workbench.model.editor.ui.INameable;
 
 public class AbstractBaseFigure extends Figure implements INameable {
-
-	
 
 	public final static int DEFAULT_WIDTH = 60;
 	public final static int DEFAULT_HEIGHT = 60;
@@ -28,22 +28,29 @@ public class AbstractBaseFigure extends Figure implements INameable {
 	protected Label nameLabel = new Label();
 
 	public AbstractBaseFigure(String name) {
+		this(name, true);
+
+	}
+
+	public AbstractBaseFigure(String name, boolean withLabel) {
 		ToolbarLayout layout = new ToolbarLayout();
 		layout.setVertical(true);
 		layout.setSpacing(2);
 		setLayoutManager(layout);
 		setBackgroundColor(getBackgtoundColor());
-		nameLabel.setText(name);
-		nameLabel.setOpaque(true);
-		add(nameLabel);
+		if (withLabel) {
+			nameLabel.setText(name);
+			nameLabel.setOpaque(true);
+			add(nameLabel);
+		}
 		setOpaque(false);
-		
+
 	}
 
 	protected Color getBackgtoundColor() {
 		return DEFAULT_BACKGROUND_COLOR;
 	}
-	
+
 	public String getName() {
 		return this.nameLabel.getText();
 	}

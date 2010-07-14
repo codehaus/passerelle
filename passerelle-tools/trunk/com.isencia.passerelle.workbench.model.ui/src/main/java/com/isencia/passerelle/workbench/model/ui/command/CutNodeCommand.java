@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
-import com.isencia.passerelle.workbench.model.ui.Relation;
+import com.isencia.passerelle.workbench.model.ui.RelationModel;
 
 import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
@@ -21,15 +21,15 @@ import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.NamedObj;
 
 public class CutNodeCommand extends Command {
-	private HashMap<NamedObj, DeleteComponentCommand> list = new HashMap<NamedObj, DeleteComponentCommand>();
-	private HashMap<NamedObj, DeleteConnectionCommand> connectionList = new HashMap<NamedObj, DeleteConnectionCommand>();
+	private HashMap<Object, DeleteComponentCommand> list = new HashMap<Object, DeleteComponentCommand>();
+	private HashMap<Object, DeleteConnectionCommand> connectionList = new HashMap<Object, DeleteConnectionCommand>();
 
 	public void emptyElementList() {
 		list.clear();
 		connectionList.clear();
 	}
 
-	public boolean addElement(NamedObj NamedObj) {
+	public boolean addElement(Object NamedObj) {
 		if (!(NamedObj instanceof IORelation)) {
 			if (!list.keySet().contains(NamedObj)) {
 				list.put(NamedObj, new DeleteComponentCommand());
@@ -49,7 +49,7 @@ public class CutNodeCommand extends Command {
 	public boolean canExecute() {
 		if (list == null || list.isEmpty())
 			return false;
-		Iterator<Map.Entry<NamedObj, DeleteComponentCommand>> it = list
+		Iterator<Map.Entry<Object, DeleteComponentCommand>> it = list
 				.entrySet().iterator();
 		while (it.hasNext()) {
 			if (!isCopyableNamedObj(it.next().getKey()))
@@ -63,12 +63,12 @@ public class CutNodeCommand extends Command {
 		if (canExecute()) {
 			CompositeEntity container = null;
 			Iterator it = connectionList.keySet().iterator();
-			List<Relation> relations = new ArrayList<Relation>();
+			List<RelationModel> relations = new ArrayList<RelationModel>();
 			while (it.hasNext()) {
 				try {
 					NamedObj child = (NamedObj) it.next();
 					if (child instanceof IORelation) {
-						relations.add(new Relation(((IORelation) child)
+						relations.add(new RelationModel(((IORelation) child)
 								.linkedDestinationPorts(), ((IORelation) child)
 								.linkedSourcePorts()));
 
@@ -134,7 +134,7 @@ public class CutNodeCommand extends Command {
 		}
 	}
 
-	public boolean isCopyableNamedObj(NamedObj NamedObj) {
+	public boolean isCopyableNamedObj(Object NamedObj) {
 		if (NamedObj instanceof Director)
 			return false;
 		return true;

@@ -3,6 +3,8 @@ package com.isencia.passerelle.workbench.model.editor.ui.figure;
 import java.util.HashMap;
 import java.util.Vector;
 
+import javax.swing.colorchooser.ColorSelectionModel;
+
 import org.eclipse.draw2d.AbstractBorder;
 import org.eclipse.draw2d.BorderLayout;
 import org.eclipse.draw2d.Clickable;
@@ -34,6 +36,7 @@ public class ActorFigure extends AbstractNodeFigure {
 	private InputPorts inputPorts = null;
 	private OutputPorts outputPorts = null;
 	private HashMap<String, PortFigure> inputPortMap = new HashMap<String, PortFigure>();
+
 	public HashMap<String, PortFigure> getInputPortMap() {
 		return inputPortMap;
 	}
@@ -44,37 +47,32 @@ public class ActorFigure extends AbstractNodeFigure {
 
 	private HashMap<String, PortFigure> outputPortMap = new HashMap<String, PortFigure>();
 
-	public ActorFigure(String name, Image image, Clickable clickable) {
+	public ActorFigure(String name, Image image, Clickable[] clickables) {
 		super(name);
 
-		add(new CompositeFigure(image, clickable));
+		add(new CompositeFigure(image, clickables));
 	}
 
-	public ActorFigure(String name, Image image) {
-		super(name);
 
-		add(new CompositeFigure(image, null));
-	}
-
-	protected IFigure generateBody(Image image, Clickable clickable) {
+	protected IFigure generateBody(Image image, Clickable[] clickables) {
 		Body body = new Body();
 		body.setBorder(new LineBorder());
 		body.initImage(image);
-		body.initClickable(clickable);
+		for (Clickable clickable : clickables)
+			body.initClickable(clickable);
 		return (body);
 	}
 
 	private class CompositeFigure extends Figure {
 
-		public CompositeFigure(Image image, Clickable clickable) {
+		public CompositeFigure(Image image,Clickable[] clickables) {
 			ToolbarLayout layout = new ToolbarLayout();
 			layout.setVertical(false);
 			setLayoutManager(layout);
 			setOpaque(false);
-
 			inputPorts = new InputPorts();
 			add(inputPorts);
-			body = generateBody(image, clickable);
+			body = generateBody(image, clickables);
 			add(body);
 
 			outputPorts = new OutputPorts();
@@ -160,7 +158,13 @@ public class ActorFigure extends AbstractNodeFigure {
 				ImageFigure imageFigure = new ImageFigure(image);
 				imageFigure.setAlignment(PositionConstants.WEST);
 				imageFigure.setBorder(new MarginBorder(5, 5, 0, 0));
+				// ImageFigure propertiesFgure = new
+				// ImageFigure(IMAGE_DESCRIPTOR_PROPERTIES.createImage());
+				// propertiesFgure.setAlignment(PositionConstants.EAST);
+				//			
+				// propertiesFgure.setBorder(new MarginBorder(5, 0, 0, 5));
 				add(imageFigure, BorderLayout.TOP);
+
 			}
 		}
 
@@ -218,34 +222,36 @@ public class ActorFigure extends AbstractNodeFigure {
 		// TODO update Anchor with correct attributes
 		FixedConnectionAnchor anchor = new FixedConnectionAnchor(
 				inputPortFigure);
+		
 		anchor.offsetV = ANCHOR_HEIGTH / 2;
 		getTargetConnectionAnchors().add(anchor);
 		connectionAnchors.put(portName, anchor);
 		return inputPortFigure;
 	}
-	
+
 	public void removeInput(String portName) {
 		PortFigure figure = inputPortMap.get(portName);
-		if (figure != null){
+		if (figure != null) {
 			inputPorts.remove(figure);
 			inputPortMap.remove(portName);
 			ConnectionAnchor anchor = getConnectionAnchor(portName);
-			if (anchor!=null){
+			if (anchor != null) {
 				getTargetConnectionAnchors().remove(anchor);
 			}
-			
+
 		}
 	}
+
 	public void removeOutput(String portName) {
 		PortFigure figure = outputPortMap.get(portName);
-		if (figure != null){
+		if (figure != null) {
 			outputPorts.remove(figure);
 			outputPortMap.remove(portName);
 			ConnectionAnchor anchor = getConnectionAnchor(portName);
-			if (anchor!=null){
+			if (anchor != null) {
 				getSourceConnectionAnchors().remove(anchor);
 			}
-			
+
 		}
 	}
 

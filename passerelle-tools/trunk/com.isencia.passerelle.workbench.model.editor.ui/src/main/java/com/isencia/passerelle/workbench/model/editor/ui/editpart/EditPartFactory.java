@@ -1,16 +1,10 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.draw2d.IFigure;
-import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.EditPart;
-import org.eclipse.gef.EditPolicy;
-import org.eclipse.gef.editparts.AbstractEditPart;
-import org.eclipse.swt.accessibility.AccessibleControlEvent;
-import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +15,16 @@ import ptolemy.actor.IOPort;
 import ptolemy.actor.TypedAtomicActor;
 import ptolemy.actor.TypedCompositeActor;
 import ptolemy.kernel.Relation;
+import ptolemy.moml.Vertex;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.actor.Sink;
 import com.isencia.passerelle.actor.Source;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
-import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
-import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundInputFigure;
-import com.isencia.passerelle.workbench.model.editor.ui.figure.InputPortFigure;
+import com.isencia.passerelle.workbench.model.ui.VertexRelation;
 
 public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 	private Set<AbstractBaseEditPart> parts = new HashSet<AbstractBaseEditPart>();
-
 	public Set<AbstractBaseEditPart> getParts() {
 		return parts;
 	}
@@ -73,13 +65,18 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 			child = new DirectorEditPart();
 		} else if (model instanceof TextAttribute) {
 			child = new CommentEditPart();
+		} else if (model instanceof Vertex) {
+			child =new VertexEditPart();
+			
 		} else if (model instanceof IOPort) {
 			if (((IOPort) model).isInput())
 				child = new PortEditPart(true);
 			else
 				child = new PortEditPart(false);
 		} else if (model instanceof Relation) {
-			child = new RelationEditPart();
+				child = new RelationEditPart();
+		} else if (model instanceof VertexRelation) {
+			child = new VertexRelationEditPart();
 		} else if (model instanceof TypedCompositeActor) {
 			// TODO Check if this is the correct check to make the distinction
 			// between this and child Composites. Check also how to go more then
@@ -111,5 +108,16 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		}
 		return child;
 	}
+	private Vertex getVertex(Relation model) {
+		Enumeration attributes = model.getAttributes();
+		while (attributes.hasMoreElements()) {
+			Object temp = attributes.nextElement();
+			if (temp instanceof Vertex) {
+				return (Vertex)temp;
+			}
+		}
+		return null;
+	}
+
 
 }

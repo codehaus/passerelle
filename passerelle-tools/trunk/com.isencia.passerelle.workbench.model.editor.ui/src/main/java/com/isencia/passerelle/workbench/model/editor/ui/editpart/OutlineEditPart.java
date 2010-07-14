@@ -25,6 +25,7 @@ import ptolemy.kernel.util.Changeable;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.kernel.util.Settable;
 import ptolemy.kernel.util.ValueListener;
+import ptolemy.moml.Vertex;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
@@ -35,7 +36,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 public class OutlineEditPart extends
 		org.eclipse.gef.editparts.AbstractTreeEditPart implements
 		ValueListener, ChangeListener {
-	private static HashMap<String,Image> modelImages = new HashMap<String,Image>();
+	private static HashMap<String, Image> modelImages = new HashMap<String, Image>();
 	private static Logger logger = LoggerFactory
 			.getLogger(OutlineEditPart.class);
 
@@ -131,6 +132,9 @@ public class OutlineEditPart extends
 			IOPort text = (IOPort) namedObjectModel;
 			children.addAll(text
 					.attributeList(ptolemy.kernel.util.StringAttribute.class));
+		} else if (namedObjectModel instanceof Vertex) {
+			Vertex text = (Vertex) namedObjectModel;
+			children.addAll(text.attributeList(Vertex.class));
 		} else if (namedObjectModel instanceof TextAttribute) {
 			TextAttribute text = (TextAttribute) namedObjectModel;
 			children.addAll(text
@@ -164,26 +168,36 @@ public class OutlineEditPart extends
 		NamedObj model = getNamedObjectModel();
 		// Set Image
 		if (model instanceof Director)
-			setWidgetImage(DirectorEditPart.IMAGE_DESCRIPTOR_DIRECTOR,model);
+			setWidgetImage(DirectorEditPart.IMAGE_DESCRIPTOR_DIRECTOR, model);
 		else if (model instanceof Parameter)
-			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_PARAMETER,model);
+			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_PARAMETER, model);
 		else if (model instanceof IOPort) {
 			IOPort port = (IOPort) model;
 			if (port.isInput())
-				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_INPUTPORT,model);
+				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_INPUTPORT, model);
 			else
-				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_OUTPUTPORT,model);
+				setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_OUTPUTPORT, model);
 		} else if (model instanceof TypedAtomicActor) {
-			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_ACTOR,model);
+			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_ACTOR, model);
 		} else if (model instanceof CompositeActor) {
-			setWidgetImage(CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR,model);
+			setWidgetImage(
+					CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR,
+					model);
+		} else if (model instanceof Vertex) {
+			setWidgetImage(CommentEditPart.IMAGE_COMMENT, model);
 		} else if (model instanceof TextAttribute) {
-			setWidgetImage(CommentEditPart.IMAGE_COMMENT,model);
+			setWidgetImage(CommentEditPart.IMAGE_COMMENT, model);
 		} else if (model instanceof TypedIOPort) {
-			if (((IOPort)model).isInput())
-				setWidgetImage(PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.InputIOPort"),model);
+			if (((IOPort) model).isInput())
+				setWidgetImage(
+						PaletteBuilder
+								.getIcon("com.isencia.passerelle.actor.general.InputIOPort"),
+						model);
 			else
-				setWidgetImage(PaletteBuilder.getIcon("com.isencia.passerelle.actor.general.OutputIOPort"),model);
+				setWidgetImage(
+						PaletteBuilder
+								.getIcon("com.isencia.passerelle.actor.general.OutputIOPort"),
+						model);
 		}
 		// Set Text
 		if (model instanceof Parameter) {
@@ -214,13 +228,14 @@ public class OutlineEditPart extends
 	public void changeFailed(ChangeRequest changerequest, Exception exception) {
 		getLogger().error("Error during execution of ChangeRequest", exception);
 	}
-	protected void setWidgetImage(ImageDescriptor image,NamedObj obj) {
-		if (modelImages.get(obj.getClass().getName())==null){
+
+	protected void setWidgetImage(ImageDescriptor image, NamedObj obj) {
+		if (modelImages.get(obj.getClass().getName()) == null) {
 			Image createImage = image.createImage();
 			setWidgetImage(createImage);
-			modelImages.put(obj.getClass().getName(),createImage);
-		}else{
-//			modelImages.get(obj.getClass().getName()).
+			modelImages.put(obj.getClass().getName(), createImage);
+		} else {
+			// modelImages.get(obj.getClass().getName()).
 			setWidgetImage(modelImages.get(obj.getClass().getName()));
 		}
 	}

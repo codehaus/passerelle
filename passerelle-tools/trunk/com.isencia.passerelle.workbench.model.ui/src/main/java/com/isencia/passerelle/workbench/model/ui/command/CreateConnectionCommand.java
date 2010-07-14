@@ -4,13 +4,13 @@ import org.eclipse.gef.commands.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ptolemy.actor.TypedCompositeActor;
 import ptolemy.actor.TypedIOPort;
 import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.CompositeEntity;
-import ptolemy.kernel.Port;
+import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
@@ -19,7 +19,8 @@ public class CreateConnectionCommand extends Command {
 
 	private IPasserelleMultiPageEditor editor;
 
-	public CreateConnectionCommand(ComponentPort source, ComponentPort target,IPasserelleMultiPageEditor editor) {
+	public CreateConnectionCommand(NamedObj source, NamedObj target,
+			IPasserelleMultiPageEditor editor) {
 		super();
 		this.source = source;
 		this.target = target;
@@ -39,17 +40,15 @@ public class CreateConnectionCommand extends Command {
 		return logger;
 	}
 
-	protected CompositeEntity container;
+	protected NamedObj container;
 
 	public void setContainer(CompositeEntity container) {
 		this.container = container;
 	}
 
 	protected TypedIORelation connection;
-	protected ComponentPort source;
-	protected ComponentPort target;
-
-	
+	protected NamedObj source;
+	protected NamedObj target;
 
 	public boolean canExecute() {
 		return (source != null && target != null);
@@ -61,7 +60,7 @@ public class CreateConnectionCommand extends Command {
 
 	public void doExecute() {
 		if (source != null && target != null) {
-			CompositeEntity temp = getContainer(source, target);
+			NamedObj temp = getContainer(source, target);
 			if (temp != null) {
 				container = temp;
 			}
@@ -76,8 +75,29 @@ public class CreateConnectionCommand extends Command {
 				protected void _execute() throws Exception {
 					getLogger().debug("Create new connection");
 					try {
-						connection = (TypedIORelation) container.connect(
-								source, target);
+
+						if (source instanceof ComponentPort
+								&& target instanceof ComponentPort)
+							connection = (TypedIORelation) ((CompositeEntity)container).connect(
+									(ComponentPort) source,
+									(ComponentPort) target);
+						if (source instanceof Vertex
+								&& target instanceof ComponentPort) {
+							((ComponentPort) target)
+									.link((Relation) ((Vertex) source)
+											.getContainer());
+						}
+						if (target instanceof Vertex
+								&& source instanceof ComponentPort) {
+							((ComponentPort) source)
+									.link((Relation) ((Vertex) target)
+											.getContainer());
+						}
+						if (target instanceof Vertex
+								&& source instanceof Vertex) {
+							
+							((TypedIORelation)((Vertex) source).getContainer()).link((TypedIORelation)((Vertex) target).getContainer());
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -86,24 +106,25 @@ public class CreateConnectionCommand extends Command {
 		}
 	}
 
-	private CompositeEntity getContainer(NamedObj source, NamedObj target) {
+	private NamedObj getContainer(NamedObj source, NamedObj target) {
 
-		if (editor!=null && (source instanceof TypedIOPort || target instanceof TypedIOPort)){
+		if (editor != null
+				&& (source instanceof TypedIOPort || target instanceof TypedIOPort)) {
 			return editor.getSelectedPage().getContainer();
 		}
-			
-		return (CompositeEntity) source.getContainer();
+
+		return  source.getContainer();
 	}
 
 	public String getLabel() {
 		return "";
 	}
 
-	public Port getSource() {
+	public NamedObj getSource() {
 		return source;
 	}
 
-	public Port getTarget() {
+	public NamedObj getTarget() {
 		return target;
 	}
 
@@ -111,11 +132,11 @@ public class CreateConnectionCommand extends Command {
 		doExecute();
 	}
 
-	public void setSource(ComponentPort newSource) {
+	public void setSource(NamedObj newSource) {
 		source = newSource;
 	}
 
-	public void setTarget(ComponentPort newTarget) {
+	public void setTarget(NamedObj newTarget) {
 		target = newTarget;
 	}
 

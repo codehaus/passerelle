@@ -92,10 +92,11 @@ public class CompoundInputFigure extends CompoundIOFigure {
 
 	}
 
-	protected IFigure generateBody(Image image, Clickable clickable) {
+	protected IFigure generateBody(Image image, Clickable[] clickables) {
 		Body body = new Body();
 		body.setBorder(new LineBorder());
-		body.initClickable(clickable);
+		for (Clickable clickable : clickables)
+			body.initClickable(clickable);
 		return (body);
 	}
 

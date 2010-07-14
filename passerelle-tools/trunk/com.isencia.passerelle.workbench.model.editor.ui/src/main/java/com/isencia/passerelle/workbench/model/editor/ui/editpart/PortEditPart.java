@@ -1,9 +1,9 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -15,15 +15,15 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
 import ptolemy.actor.TypedIOPort;
+import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.Relation;
-import ptolemy.kernel.util.Nameable;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundIOFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundInputFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompoundOutputFigure;
-import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 /**
@@ -70,21 +70,55 @@ public class PortEditPart extends ActorEditPart {
 	}
 
 	@Override
-	protected List<Relation> getModelSourceConnections() {
+	protected List getModelSourceConnections() {
 		if (isInput) {
-			return ModelUtils.getConnectedRelations((NamedObj) getModel(),
-					ModelUtils.ConnectionType.SOURCE);
+			return getPortSourceConnections();
 		}
 		return Collections.EMPTY_LIST;
 	}
 
 	@Override
-	protected List<Relation> getModelTargetConnections() {
+	protected List getModelTargetConnections() {
 		if (!isInput) {
-			return ModelUtils.getConnectedRelations((Nameable) getModel(),
-					ModelUtils.ConnectionType.TARGET);
+			return getPortTargetConnections();
 		}
 		return Collections.EMPTY_LIST;
+	}
+
+	protected List getPortSourceConnections() {
+		Set<Relation> connectedRelations = ModelUtils.getConnectedRelations(
+				(NamedObj) getModel(), ModelUtils.ConnectionType.SOURCE);
+		List modelSourceConnections = new ArrayList();
+		for (Relation rel : connectedRelations) {
+			Vertex vertex = getVertex(rel);
+			if (vertex != null) {
+				Object relation = VertexEditPart.getRelation(
+						(TypedIORelation) rel, (IOPort) getModel(), vertex,
+						false);
+				modelSourceConnections.add(relation);
+			} else {
+				modelSourceConnections.add(rel);
+			}
+		}
+		return modelSourceConnections;
+	}
+
+	protected List getPortTargetConnections() {
+		Set<Relation> connectedRelations = ModelUtils.getConnectedRelations(
+				(NamedObj) getModel(), ModelUtils.ConnectionType.TARGET);
+		List modelTargetConnections = new ArrayList();
+		for (Relation rel : connectedRelations) {
+			Vertex vertex = getVertex(rel);
+			if (vertex != null) {
+					Object relation = VertexEditPart.getRelation(
+							(TypedIORelation) rel, (IOPort) getModel(), vertex,
+							false);
+					modelTargetConnections.add(relation);
+			} else {
+				modelTargetConnections.add(rel);
+			}
+		}
+		return modelTargetConnections;
 	}
 
 	public Port getSourcePort(ConnectionAnchor anchor) {
@@ -109,29 +143,15 @@ public class PortEditPart extends ActorEditPart {
 
 	public ConnectionAnchor getSourceConnectionAnchor(
 			ConnectionEditPart connEditPart) {
-		getLogger().debug(
-				"Get SourceConnectionAnchor based on ConnectionEditPart");
-		Relation relation = (Relation) connEditPart.getModel();
-		List linkedPortList = ((IORelation) relation).linkedSourcePortList();
-		if (linkedPortList == null || linkedPortList.size() == 0)
-			return null;
-		ConnectionAnchor connectionAnchor = getComponentFigure()
-				.getConnectionAnchor(CompoundInputFigure.INPUT_PORT_NAME);
-		return connectionAnchor;
+		return getComponentFigure().getConnectionAnchor(
+				CompoundInputFigure.INPUT_PORT_NAME);
 	}
 
 	public ConnectionAnchor getTargetConnectionAnchor(
 			ConnectionEditPart connEditPart) {
-		getLogger().debug(
-				"Get TargetConnectionAnchor based on ConnectionEditPart");
-		Relation relation = (Relation) connEditPart.getModel();
-		List linkedPortList = ((IORelation) relation)
-				.linkedDestinationPortList();
-		if (linkedPortList == null || linkedPortList.size() == 0)
-			return null;
-		ConnectionAnchor connectionAnchor = getComponentFigure()
-				.getConnectionAnchor(CompoundOutputFigure.OUTPUT_PORT_NAME);
-		return connectionAnchor;
+		return getComponentFigure().getConnectionAnchor(
+				CompoundOutputFigure.OUTPUT_PORT_NAME);
+		
 	}
 
 }

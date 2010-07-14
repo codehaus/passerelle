@@ -7,12 +7,19 @@ import org.eclipse.swt.graphics.Color;
 public class PortFigure extends RectangleFigure {
 	private Color fillColor;
 	private String name;
-
+	protected int width;
+	protected int height;
 	public PortFigure(String name) {
+		this(name,ActorFigure.ANCHOR_WIDTH,ActorFigure.ANCHOR_HEIGTH);
+	}
+	public PortFigure(String name,int width,int height) {
 		super();
+		this.width = width;
+		this.height = height;
+
 		setOpaque(false);
 		setName(name);
-		setSize(ActorFigure.ANCHOR_WIDTH,ActorFigure.ANCHOR_HEIGTH);
+		setSize(width,height);
 	}
 
 	/*
@@ -21,9 +28,7 @@ public class PortFigure extends RectangleFigure {
 	 * @see org.eclipse.draw2d.IFigure#getPreferredSize(int, int)
 	 */
 	public Dimension getPreferredSize(int wHint, int hHint) {
-		int w = ActorFigure.ANCHOR_WIDTH;
-		int h = ActorFigure.ANCHOR_HEIGTH;
-		return new Dimension(w, h);
+		return new Dimension(width, height);
 	}
 
 	public String getName() {

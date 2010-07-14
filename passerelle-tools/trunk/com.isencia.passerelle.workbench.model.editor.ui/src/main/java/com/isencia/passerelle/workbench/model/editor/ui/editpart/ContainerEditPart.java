@@ -9,11 +9,9 @@ import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 
 import ptolemy.actor.CompositeActor;
-import ptolemy.actor.IOPort;
-import ptolemy.actor.TypedCompositeActor;
+import ptolemy.kernel.Relation;
+import ptolemy.moml.Vertex;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
-
-import com.isencia.passerelle.actor.Actor;
 
 /**
  * Provides support for Container EditParts.
@@ -98,6 +96,24 @@ abstract public class ContainerEditPart extends AbstractBaseEditPart {
 			
 			Object nextElement = ports.nextElement();
 			children.add(nextElement);
+		}
+		Enumeration relations = modelDiagram.getRelations();
+		while (relations.hasMoreElements()) {
+			
+			Object nextElement = relations.nextElement();
+			children.addAll(getVertexModelChildren((Relation)nextElement));
+		}
+		return children;
+	}
+	protected List getVertexModelChildren(Relation relation) {
+		ArrayList children = new ArrayList();
+
+		Enumeration attributes = relation.getAttributes();
+		while (attributes.hasMoreElements()) {
+
+			Object nextElement = attributes.nextElement();
+			if (nextElement instanceof Vertex)
+				children.add(nextElement);
 		}
 		return children;
 	}

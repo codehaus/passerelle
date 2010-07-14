@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-public class Relation {
+public class RelationModel {
 	private List source = new ArrayList();
 
 	public List getSource() {
@@ -17,7 +17,7 @@ public class Relation {
 
 	private List destination = new ArrayList();
 
-	public Relation(Enumeration source, Enumeration destination) {
+	public RelationModel(Enumeration source, Enumeration destination) {
 		super();
 		while (source.hasMoreElements()) {
 			this.source.add(source.nextElement());
