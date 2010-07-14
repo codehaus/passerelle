@@ -86,6 +86,13 @@
             id="SocketClientSender"
             name="SocketClientSender">
       </actor>
+      <actor
+            class="ptolemy.moml.Vertex"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            icon="icons/vertex.gif"
+            id="Vertex"
+            name="Vertex">
+      </actor>
       
    </extension>
    <extension
