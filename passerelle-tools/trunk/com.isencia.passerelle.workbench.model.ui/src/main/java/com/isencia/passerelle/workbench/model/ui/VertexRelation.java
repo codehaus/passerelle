@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ptolemy.actor.IOPort;
+import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.Attribute;
@@ -27,6 +28,7 @@ import ptolemy.kernel.util.Moveable;
 import ptolemy.kernel.util.NameDuplicationException;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.kernel.util.Workspace;
+import ptolemy.moml.Vertex;
 
 public class VertexRelation implements Changeable, Cloneable, Debuggable,
 		DebugListener, Derivable, MoMLExportable, ModelErrorHandler, Moveable,
@@ -353,11 +355,28 @@ public class VertexRelation implements Changeable, Cloneable, Debuggable,
 		return relation.workspace();
 	}
 
-	public VertexRelation(Relation relation,IOPort port,boolean isSourceVertex) {
+	public VertexRelation(IOPort port,Vertex vertex,boolean isSourceVertex) {
 		super();
-		this.relation = relation;
-		this.isSourceVertex = isSourceVertex;
+		this.relation = (TypedIORelation)vertex.getContainer();
 		this.port = port;
+		
+		if (isSourceVertex){
+			this.sourceVertex = vertex;
+		}else{
+			this.targetVertex = vertex;
+		}
+	}
+	public VertexRelation(Vertex vertex1,Vertex vertex2,boolean isSourceVertex) {
+		super();
+		this.relation = (TypedIORelation)vertex2.getContainer();
+		if (isSourceVertex){
+			this.targetVertex = vertex2;
+			this.sourceVertex = vertex1;
+		}else{
+			this.sourceVertex = vertex2;
+			this.targetVertex = vertex1;
+		}
+		
 	}
 
 	private Relation relation;
@@ -366,21 +385,20 @@ public class VertexRelation implements Changeable, Cloneable, Debuggable,
 	}
 
 	private IOPort port;
-	private boolean isSourceVertex;
-
-	public boolean isSourceVertex() {
-		return isSourceVertex;
-	}
-
-	public void setSourceVertex(boolean isSourceVertex) {
-		this.isSourceVertex = isSourceVertex;
-	}
 
 	public IOPort getPort() {
 		return port;
 	}
 
-	public void setPort(IOPort port) {
-		this.port = port;
+	private Vertex sourceVertex;
+	public Vertex getSourceVertex() {
+		return sourceVertex;
 	}
+
+	private Vertex targetVertex;
+	public Vertex getTargetVertex() {
+		return targetVertex;
+	}
+
+
 }

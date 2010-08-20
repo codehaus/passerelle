@@ -24,7 +24,10 @@ public class VertexRelationDeletePolicy extends
 				.getModel());
 		VertexRelation vr = (VertexRelation) getHost().getModel();
 		deleteCmd.setConnection((TypedIORelation) vr.getRelation());
-		deleteCmd.setPort(vr.getPort());
+		if (vr.getPort() != null)
+			deleteCmd.setPort(vr.getPort());
+		else
+			deleteCmd.setVertex(vr.getTargetVertex());
 		return deleteCmd;
 	}
 

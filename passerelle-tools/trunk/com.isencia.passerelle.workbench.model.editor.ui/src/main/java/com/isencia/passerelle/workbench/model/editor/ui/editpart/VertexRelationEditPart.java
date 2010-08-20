@@ -17,6 +17,7 @@ import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
+import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationEndpointEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.VertexRelationDeletePolicy;
@@ -33,6 +34,9 @@ public class VertexRelationEditPart extends AbstractConnectionEditPart
 	}
 	public IOPort getPort() {
 		return ((VertexRelation)getModel()).getPort();
+	}
+	public Vertex getVertex() {
+		return ((VertexRelation)getModel()).getTargetVertex();
 	}
 
 

@@ -14,8 +14,11 @@ import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NamedObj;
+import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
+import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class DeleteVertexConnectionCommand extends Command {
 
@@ -23,7 +26,22 @@ public class DeleteVertexConnectionCommand extends Command {
 			.getLogger(DeleteVertexConnectionCommand.class);
 
 	private ComponentRelation connection;
+	private Vertex vertex;
+
+	public Vertex getVertex() {
+		return vertex;
+	}
+
+	public void setVertex(Vertex vertex) {
+		this.vertex = vertex;
+	}
+
 	private IOPort port;
+
+	public IOPort getPort() {
+		return port;
+	}
+
 	public void setPort(IOPort port) {
 		this.port = port;
 	}
@@ -49,8 +67,11 @@ public class DeleteVertexConnectionCommand extends Command {
 			@SuppressWarnings("unchecked")
 			@Override
 			protected void _execute() throws Exception {
-				unlinkRelation(connection,port);
 
+				if (getPort() != null)
+					unlinkRelation(connection, getPort());
+				else
+					unlinkRelation(connection, getVertex());
 				getLogger().debug("Connection deleted");
 			}
 		});
@@ -75,26 +96,30 @@ public class DeleteVertexConnectionCommand extends Command {
 				connection, "undo-delete") {
 			@Override
 			protected void _execute() throws Exception {
-				port.link(connection);
+				if (getPort() != null)
+					getPort().link(connection);
+				else
+					((TypedIORelation) getVertex().getContainer())
+							.link(connection);
 
 			}
 		});
 	}
 
-	private void unlinkRelation(ComponentRelation connection,Object port) throws IllegalActionException {
-		List linkedPortList = connection
-				.linkedObjectsList();
+	private void unlinkRelation(ComponentRelation connection, NamedObj namedObj)
+			throws IllegalActionException {
+		List linkedPortList = connection.linkedObjectsList();
 		connection.unlinkAll();
-		for (Iterator<Object> iterator = linkedPortList
-				.iterator(); iterator.hasNext();) {
+		for (Iterator<Object> iterator = linkedPortList.iterator(); iterator
+				.hasNext();) {
 			Object temp = (Object) iterator.next();
-			if (!temp.equals(port)) {
-				if (temp instanceof Port){
-					((Port)temp).link(connection);
-				}
-				if (temp instanceof Relation){
-					((Relation)temp).link(connection);
-				}
+			if (temp instanceof Port && !temp.equals(namedObj)) {
+				((Port) temp).link(connection);
+			}
+			if (temp instanceof TypedIORelation && (!(namedObj instanceof Vertex)
+					|| (temp instanceof TypedIORelation && !(((Vertex) namedObj)
+							.getContainer().equals(connection))))) {
+				((Relation) temp).link(connection);
 			}
 
 		}

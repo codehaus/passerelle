@@ -2,8 +2,10 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
@@ -20,7 +22,9 @@ import org.eclipse.swt.accessibility.AccessibleEvent;
 
 import ptolemy.actor.IOPort;
 import ptolemy.actor.TypedIORelation;
+import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
+import ptolemy.kernel.util.NamedObj;
 import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
@@ -44,9 +48,23 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
  * @author Dirk Jacobs
  */
 public class VertexEditPart extends AbstractNodeEditPart {
-	public static Map<Vertex, Map<IOPort, VertexRelation>> vertexRelationMap = new HashMap<Vertex, Map<IOPort, VertexRelation>>();
-	public static Map<TypedIORelation, Vertex> vertexSourceMap = new HashMap<TypedIORelation, Vertex>();
-
+	public static Map<Vertex, Map<NamedObj, VertexRelation>> vertexRelationMap = new HashMap<Vertex, Map<NamedObj, VertexRelation>>();
+	public static Set<Vertex> vertexRelationSources = new HashSet<Vertex>();
+	public static Set<Vertex> vertexRelationTargets = new HashSet<Vertex>();
+	public static boolean isSource(Vertex source){
+		if (!vertexRelationSources.contains(source)&& !vertexRelationTargets.contains(source)){
+			vertexRelationSources.add(source);
+			return true;
+		}
+		return vertexRelationSources.contains(source);
+	}
+	public static boolean isTarget(Vertex target){
+		if (!vertexRelationSources.contains(target)){
+			vertexRelationTargets.add(target);
+			return true;
+		}
+		return vertexRelationTargets.contains(target);
+	}
 	public final static ImageDescriptor IMAGE_COMMENT = Activator
 			.getImageDescriptor("com.isencia.passerelle.actor",
 					"icons/vertex.gif");
@@ -65,40 +83,23 @@ public class VertexEditPart extends AbstractNodeEditPart {
 		List relations = new ArrayList();
 		TypedIORelation relation = (TypedIORelation) ((Vertex) getModel())
 				.getContainer();
-		for (Object o : relation.linkedDestinationPortList()) {
-			relations.add(getRelation(relation, o, (Vertex) getModel(), true));
-		}
 		List list = relation.linkedObjectsList();
+
+		for (Object o : relation.linkedDestinationPortList()) {
+			if (list.contains(o))
+				relations.add(getRelation(relation, o, (Vertex) getModel(),
+						true));
+		}
 		for (Object o : relation.linkedObjectsList()) {
 			if (o instanceof TypedIORelation) {
-				if (isSource(relation, (TypedIORelation) o, (Vertex) getModel())) {
-					relations.add(relation);
-				}
+				Object rel = getRelation(relation, ModelUtils
+						.getVertex((Relation) o), (Vertex) getModel(), true);
+				if (rel != null)
+					relations.add(rel);
+
 			}
 		}
 		return relations;
-	}
-
-	private boolean isSource(TypedIORelation source, TypedIORelation target,
-			Vertex vertex) {
-		Vertex targetVertex = vertexSourceMap.get(target);
-		if (targetVertex == null) {
-			vertexSourceMap.put(source, vertex);
-			return true;
-		}
-		if (targetVertex.equals(vertex)) {
-			return true;
-		}
-		return false;
-	}
-
-	private boolean isTarget(TypedIORelation source, TypedIORelation target,
-			Vertex vertex) {
-		Vertex sourceVertex = vertexSourceMap.get(source);
-		if (vertex.equals(sourceVertex)) {
-			return false;
-		}
-		return true;
 	}
 
 	@Override
@@ -106,16 +107,19 @@ public class VertexEditPart extends AbstractNodeEditPart {
 		List relations = new ArrayList();
 		TypedIORelation relation = (TypedIORelation) ((Vertex) getModel())
 				.getContainer();
-		for (Object o : relation.linkedSourcePortList()) {
-			relations.add(getRelation(relation, o, (Vertex) getModel(), false));
-		}
 		List list = relation.linkedObjectsList();
+
+		for (Object o : relation.linkedSourcePortList()) {
+			if (list.contains(o))
+				relations.add(getRelation(relation, o, (Vertex) getModel(),
+						false));
+		}
 		for (Object o : relation.linkedObjectsList()) {
 			if (o instanceof TypedIORelation) {
-				if (isTarget(relation, (TypedIORelation) o, (Vertex) getModel())) {
-					relations.add(o);
-				}
-
+				Object rel = getRelation(relation, (Vertex) getModel(),
+						ModelUtils.getVertex((Relation) o), false);
+				if (rel != null)
+					relations.add(rel);
 			}
 		}
 
@@ -124,17 +128,26 @@ public class VertexEditPart extends AbstractNodeEditPart {
 
 	public static Object getRelation(TypedIORelation relation, Object o,
 			Vertex vertex, boolean isSource) {
-		Object relationObject;
-		Map<IOPort, VertexRelation> map = vertexRelationMap.get(vertex);
+		VertexRelation relationObject = null;
+		Map<NamedObj, VertexRelation> map = vertexRelationMap.get(vertex);
 		if (map == null) {
-			map = new HashMap<IOPort, VertexRelation>();
+			map = new HashMap<NamedObj, VertexRelation>();
 			vertexRelationMap.put(vertex, map);
 		}
-		if (map.containsKey((IOPort) o)) {
-			relationObject = map.get((IOPort) o);
+		if (map.containsKey(o)) {
+			relationObject = map.get(o);
 		} else {
-			relationObject = new VertexRelation(relation, (IOPort) o, isSource);
-			map.put((IOPort) o, (VertexRelation) relationObject);
+
+			if (o instanceof IOPort) {
+				relationObject = new VertexRelation((IOPort) o, vertex,
+						isSource);
+			} else {
+				if ((isSource && isSource((Vertex) o)) || (!isSource && isTarget(vertex)) ) 
+					relationObject = new VertexRelation((Vertex) o, vertex,
+							isSource);
+			}
+
+			map.put((NamedObj) o, relationObject);
 
 		}
 		return relationObject;
@@ -148,15 +161,25 @@ public class VertexEditPart extends AbstractNodeEditPart {
 			ConnectionEditPart connEditPart) {
 		getLogger().debug(
 				"Get SourceConnectionAnchor based on ConnectionEditPart");
-		return getVertexFigure().getInputAnchor(getLocation(connEditPart),ModelUtils.getLocation((Vertex)getModel()));
+		return getVertexFigure().getInputAnchor(getLocation(connEditPart,true),
+				ModelUtils.getLocation((Vertex) getModel()));
 	}
 
-	private double[] getLocation(ConnectionEditPart connEditPart) {
+	private double[] getLocation(ConnectionEditPart connEditPart,boolean isSource) {
 		Object model = connEditPart.getModel();
 		double[] location = { 0, 0 };
 		if (model instanceof VertexRelation) {
-			location = ModelUtils.getLocation(((VertexRelation) model)
-					.getPort().getContainer());
+			VertexRelation relation = (VertexRelation) model;
+			if (relation.getPort() != null) {
+				location = ModelUtils.getLocation(((VertexRelation) model)
+						.getPort().getContainer());
+			} else if (!isSource && relation.getTargetVertex() != null) {
+				location = ModelUtils.getLocation(((VertexRelation) model)
+						.getTargetVertex());
+			} else if (isSource && relation.getSourceVertex() != null) {
+				location = ModelUtils.getLocation(((VertexRelation) model)
+						.getSourceVertex());
+			}
 		}
 		return location;
 	}
@@ -165,8 +188,9 @@ public class VertexEditPart extends AbstractNodeEditPart {
 			ConnectionEditPart connEditPart) {
 		getLogger().debug(
 				"Get TargetConnectionAnchor based on ConnectionEditPart");
-		
-		return getVertexFigure().getOutputAnchor(getLocation(connEditPart),ModelUtils.getLocation((Vertex)getModel()));
+
+		return getVertexFigure().getOutputAnchor(getLocation(connEditPart,false),
+				ModelUtils.getLocation((Vertex) getModel()));
 	}
 
 	protected AccessibleEditPart createAccessible() {
@@ -225,8 +249,8 @@ public class VertexEditPart extends AbstractNodeEditPart {
 					List<ConnectionAnchor> outputAnchors = getVertexFigure()
 							.getOutputAnchors();
 					for (ConnectionAnchor outputAnchor : outputAnchors) {
-						list.add(outputAnchor.getReferencePoint().getTranslated(0,
-								3));
+						list.add(outputAnchor.getReferencePoint()
+								.getTranslated(0, 3));
 					}
 
 					return list;
@@ -234,6 +258,7 @@ public class VertexEditPart extends AbstractNodeEditPart {
 			};
 		return super.getAdapter(key);
 	}
+
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
 		super.changeExecuted(changerequest);

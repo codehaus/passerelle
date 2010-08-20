@@ -338,14 +338,12 @@ public class ActorEditPart extends AbstractNodeEditPart {
 			ConnectionEditPart connEditPart) {
 		getLogger().debug(
 				"Get SourceConnectionAnchor based on ConnectionEditPart");
-		Relation relation = null;
 		Port port = null;
 		if (connEditPart instanceof VertexRelationEditPart) {
-			relation = ((VertexRelationEditPart) connEditPart).getRelation();
 			port = ((VertexRelationEditPart) connEditPart).getPort();
 
 		} else {
-			relation = (Relation) connEditPart.getModel();
+			Relation relation = (Relation) connEditPart.getModel();
 			List linkedPortList = ((IORelation) relation)
 					.linkedSourcePortList();
 			if (linkedPortList == null || linkedPortList.size() == 0)
@@ -378,17 +376,14 @@ public class ActorEditPart extends AbstractNodeEditPart {
 			ConnectionEditPart connEditPart) {
 		getLogger().debug(
 				"Get TargetConnectionAnchor based on ConnectionEditPart");
-		Relation relation = null;
 		Port port = null;
 		if (connEditPart instanceof VertexRelationEditPart) {
-			relation = ((VertexRelationEditPart) connEditPart).getRelation();
 			port = ((VertexRelationEditPart) connEditPart).getPort();
 
 		} else {
 
-			relation = (Relation) connEditPart.getModel();
-			List linkedPortList = ((IORelation) relation)
-					.linkedDestinationPortList();
+			IORelation relation = (IORelation) connEditPart.getModel();
+			List linkedPortList = relation.linkedDestinationPortList();
 			if (linkedPortList == null || linkedPortList.size() == 0)
 				return null;
 			port = (Port) linkedPortList.get(0);
