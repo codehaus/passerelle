@@ -133,9 +133,7 @@ public class ModelUtils {
 								connections.add(relation);
 						}
 					}
-				} else if (o instanceof Relation) {
-					connections.add(relation);
-				}
+				} 
 			}
 
 		}
