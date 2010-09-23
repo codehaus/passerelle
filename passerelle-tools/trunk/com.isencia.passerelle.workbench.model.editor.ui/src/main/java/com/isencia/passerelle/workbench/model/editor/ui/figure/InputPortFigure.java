@@ -27,11 +27,11 @@ public class InputPortFigure extends PortFigure {
 		graphics.setForegroundColor(ColorConstants.black);
 
 		PointList pts = new PointList();
-		pts.addPoint(bounds.getTopRight());
-		pts.addPoint(bounds.getTopRight().x - width+1, bounds.y
+		pts.addPoint(bounds.getTopLeft());
+		pts.addPoint(bounds.getTopLeft().x + width - 1, bounds.y
 				+ height / 2);
-		pts.addPoint(bounds.getBottomRight());
-		pts.addPoint(bounds.getTopRight());
+		pts.addPoint(bounds.getBottomLeft());
+		pts.addPoint(bounds.getTopLeft());
 		graphics.fillPolygon(pts);
 		graphics.drawPolyline(pts);
 	}
