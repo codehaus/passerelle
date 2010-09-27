@@ -388,6 +388,27 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		return super.getAdapter(key);
 	}
 	@Override
+	protected List getModelTargetConnections() {
+		Set<Relation> connectedRelations = ModelUtils.getConnectedRelations(
+				getActorModel(), ModelUtils.ConnectionType.TARGET);
+		List modelTargetConnections = new ArrayList();
+		for (Relation rel : connectedRelations) {
+			Vertex vertex = getVertex(rel);
+			if (vertex != null) {
+				List<IOPort> ports = ModelUtils.getPorts(rel,
+						(NamedObj) getActorModel());
+				for (IOPort port : ports) {
+					Object relation = VertexEditPart.getRelation(
+							(TypedIORelation) rel, port, vertex, false);
+					modelTargetConnections.add(relation);
+				}
+			} else {
+				modelTargetConnections.add(rel);
+			}
+		}
+		return modelTargetConnections;
+	}
+	@Override
 	protected List getModelSourceConnections() {
 		Set<Relation> connectedRelations = ModelUtils.getConnectedRelations(
 				getActorModel(), ModelUtils.ConnectionType.SOURCE);
