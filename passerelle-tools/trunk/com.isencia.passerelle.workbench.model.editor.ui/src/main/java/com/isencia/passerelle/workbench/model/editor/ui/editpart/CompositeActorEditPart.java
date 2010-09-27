@@ -1,7 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +57,7 @@ import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteConnectionCommand;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
+import com.isencia.passerelle.workbench.model.utils.ModelUtils.ConnectionType;
 
 public class CompositeActorEditPart extends ContainerEditPart implements
 		NodeEditPart {
@@ -387,10 +387,20 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 			};
 		return super.getAdapter(key);
 	}
+
 	@Override
 	protected List getModelTargetConnections() {
+		return getModelConnections(ModelUtils.ConnectionType.TARGET);
+	}
+
+	@Override
+	protected List getModelSourceConnections() {
+		return getModelConnections(ModelUtils.ConnectionType.SOURCE);
+	}
+
+	protected List getModelConnections(ConnectionType connectionType) {
 		Set<Relation> connectedRelations = ModelUtils.getConnectedRelations(
-				getActorModel(), ModelUtils.ConnectionType.TARGET);
+				getActorModel(), connectionType);
 		List modelTargetConnections = new ArrayList();
 		for (Relation rel : connectedRelations) {
 			Vertex vertex = getVertex(rel);
@@ -408,27 +418,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		}
 		return modelTargetConnections;
 	}
-	@Override
-	protected List getModelSourceConnections() {
-		Set<Relation> connectedRelations = ModelUtils.getConnectedRelations(
-				getActorModel(), ModelUtils.ConnectionType.SOURCE);
-		List modelSourceConnections = new ArrayList();
-		for (Relation rel : connectedRelations) {
-			Vertex vertex = getVertex(rel);
-			if (vertex != null) {
-				List<IOPort> ports = ModelUtils.getPorts(rel,
-						(NamedObj) getActorModel());
-				for (IOPort port : ports) {
-					Object relation = VertexEditPart.getRelation(
-									(TypedIORelation) rel, port, vertex, false);
-					modelSourceConnections.add(relation);
-				}
-			} else {
-				modelSourceConnections.add(rel);
-			}
-		}
-		return modelSourceConnections;
-	}
 
 	public Vertex getVertex(Relation model) {
 		Enumeration attributes = model.getAttributes();
@@ -442,35 +431,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	}
 
 	/**
-	 * Returns the connection anchor for the given ConnectionEditPart's source.
-	 * 
-	 * @return ConnectionAnchor.
-	 */
-	public ConnectionAnchor getSourceConnectionAnchor(
-			ConnectionEditPart connEditPart) {
-		getLogger().debug(
-				"Get SourceConnectionAnchor based on ConnectionEditPart");
-		Relation relation = null;
-		Port port = null;
-		if (connEditPart instanceof VertexRelationEditPart) {
-			relation = ((VertexRelationEditPart) connEditPart).getRelation();
-			port = ((VertexRelationEditPart) connEditPart).getPort();
-
-		} else {
-			relation = (Relation) connEditPart.getModel();
-			List linkedPortList = ((IORelation) relation)
-					.linkedSourcePortList();
-			if (linkedPortList == null || linkedPortList.size() == 0)
-				return null;
-			port = (Port) linkedPortList.get(0);
-
-		}
-		ConnectionAnchor connectionAnchor = getComponentFigure()
-				.getConnectionAnchor(port.getName());
-		return connectionAnchor;
-	}
-
-	/**
 	 * Returns the Output Port based on a given Anchor
 	 * 
 	 * @return Port.
@@ -478,16 +438,7 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	public Port getSourcePort(ConnectionAnchor anchor) {
 		getLogger().debug("Get Source port  based on anchor");
 
-		ActorFigure anchorFigure = getComponentFigure();
-		List outputPortList = getActorModel().outputPortList();
-		for (Iterator iterator = outputPortList.iterator(); iterator.hasNext();) {
-			Port port = (Port) iterator.next();
-			if (port.getName() != null
-					&& port.getName().equals(
-							anchorFigure.getConnectionAnchorName(anchor)))
-				return port;
-		}
-		return null;
+		return getPort(anchor, getActorModel().outputPortList());
 	}
 
 	/**
@@ -498,9 +449,12 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	public Port getTargetPort(ConnectionAnchor anchor) {
 		getLogger().debug("Get Target port  based on anchor");
 
+		return getPort(anchor, getActorModel().inputPortList());
+	}
+
+	protected Port getPort(ConnectionAnchor anchor, List outputPortList) {
 		ActorFigure anchorFigure = getComponentFigure();
-		List inputPortList = getActorModel().inputPortList();
-		for (Iterator iterator = inputPortList.iterator(); iterator.hasNext();) {
+		for (Iterator iterator = outputPortList.iterator(); iterator.hasNext();) {
 			Port port = (Port) iterator.next();
 			if (port.getName() != null
 					&& port.getName().equals(
@@ -510,7 +464,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		return null;
 	}
 
-	
 	/**
 	 * Returns the connection anchor of a source connection which is at the
 	 * given point.
@@ -523,36 +476,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	}
 
 	/**
-	 * Returns the connection anchor for the given ConnectionEditPart's target.
-	 * 
-	 * @return ConnectionAnchor.
-	 */
-	public ConnectionAnchor getTargetConnectionAnchor(
-			ConnectionEditPart connEditPart) {
-		getLogger().debug(
-				"Get TargetConnectionAnchor based on ConnectionEditPart");
-		Relation relation = null;
-		Port port = null;
-		if (connEditPart instanceof VertexRelationEditPart) {
-			relation = ((VertexRelationEditPart) connEditPart).getRelation();
-			port = ((VertexRelationEditPart) connEditPart).getPort();
-
-		} else {
-
-			relation = (Relation) connEditPart.getModel();
-			List linkedPortList = ((IORelation) relation)
-					.linkedDestinationPortList();
-			if (linkedPortList == null || linkedPortList.size() == 0)
-				return null;
-			port = (Port) linkedPortList.get(0);
-		}
-
-		ConnectionAnchor connectionAnchor = getComponentFigure()
-				.getConnectionAnchor(port.getName());
-		return connectionAnchor;
-	}
-
-	/**
 	 * Returns the connection anchor of a terget connection which is at the
 	 * given point.
 	 * 
@@ -561,6 +484,53 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
 		Point pt = new Point(((DropRequest) request).getLocation());
 		return getComponentFigure().getTargetConnectionAnchorAt(pt);
+	}
+
+	/**
+	 * Returns the connection anchor for the given ConnectionEditPart's source.
+	 * 
+	 * @return ConnectionAnchor.
+	 */
+	public ConnectionAnchor getSourceConnectionAnchor(
+			ConnectionEditPart connEditPart) {
+		getLogger().debug(
+				"Get SourceConnectionAnchor based on ConnectionEditPart");
+		return getConnectionActor(connEditPart, true);
+	}
+
+	/**
+	 * Returns the connection anchor for the given ConnectionEditPart's target.
+	 * 
+	 * @return ConnectionAnchor.
+	 */
+	public ConnectionAnchor getTargetConnectionAnchor(
+			ConnectionEditPart connEditPart) {
+		getLogger().debug(
+				"Get TargetConnectionAnchor based on ConnectionEditPart");
+		return getConnectionActor(connEditPart, false);
+	}
+
+	private ConnectionAnchor getConnectionActor(
+			ConnectionEditPart connEditPart, boolean isSource) {
+		Relation relation = null;
+		Port port = null;
+		if (connEditPart instanceof VertexRelationEditPart) {
+			relation = ((VertexRelationEditPart) connEditPart).getRelation();
+			port = ((VertexRelationEditPart) connEditPart).getPort();
+
+		} else {
+			relation = (Relation) connEditPart.getModel();
+			List linkedPortList = isSource ? ((IORelation) relation)
+					.linkedSourcePortList() : ((IORelation) relation)
+					.linkedDestinationPortList();
+			if (linkedPortList == null || linkedPortList.size() == 0)
+				return null;
+			port = (Port) linkedPortList.get(0);
+
+		}
+		ConnectionAnchor connectionAnchor = getComponentFigure()
+				.getConnectionAnchor(port.getName());
+		return connectionAnchor;
 	}
 
 	/**
@@ -598,4 +568,3 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 	}
 
 }
-
