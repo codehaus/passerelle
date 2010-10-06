@@ -1,6 +1,8 @@
 package com.isencia.passerelle.workbench.model.activator;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -25,6 +27,15 @@ public class Activator extends Plugin {
 	 * @see org.eclipse.core.runtime.Plugins#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
+		
+		if (System.getProperty("logback.configurationFile")==null) {
+			final Bundle bundle = Platform.getBundle(PLUGIN_ID);
+			System.setProperty("logback.configurationFile", bundle.getResource("logback.xml").toString());
+			
+			// For some reason slf4j still gives log4j errors, so we also configure log4j here:
+			//PropertyConfigurator.configure(bundle.getResource("log4j.properties"));
+		}
+
 		super.start(context);
 		plugin = this;
 	}

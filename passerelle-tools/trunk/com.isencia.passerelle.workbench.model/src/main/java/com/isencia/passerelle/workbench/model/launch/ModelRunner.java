@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.slf4j.Logger;
@@ -11,12 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Manager;
-import ptolemy.moml.MoMLParser;
+
+import com.isencia.passerelle.model.util.MoMLParser;
 
 public class ModelRunner implements IApplication {
-
-    private static Logger logger = LoggerFactory.getLogger(ModelRunner.class.getName());
-    
+	
+    private static Logger logger = LoggerFactory.getLogger(ModelRunner.class);   
     
 	public Logger getLogger() {
 		return logger;
@@ -24,6 +25,13 @@ public class ModelRunner implements IApplication {
 
 	@Override
 	public Object start(IApplicationContext applicationContext) throws Exception {
+		
+		logger.info("Starting EDNA Server"); // Well we will one day! TODO Use property for name of server.
+		
+		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+		System.setProperty("eclipse.workspace.home", workspacePath);
+		logger.info("Workspace folder set to: "+workspacePath);
+		
 		String model = System.getProperty("model");
 		runModel(model);
 		return  IApplication.EXIT_OK;
@@ -31,37 +39,36 @@ public class ModelRunner implements IApplication {
 
 	@Override
 	public void stop() {
+		logger.info("Stopping EDNA Server");
 	}
 
-	private static void runModel(String model) {
+	private void runModel(String model) {
 		Reader reader = null;
 		try {
 			if( model==null) {
 				throw new IllegalArgumentException("No model specified",null);
 			} else {
-				if( logger.isInfoEnabled())
-					logger.info("Start model : " + model);
+				logger.info("Running model : " + model);
 				reader = new FileReader(model);
 				MoMLParser moMLParser = new MoMLParser();
 				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
 				executeModel(compositeActor);
 			}
 		} catch (IllegalArgumentException illegalArgumentException) { 
-			if( logger.isInfoEnabled())
-				logger.info(illegalArgumentException.getMessage());
+			logger.info(illegalArgumentException.getMessage());
 		} catch (Throwable e) {
-			if( logger.isErrorEnabled())
-				logger.error(e.getMessage());
-			System.exit(1);
+			e.printStackTrace();
+			logger.error("Cannot read "+model, e);
+
 		} finally {
-			if( logger.isInfoEnabled() && model != null )
-				logger.info("End model : "+model);
+			logger.info("End model : "+model);
 			if (reader != null) {
 				try {
 					reader.close();
 				} catch (IOException e) {}
 			}
-		}		
+		}
+		stop();
 	}
 	
 	private static void executeModel(CompositeActor compositeActor) throws Exception {
@@ -83,7 +90,8 @@ public class ModelRunner implements IApplication {
 			}
 		}
 		
-		runModel(model);
+		final ModelRunner runner = new ModelRunner();
+		runner.runModel(model);
 	}
 
 	
