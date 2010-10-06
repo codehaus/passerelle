@@ -23,6 +23,7 @@ import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.part.EditorPart;
+import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,20 +82,21 @@ public class PaletteBuilder {
 						icon =iconAttribute;
 					}
 					
-					String classAttribute = configurationElement.getAttribute("class");
+					final String bundleId = configurationElement.getDeclaringExtension().getContributor().getName();
+                    final Class<?> clazz = loadClass(configurationElement, bundleId);
 					
-					ImageDescriptor imageDescriptor = Activator.getImageDescriptor("com.isencia.passerelle.actor",icon);
+					ImageDescriptor imageDescriptor = Activator.getImageDescriptor(bundleId,icon);
 					if (imageDescriptor == null){
 						imageDescriptor = Activator.getImageDescriptor(icon);
 					}
-					if (classAttribute.equals("ptolemy.actor.TypedIOPort")){
+					if (clazz.getName().equals("ptolemy.actor.TypedIOPort")){
 						actorIconMap.put(nameAttribute,imageDescriptor);
 					}
-					actorIconMap.put(classAttribute,imageDescriptor);
+					actorIconMap.put(clazz.getName(),imageDescriptor);
 					CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
 							nameAttribute,
 							nameAttribute,
-							new ClassTypeFactory(classAttribute,nameAttribute),
+							new ClassTypeFactory(clazz,nameAttribute),
 							imageDescriptor, //$NON-NLS-1$
 							imageDescriptor//$NON-NLS-1$
 						);
@@ -119,6 +121,20 @@ public class PaletteBuilder {
 
 		return categories;
 	}
+	
+	private static Class<?> loadClass(final IConfigurationElement configurationElement, 
+			                          final String bundleId) {
+		
+		final Bundle bundle = Platform.getBundle(bundleId);
+		try {
+			return bundle.loadClass(configurationElement.getAttribute("class"));
+		} catch (Exception e) {
+			logger.error("Cannot load class "+configurationElement.getAttribute("class"), e);
+			return null;
+		}
+
+	}
+	
 	static private PaletteContainer createControlGroup(PaletteRoot root){
 		PaletteGroup controlGroup = new PaletteGroup(
 			"ControlGroup");
@@ -208,7 +224,9 @@ public class PaletteBuilder {
 	
 	public static class ClassTypeFactory implements CreationFactory {
 
-		public ClassTypeFactory(String type,String name) {
+		private Class<?> type;
+		private String name;
+		public ClassTypeFactory(Class<?> type,String name) {
 			this.type = type;
 			this.name = name;
 		}
@@ -221,7 +239,5 @@ public class PaletteBuilder {
 			return type;
 		}
 
-		private String type;
-		private String name;
 	}
 }

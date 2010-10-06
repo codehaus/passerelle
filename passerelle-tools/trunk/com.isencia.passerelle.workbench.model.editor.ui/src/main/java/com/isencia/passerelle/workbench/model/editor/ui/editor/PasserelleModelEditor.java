@@ -40,8 +40,10 @@ import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
+import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
+import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
@@ -83,6 +85,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
+import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
 
 public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		implements IPasserelleEditor, ITabbedPropertySheetPageContributor {
@@ -333,7 +336,8 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	}
 
 	public void dispose() {
-		((IFileEditorInput) getEditorInput()).getFile().getWorkspace()
+		final IFile file = EclipseUtils.getIFile(getEditorInput());
+		if (file!=null) file.getWorkspace()
 				.removeResourceChangeListener(resourceListener);
 		for (AbstractBaseEditPart part : editPartFactory.getParts()) {
 			for (Image image : part.getImages())
@@ -525,8 +529,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	 * .swt.widgets.Composite)
 	 */
 	protected void createGraphicalViewer(Composite parent) {
+		
 		rulerComp = new RulerComposite(parent, SWT.NONE);
 		super.createGraphicalViewer(rulerComp);
+		
 		ScrollingGraphicalViewer graphicalViewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 		rulerComp.setGraphicalViewer(graphicalViewer);
 
@@ -540,6 +546,20 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		graphicalViewer.setKeyHandler(graphicalViewerKeyHandler);
 
 	}
+	
+	/**
+	 * By default, this method returns a FlyoutPreferences object that stores
+	 * the flyout settings in the GEF plugin. Sub-classes may override.
+	 * 
+	 * @return the FlyoutPreferences object used to save the flyout palette's
+	 *         preferences
+	 */
+	protected FlyoutPreferences getPalettePreferences() {
+		final FlyoutPreferences prefs = super.getPalettePreferences();
+		prefs.setPaletteState(FlyoutPaletteComposite.STATE_PINNED_OPEN);
+		return prefs;
+	}
+
 
 	protected FigureCanvas getEditor() {
 		return (FigureCanvas) getGraphicalViewer().getControl();
@@ -579,9 +599,9 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		super.setInput(input);
 
 		if (getEditorInput() != null) {
-			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-			file.getWorkspace().addResourceChangeListener(resourceListener);
-			setPartName(file.getName());
+			IFile file = EclipseUtils.getIFile(input);
+			if (file!=null) file.getWorkspace().addResourceChangeListener(resourceListener);
+			setPartName(input.getName());
 		}
 	}
 

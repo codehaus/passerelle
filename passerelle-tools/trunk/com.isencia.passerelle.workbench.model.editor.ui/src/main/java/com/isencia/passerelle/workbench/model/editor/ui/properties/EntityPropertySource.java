@@ -2,11 +2,8 @@ package com.isencia.passerelle.workbench.model.editor.ui.properties;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
@@ -21,12 +18,11 @@ import ptolemy.data.expr.FileParameter;
 import ptolemy.data.expr.Parameter;
 import ptolemy.data.type.BaseType;
 import ptolemy.data.type.Type;
+import ptolemy.kernel.util.AbstractSettableAttribute;
 import ptolemy.kernel.util.Attribute;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.actor.Actor;
-import com.isencia.passerelle.actor.gui.IOptionsFactory;
-import com.isencia.passerelle.actor.gui.IOptionsFactory.Option;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CheckboxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ColorPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FilePickerPropertyDescriptor;
@@ -98,7 +94,7 @@ public class EntityPropertySource implements IPropertySource {
 	}
 
 	public Object getPropertyValue(Object id) {
-		Parameter attribute = (Parameter) entity.getAttribute((String) id);
+		AbstractSettableAttribute attribute = (AbstractSettableAttribute) entity.getAttribute((String) id);
 		if (attribute instanceof ColorAttribute) {
 			return new org.eclipse.swt.graphics.RGB(0, 10, 10);
 		} else if (hasOptions(attribute)) {
@@ -107,12 +103,15 @@ public class EntityPropertySource implements IPropertySource {
 				if (options[i].equals(attribute.getExpression()))
 					return i;
 			}
-		} else if (BaseType.INT.equals(attribute.getType())) {
-			return (new Integer(attribute.getExpression()));
-		} else if (BaseType.FLOAT.equals(attribute.getType())) {
-			return (new Float(attribute.getExpression()));
-		} else if (BaseType.BOOLEAN.equals(attribute.getType())) {
-			return (new Boolean(attribute.getExpression()));
+		} else if (attribute instanceof Parameter) {
+			Parameter parameter = (Parameter)attribute;
+			if (BaseType.INT.equals(parameter.getType())) {
+				return (new Integer(attribute.getExpression()));
+			} else if (BaseType.FLOAT.equals(parameter.getType())) {
+				return (new Float(attribute.getExpression()));
+			} else if (BaseType.BOOLEAN.equals(parameter.getType())) {
+				return (new Boolean(attribute.getExpression()));
+			}
 		}
 		return attribute.getExpression();
 	}

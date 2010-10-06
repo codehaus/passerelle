@@ -21,8 +21,6 @@ import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.slf4j.Logger;
 
-import ptolemy.actor.CompositeActor;
-import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
@@ -222,7 +220,7 @@ public class DiagramXYLayoutEditPolicy extends
 			
 			create.setParent(editor.getSelectedContainer());
 			String name = (String) request.getNewObject();
-			String clazz = (String) request.getNewObjectType();
+			Class<? extends NamedObj> clazz = (Class<? extends NamedObj>)request.getNewObjectType();
 			create.setClazz(clazz);
 			create.setName(name);
 			Rectangle constraint = (Rectangle) getConstraintFor(request);
