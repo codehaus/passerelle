@@ -5,7 +5,7 @@ Bundle-SymbolicName: com.isencia.passerelle.ume
 Bundle-Version: 6.0.0.qualifier
 Bundle-Vendor: iSencia
 Import-Package: com.isencia.util,
- org.slf4j;version="1.5.8"
+ org.slf4j
 Require-Bundle: activation,
  mail
 Export-Package: com.isencia.message;version="4.0.0",
