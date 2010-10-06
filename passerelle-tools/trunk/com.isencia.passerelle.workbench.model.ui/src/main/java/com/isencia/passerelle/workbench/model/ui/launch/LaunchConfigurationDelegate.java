@@ -52,7 +52,6 @@ import org.eclipse.pde.ui.launcher.PDESourcePathProvider;
 import org.osgi.framework.Version;
 
 import com.isencia.passerelle.workbench.model.launch.ModelLauncher;
-import com.isencia.passerelle.workbench.model.launch.ModelRunner;
 import com.isencia.passerelle.workbench.model.ui.utils.LaunchUtils;
 
 public class LaunchConfigurationDelegate extends AbstractJavaLaunchConfigurationDelegate {

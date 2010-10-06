@@ -10,7 +10,6 @@ import ptolemy.actor.TypedIOPort;
 import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
-import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.moml.Vertex;
 
@@ -25,10 +24,9 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
 	private static final String DEFAULT_INPUT_PORT = "InputPort";
 
-	private static Logger logger = LoggerFactory
-			.getLogger(CreateComponentCommand.class);
+	private static Logger logger = LoggerFactory.getLogger(CreateComponentCommand.class);
 
-	private String clazz;
+	private Class<? extends NamedObj> clazz;
 	private String name;
 
 	private NamedObj model;
@@ -78,28 +76,26 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 					CompositeEntity parentModel = (CompositeEntity) parent;
 					String componentName = null;
 					if (model == null) {
-						Class<?> newClass = CreateComponentCommand.class
-								.getClassLoader().loadClass(clazz);
 						componentName = ModelUtils
 								.findUniqueName(
 										parentModel,
-										newClass,
+										clazz,
 										name.equalsIgnoreCase("INPUT") ? DEFAULT_INPUT_PORT
 												: DEFAULT_OUTPUT_PORT);
 						Class constructorClazz = CompositeEntity.class;
-						if (newClass.getSimpleName().equals("TypedIOPort")) {
+						if (clazz.getSimpleName().equals("TypedIOPort")) {
 							constructorClazz = ComponentEntity.class;
-						} else if (newClass.getSimpleName().equals(
+						} else if (clazz.getSimpleName().equals(
 								"TextAttribute")) {
 							constructorClazz = NamedObj.class;
 						}
-						if (newClass.getSimpleName().equals("Vertex")) {
+						if (clazz.getSimpleName().equals("Vertex")) {
 							TypedIORelation rel = new TypedIORelation(
 									parentModel, componentName);
 							child = new Vertex(rel, "Vertex");
 
 						} else {
-							Constructor constructor = newClass.getConstructor(
+							Constructor constructor = clazz.getConstructor(
 									constructorClazz, String.class);
 
 							child = (NamedObj) constructor.newInstance(
@@ -162,7 +158,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 		});
 	}
 
-	public void setClazz(String clazz) {
+	public void setClazz(Class<? extends NamedObj> clazz) {
 		this.clazz = clazz;
 	}
 

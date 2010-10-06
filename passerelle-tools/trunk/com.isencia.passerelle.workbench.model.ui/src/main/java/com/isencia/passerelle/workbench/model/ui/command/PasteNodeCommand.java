@@ -10,7 +10,6 @@ import org.eclipse.gef.ui.actions.Clipboard;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Director;
-import ptolemy.actor.IOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.ComponentPort;
 import ptolemy.kernel.Port;
@@ -83,7 +82,7 @@ public class PasteNodeCommand extends Command {
 							editor);
 					createCommand.setModel(child);
 					createCommand.setParent(selectedContainer);
-					createCommand.setClazz(child.getClass().getSimpleName());
+					createCommand.setClazz(child.getClass());
 					double[] location = ModelUtils.getLocation(child);
 					createCommand.setLocation(new double[] { location[0] + 100,
 							location[1] + 100 });
