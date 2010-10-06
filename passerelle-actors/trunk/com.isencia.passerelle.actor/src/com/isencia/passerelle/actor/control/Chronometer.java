@@ -16,8 +16,8 @@ package com.isencia.passerelle.actor.control;
 
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.ProcessingException;
@@ -51,7 +51,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public class Chronometer extends Actor {
 
-	private static Log logger = LogFactory.getLog(Chronometer.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Chronometer.class);
 
 	public Chronometer(CompositeEntity container, String name) throws IllegalActionException, NameDuplicationException {
 		super(container, name);

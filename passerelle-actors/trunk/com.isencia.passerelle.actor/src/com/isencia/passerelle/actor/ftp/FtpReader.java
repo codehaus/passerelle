@@ -16,8 +16,8 @@ package com.isencia.passerelle.actor.ftp;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.IReceiverChannel;
 import com.isencia.message.extractor.TextLineMessageExtractor;
@@ -37,7 +37,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public class FtpReader extends TriggeredChannelSource {
 	
-	private static Log logger = LogFactory.getLog(FtpReader.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FtpReader.class);
 	
 	//Parameters
 	public Parameter serverParam = null;

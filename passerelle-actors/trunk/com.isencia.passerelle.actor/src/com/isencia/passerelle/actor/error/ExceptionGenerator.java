@@ -15,8 +15,8 @@
 
 package com.isencia.passerelle.actor.error;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.Transformer;
@@ -40,7 +40,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  *
  */
 public class ExceptionGenerator extends Transformer {
-	private final static Log logger = LogFactory.getLog(ExceptionGenerator.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ExceptionGenerator.class);
 	
 	public Parameter exceptionClassName;
     public Parameter severity;

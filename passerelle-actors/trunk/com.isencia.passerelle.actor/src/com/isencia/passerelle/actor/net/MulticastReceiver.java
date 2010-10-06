@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.net;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.ChannelException;
 import com.isencia.message.IReceiverChannel;
@@ -56,7 +56,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  *  this container */
 public class MulticastReceiver extends ChannelSource {
 
-	private static Log logger = LogFactory.getLog(MulticastReceiver.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MulticastReceiver.class);
 
 	private int port = 4446;
 	private String group = "230.0.0.1";

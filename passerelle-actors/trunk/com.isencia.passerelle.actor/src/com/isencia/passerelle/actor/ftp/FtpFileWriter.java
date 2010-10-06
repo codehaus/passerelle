@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.ftp;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.message.ManagedMessage;
@@ -34,7 +34,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author Bram Bogaert
  */
 public class FtpFileWriter extends FtpWriter {
-	private static Log logger = LogFactory.getLog(FtpFileWriter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FtpFileWriter.class);
 
 	public Parameter overwriteParam = null;
 	private boolean overwrite = false;

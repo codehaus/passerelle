@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.general;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.v3.Actor;
@@ -49,7 +49,7 @@ public class DevNullActor extends Actor {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static Log logger = LogFactory.getLog(DevNullActor.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DevNullActor.class);
 
 	public Port input;
 	public Parameter logReceivedMessages;

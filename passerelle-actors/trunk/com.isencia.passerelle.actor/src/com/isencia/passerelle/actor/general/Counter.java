@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.general;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.InitializationException;
 import com.isencia.passerelle.actor.ProcessingException;
@@ -44,7 +44,7 @@ import ptolemy.kernel.util.NameDuplicationException;
 
 public class Counter extends Transformer {
 
-	private static Log logger = LogFactory.getLog(Counter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Counter.class);
 
 	public Parameter startValueParam;
 	private long startValue = 0;

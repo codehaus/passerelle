@@ -20,8 +20,8 @@ import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.apache.xpath.XPathAPI;
@@ -51,7 +51,7 @@ import ptolemy.kernel.util.NameDuplicationException;
 public class XPathConverter extends Transformer 
 {
 
-	private static Log logger = LogFactory.getLog(XPathConverter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(XPathConverter.class);
 
 	/** Construct an actor with the given container and name.
 	 *  @param container The container.

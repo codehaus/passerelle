@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.error;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.message.ManagedMessage;
@@ -30,7 +30,7 @@ import ptolemy.kernel.util.NameDuplicationException;
 
 public class ConstErrorViaDirector extends ConstError {
 
-	private static Log logger = LogFactory.getLog(ConstErrorViaDirector.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ConstErrorViaDirector.class);
 
 	/** Construct a constant source with the given container and name.
 	 *  Create the <i>value</i> parameter, initialize its value to

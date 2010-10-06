@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.convert;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -76,7 +76,7 @@ public class BodyToHeaderExtractor extends Transformer {
     private final static  String MODE_ADD = "Add";
     private final static  String MODE_MODIFY = "Modify";
     
-	private static Log logger = LogFactory.getLog(BodyToHeaderExtractor.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BodyToHeaderExtractor.class);
 
 	/** Construct an actor with the given container and name.
 	 *  @param container The container.

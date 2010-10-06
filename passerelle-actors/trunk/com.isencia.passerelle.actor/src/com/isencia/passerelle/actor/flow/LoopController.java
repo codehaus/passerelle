@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.flow;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.InitializationException;
@@ -44,7 +44,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public class LoopController extends Actor {
-	private final static Log logger = LogFactory.getLog(LoopController.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(LoopController.class);
 
 	// input ports
 	public Port countPort;

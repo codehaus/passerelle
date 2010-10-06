@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.control;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.InitializationException;
@@ -41,7 +41,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public class Timer extends Actor {
 
-	private static Log logger = LogFactory.getLog(Timer.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Timer.class);
 
 	private boolean setPresent = false;
 	private boolean set = false;

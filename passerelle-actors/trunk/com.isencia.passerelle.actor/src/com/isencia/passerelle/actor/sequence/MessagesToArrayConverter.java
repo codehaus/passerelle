@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.InitializationException;
 import com.isencia.passerelle.actor.ProcessingException;
@@ -55,7 +55,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public class MessagesToArrayConverter extends Transformer {
-	private static Log logger = LogFactory.getLog(MessagesToArrayConverter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessagesToArrayConverter.class);
 
 	public final static String TRIGGER_PORT = "trigger";
 	

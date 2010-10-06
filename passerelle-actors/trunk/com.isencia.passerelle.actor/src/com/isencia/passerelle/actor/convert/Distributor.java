@@ -18,8 +18,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.Transformer;
@@ -40,7 +40,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public class Distributor extends Transformer {
 	//~ Static variables/initializers
-	private static Log logger = LogFactory.getLog(Distributor.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Distributor.class);
 
 	//~ Instance variables
 	/*public Parameter messageInParam = null;

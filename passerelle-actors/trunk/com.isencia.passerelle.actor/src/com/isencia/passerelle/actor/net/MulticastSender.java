@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.net;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.ChannelException;
 import com.isencia.message.ISenderChannel;
@@ -45,7 +45,7 @@ import ptolemy.kernel.util.NameDuplicationException;
 
 public class MulticastSender extends ChannelSink {
 
-	private static Log logger = LogFactory.getLog(MulticastSender.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MulticastSender.class);
 
 	private int port = 4446;
 	private String group = "230.0.0.1";

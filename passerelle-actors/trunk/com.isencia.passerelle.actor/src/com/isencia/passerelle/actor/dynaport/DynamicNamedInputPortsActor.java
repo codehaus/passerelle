@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.v3.Actor;
 import com.isencia.passerelle.core.Port;
@@ -41,10 +41,10 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public abstract class DynamicNamedInputPortsActor extends Actor {
 
-    //~ Static variables/initializers ····································
+    //~ Static variables/initializers ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public static final String INPUT_PORTNAMES = "Input port names (comma-separated)";
 
-    private static Log logger = LogFactory.getLog(DynamicNamedInputPortsActor.class);
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DynamicNamedInputPortsActor.class);
 
     public StringParameter inPortNamesParameter = null;
     public Set<String> inputPortNames = new HashSet<String>();
@@ -72,7 +72,7 @@ public abstract class DynamicNamedInputPortsActor extends Actor {
         inPortNamesParameter = new StringParameter(this, INPUT_PORTNAMES);
     }
 
-    //~ Methods ··························································
+    //~ Methods ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     /**
      * @param attribute

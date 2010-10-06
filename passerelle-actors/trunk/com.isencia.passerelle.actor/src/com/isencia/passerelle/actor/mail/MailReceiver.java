@@ -19,8 +19,8 @@ import java.util.List;
 
 import javax.mail.URLName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.IReceiverChannel;
 import com.isencia.message.interceptor.IMessageInterceptorChain;
@@ -49,7 +49,7 @@ import ptolemy.kernel.util.NameDuplicationException;
 public class MailReceiver extends TriggeredChannelSource {
 
 	private static final String NOT_APPLICABLE = "N/A";
-	private static Log logger = LogFactory.getLog(MailReceiver.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MailReceiver.class);
 	
 	private final static String[] protocolChoices = new String[] {"pop3","imap"};
 	private final static String[] msgTypeChoices= new String [] {"Messages", "Message Count"};

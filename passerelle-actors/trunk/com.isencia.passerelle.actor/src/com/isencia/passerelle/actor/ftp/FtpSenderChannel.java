@@ -17,8 +17,6 @@ package com.isencia.passerelle.actor.ftp;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
@@ -34,8 +32,7 @@ import com.isencia.message.generator.IMessageGenerator;
  * @author Bram Bogaert
  */
 public class FtpSenderChannel extends WriterSenderChannel {
-	private final static Log logger =
-		LogFactory.getLog(FtpSenderChannel.class);
+	private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FtpSenderChannel.class);
 	
 	private String server = null;
 	private String username = null;

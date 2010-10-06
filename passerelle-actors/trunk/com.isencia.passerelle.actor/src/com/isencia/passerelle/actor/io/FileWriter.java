@@ -18,8 +18,8 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import ptolemy.data.BooleanToken;
 import ptolemy.data.expr.FileParameter;
@@ -44,7 +44,7 @@ import com.isencia.util.StringConvertor;
  */
 public class FileWriter extends ChannelSink {
 
-	private static Log logger = LogFactory.getLog(FileWriter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
 
 	public final static String PATH_PARAM = "Path";
 	public final static String APPEND_PARAM = "Append";

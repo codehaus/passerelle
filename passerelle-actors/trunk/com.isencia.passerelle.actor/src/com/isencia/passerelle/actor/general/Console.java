@@ -16,14 +16,8 @@ package com.isencia.passerelle.actor.general;
 
 import java.io.PrintStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import com.isencia.passerelle.actor.ProcessingException;
-import com.isencia.passerelle.actor.Sink;
-import com.isencia.passerelle.core.PasserelleException;
-import com.isencia.passerelle.message.ManagedMessage;
-import com.isencia.passerelle.message.MessageException;
+
 
 import ptolemy.data.IntToken;
 import ptolemy.data.expr.Parameter;
@@ -32,6 +26,12 @@ import ptolemy.kernel.util.Attribute;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NameDuplicationException;
 
+import com.isencia.passerelle.actor.ProcessingException;
+import com.isencia.passerelle.actor.Sink;
+import com.isencia.passerelle.core.PasserelleException;
+import com.isencia.passerelle.message.ManagedMessage;
+import com.isencia.passerelle.message.MessageException;
+
 /**
  * Dump a message on the console
  *
@@ -39,7 +39,8 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @version 1.0
  */
 public class Console extends Sink {
-    private static Log logger = LogFactory.getLog(Console.class);
+	
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Console.class);
     
     public Parameter chopLengthParam;
     private int chopLength=80;

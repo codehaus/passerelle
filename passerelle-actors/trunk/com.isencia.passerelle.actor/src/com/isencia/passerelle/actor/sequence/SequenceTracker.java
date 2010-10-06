@@ -17,8 +17,8 @@ package com.isencia.passerelle.actor.sequence;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.InitializationException;
 import com.isencia.passerelle.actor.ProcessingException;
@@ -51,7 +51,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public class SequenceTracker extends Transformer {
-	private static Log logger = LogFactory.getLog(SequenceTracker.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SequenceTracker.class);
 	
 	private Map sequences = new HashMap();
 	// flag to catch race conditions between threads of handled and input message processing

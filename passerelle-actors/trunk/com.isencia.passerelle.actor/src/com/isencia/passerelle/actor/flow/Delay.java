@@ -14,12 +14,8 @@
 */
 package com.isencia.passerelle.actor.flow;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
-import com.isencia.passerelle.actor.ProcessingException;
-import com.isencia.passerelle.actor.Transformer;
-import com.isencia.passerelle.message.ManagedMessage;
+
 
 import ptolemy.data.IntToken;
 import ptolemy.data.expr.Parameter;
@@ -29,6 +25,10 @@ import ptolemy.kernel.util.Attribute;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NameDuplicationException;
 
+import com.isencia.passerelle.actor.ProcessingException;
+import com.isencia.passerelle.actor.Transformer;
+import com.isencia.passerelle.message.ManagedMessage;
+
 /**
  * Simple actor that reads input tokens and and forwards them to the output port
  * after a configurable delay (ms).
@@ -37,7 +37,8 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public class Delay extends Transformer {
-	private static Log logger = LogFactory.getLog(Delay.class);
+	
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Delay.class);
 	
 	public Parameter timeParameter = null;
 	private int time = 0;
@@ -69,6 +70,7 @@ public class Delay extends Transformer {
 		
 		try {
 			if(time>0) {
+				logger.debug("Delay action, sleeping for "+time+" seconds.");
 				Thread.sleep(time * 1000);
 			}
 		} catch(InterruptedException e) {

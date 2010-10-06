@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.general;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.InitializationException;
 import com.isencia.passerelle.actor.ProcessingException;
@@ -37,7 +37,7 @@ import ptolemy.kernel.util.NameDuplicationException;
 
 public class Const extends TriggeredSource {
 
-	private static Log logger = LogFactory.getLog(Const.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Const.class);
 	private boolean messageSent = false;
 
 	/** Construct a constant source with the given container and name.

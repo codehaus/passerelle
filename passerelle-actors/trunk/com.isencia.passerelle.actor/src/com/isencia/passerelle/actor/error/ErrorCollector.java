@@ -19,8 +19,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.InitializationException;
@@ -49,7 +49,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public class ErrorCollector extends Actor implements com.isencia.passerelle.ext.ErrorCollector {
-	final private static Log logger = LogFactory.getLog(ErrorCollector.class);
+	final private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ErrorCollector.class);
 
 	/** The input port.  This base class imposes no type constraints except
 	 *  that the type of the input cannot be greater than the type of the

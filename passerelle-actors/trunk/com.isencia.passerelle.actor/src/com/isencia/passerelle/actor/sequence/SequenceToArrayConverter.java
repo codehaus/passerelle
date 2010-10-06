@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.InitializationException;
 import com.isencia.passerelle.actor.ProcessingException;
@@ -45,7 +45,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public class SequenceToArrayConverter extends Transformer {
-	private static Log logger = LogFactory.getLog(SequenceToArrayConverter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SequenceToArrayConverter.class);
 	
 	private Map sequences = new HashMap();
 	

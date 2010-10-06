@@ -14,8 +14,14 @@
 */
 package com.isencia.passerelle.actor.flow;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
+
+import ptolemy.data.IntToken;
+import ptolemy.data.expr.Parameter;
+import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NameDuplicationException;
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.v3.Actor;
@@ -25,12 +31,6 @@ import com.isencia.passerelle.actor.v3.ProcessResponse;
 import com.isencia.passerelle.core.Port;
 import com.isencia.passerelle.core.PortFactory;
 import com.isencia.passerelle.message.internal.MessageContainer;
-
-import ptolemy.data.IntToken;
-import ptolemy.data.expr.Parameter;
-import ptolemy.kernel.CompositeEntity;
-import ptolemy.kernel.util.IllegalActionException;
-import ptolemy.kernel.util.NameDuplicationException;
 
 /**
  * This actor supports retry-loop constructions in a Passerelle sequence.
@@ -57,7 +57,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public class RetryLoopActor extends Actor {
 
-	private final Log LOGGER = LogFactory.getLog(RetryLoopActor.class);
+	private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(RetryLoopActor.class);
 	
 	public Port input;
 	public Port retryOutput;

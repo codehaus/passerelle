@@ -18,9 +18,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import ptolemy.data.expr.FileParameter;
 import ptolemy.data.expr.Parameter;
 import ptolemy.data.expr.StringParameter;
@@ -103,7 +100,7 @@ public class FileReader extends TriggeredChannelSource {
         }
     }
 
-	private static Log logger = LogFactory.getLog(FileReader.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FileReader.class);
 
 	public final static String PATH_PARAM = "Path";
 	public final static String INPUTTYPE_PARAM = "Input Type";

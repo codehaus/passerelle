@@ -17,8 +17,8 @@ package com.isencia.passerelle.actor.dynaport;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.v3.Actor;
 import com.isencia.passerelle.core.Port;
@@ -45,15 +45,15 @@ public abstract class DynamicPortsActor extends Actor {
         INPUT, OUTPUT;
     }
 
-    //~ Static variables/initializers ····································
+    //~ Static variables/initializers ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public static final String NUMBER_OF_INPUTS = "Number of inputs";
     public static final String NUMBER_OF_OUTPUTS = "Number of outputs";
     public static final String INPUTPORTPREFIX = "input";
     public static final String OUTPUTPORTPREFIX = "output";
 
-    private static Log logger = LogFactory.getLog(DynamicPortsActor.class);
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DynamicPortsActor.class);
 
-    //~ Instance variables ···············································
+    //~ Instance variables ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //    private List inputPorts = null;
     public Parameter numberOfInputs = null;
     protected int nrInputPorts = 0;
@@ -89,7 +89,7 @@ public abstract class DynamicPortsActor extends Actor {
         numberOfOutputs.setTypeEquals(BaseType.INT);
     }
 
-    //~ Methods ··························································
+    //~ Methods ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     /**
      * @param attribute

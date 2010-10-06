@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.ftp;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.ISenderChannel;
 import com.isencia.message.generator.MessageTextLineGenerator;
@@ -36,7 +36,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author Bram Bogaert
  */
 public class FtpWriter extends ChannelSink {
-	private static Log logger = LogFactory.getLog(FtpWriter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FtpWriter.class);
 	
 	// Parameters
 	public Parameter serverParam = null;

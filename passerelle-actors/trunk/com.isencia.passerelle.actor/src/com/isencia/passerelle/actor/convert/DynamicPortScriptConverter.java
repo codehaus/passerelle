@@ -24,8 +24,8 @@ import java.util.List;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.bsf.util.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 import org.python.core.Py;
 import org.python.core.PySystemState;
 
@@ -76,14 +76,14 @@ public class DynamicPortScriptConverter extends DynamicPortsActor {
 
     private static final String JAVASCRIPT = "javascript";
 	private static final String JYTHON = "jython";
-	//~ Static variables/initializers ····································
+	//~ Static variables/initializers ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public static final String PATH_PARAM = "Path";
     public static final String LANGUAGE_PARAM = "Language";
     public static final String CONTAINERNAME_PARAM = "Container name";
 
-    private static Log logger = LogFactory.getLog(DynamicPortScriptConverter.class);
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DynamicPortScriptConverter.class);
 
-    //~ Instance variables ···············································
+    //~ Instance variables ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     // bsf managers
     protected List<BSFManager> bsfManagers = new ArrayList<BSFManager>();
 
@@ -101,7 +101,7 @@ public class DynamicPortScriptConverter extends DynamicPortsActor {
 
     protected String scriptPath = null;
 
-    //~ Constructors ·····················································
+    //~ Constructors ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     /**
      * Construct an actor in the specified container with the specified name.
@@ -157,7 +157,7 @@ public class DynamicPortScriptConverter extends DynamicPortsActor {
                 + "style=\"stroke-width:2.0\"/>\n" + "</svg>\n");
     }
 
-    //~ Methods ··························································
+    //~ Methods ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     /**
      * @param attribute

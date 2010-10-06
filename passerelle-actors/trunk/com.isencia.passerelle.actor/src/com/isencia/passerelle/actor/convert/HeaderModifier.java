@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.convert;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.Transformer;
@@ -44,7 +44,7 @@ public class HeaderModifier extends Transformer {
     private final static  String MODE_MODIFY = "Modify";
     private final static  String MODE_REMOVE = "Remove";
     
-	private static Log logger = LogFactory.getLog(HeaderModifier.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(HeaderModifier.class);
 
 	/** Construct an actor with the given container and name.
 	 *  @param container The container.

@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.sequence;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.Transformer;
@@ -38,7 +38,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public final class ArrayToSequenceConverter extends Transformer {
-	private static Log logger = LogFactory.getLog(ArrayToSequenceConverter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ArrayToSequenceConverter.class);
 
 
 	/**

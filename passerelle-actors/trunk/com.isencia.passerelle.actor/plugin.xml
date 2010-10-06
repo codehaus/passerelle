@@ -29,7 +29,7 @@
             name="HeaderFilter">
       </actor>
       <actor
-            class="com.isencia.passerelle.actor.filter.RegExpFilter"
+            class="com.isencia.passerelle.actor.filter.RegexpFilter"
             group="com.isencia.passerelle.actor.actorgroup.filter"
             id="com.isencia.passerelle.actor.RegExpFilter"
             name="RegExpFilter">
@@ -75,6 +75,12 @@
             name="Output">
       </actor>
       <actor
+            class="com.isencia.passerelle.actor.io.FileReader"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            id="FileReader"
+            name="FileReader">
+      </actor>
+      <actor
             class="com.isencia.passerelle.actor.io.FileWriter"
             group="com.isencia.passerelle.actor.actorgroup.general"
             id="FileWriter"
@@ -92,6 +98,12 @@
             icon="icons/vertex.gif"
             id="Vertex"
             name="Vertex">
+      </actor>
+      <actor
+            class="com.isencia.passerelle.actor.flow.Delay"
+            group="com.isencia.passerelle.actor.actorgroup.general"
+            id="Delay"
+            name="Delay">
       </actor>
       
    </extension>

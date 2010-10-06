@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.mail;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.ISenderChannel;
 import com.isencia.message.interceptor.IMessageInterceptor;
@@ -53,7 +53,7 @@ public class SMTPSender extends ChannelSink {
 
 	//~ Instance/static variables .............................................
 
-	private static Log logger = LogFactory.getLog(SMTPSender.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SMTPSender.class);
 
 	///////////////////////////////////////////////////////////////////
 	////                     ports and parameters                  ////

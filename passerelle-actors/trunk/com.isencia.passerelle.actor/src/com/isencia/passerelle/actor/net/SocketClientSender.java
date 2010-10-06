@@ -19,8 +19,8 @@ package com.isencia.passerelle.actor.net;
  * @version 	1.0
  * @author		erwin.de.ley@tuple.be
  */
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.ISenderChannel;
 import com.isencia.message.generator.IMessageGenerator;
@@ -43,7 +43,7 @@ import ptolemy.kernel.util.NameDuplicationException;
 public class SocketClientSender extends ChannelSink {
 	///////////////////////////////////////////////////////////////////
 	////                         private variables                 ////
-	private static Log logger = LogFactory.getLog(SocketClientSender.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SocketClientSender.class);
 
 	protected int port = 3333;
 	protected String host = "localhost";

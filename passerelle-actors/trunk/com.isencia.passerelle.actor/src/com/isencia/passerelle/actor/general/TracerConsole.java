@@ -14,8 +14,8 @@
 */
 package com.isencia.passerelle.actor.general;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.Sink;
@@ -38,7 +38,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @version 1.0
  */
 public class TracerConsole extends Sink {
-    private static Log logger = LogFactory.getLog(TracerConsole.class);
+    private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TracerConsole.class);
     
     public Parameter chopLengthParam;
     private int chopLength=80;

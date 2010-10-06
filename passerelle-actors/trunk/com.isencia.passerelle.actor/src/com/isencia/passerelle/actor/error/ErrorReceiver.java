@@ -19,8 +19,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.ProcessingException;
 import com.isencia.passerelle.actor.TerminationException;
@@ -48,7 +48,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public class ErrorReceiver extends Actor implements ErrorCollector {
 
-	private final static Log logger = LogFactory.getLog(ErrorReceiver.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ErrorReceiver.class);
 
 	private BlockingQueue<PasserelleException> errors = new LinkedBlockingQueue<PasserelleException>();
 

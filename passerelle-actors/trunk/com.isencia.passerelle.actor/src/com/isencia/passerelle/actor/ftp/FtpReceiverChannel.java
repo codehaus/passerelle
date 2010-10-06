@@ -19,8 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPConnectionClosedException;
@@ -37,8 +35,7 @@ import com.isencia.message.extractor.IMessageExtractor;
  */
 public class FtpReceiverChannel extends ReaderReceiverChannel {
 	
-	private final static Log logger =
-		LogFactory.getLog(FtpReceiverChannel.class);
+	private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FtpReceiverChannel.class);
 	
 	private String server;
 	private String username;

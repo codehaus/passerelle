@@ -17,8 +17,8 @@ package com.isencia.passerelle.actor.flow;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.InitializationException;
@@ -54,7 +54,7 @@ import ptolemy.kernel.util.NameDuplicationException;
  * @author erwin dl
  */
 public class Synchronizer extends Actor {
-	private static Log logger = LogFactory.getLog(Synchronizer.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Synchronizer.class);
 
 	public static final String NUMBER_OF_PORTS = "Extra nr of ports";
 

@@ -23,8 +23,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+
 
 import com.isencia.message.interceptor.IMessageInterceptor;
 import com.isencia.passerelle.message.ManagedMessage;
@@ -38,7 +38,7 @@ import com.isencia.passerelle.message.ManagedMessage;
  */
 public class MessageToMailMessageConverter implements IMessageInterceptor {
 
-	private final static Log logger = LogFactory.getLog(MessageToMailMessageConverter.class);
+	private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MessageToMailMessageConverter.class);
 	
 	private boolean passThrough = false;
 	
