@@ -44,22 +44,6 @@
          </contextualLaunch>
       </shortcut>
    </extension>
-   <extension
-         point="org.eclipse.debug.core.launchConfigurationTypes">
-      <launchConfigurationType
-            delegate="com.isencia.passerelle.workbench.model.ui.launch.LaunchConfigurationDelegate"
-            icon="icons/ide.gif"
-            id="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationType"
-            modes="run, debug"
-            name="Passerelle Model"
-            public="true">
-            
-            <fileExtension
-               default="true"
-               extension="moml">
-         </fileExtension>
-            </launchConfigurationType>
-   </extension>
    <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
     	<launchConfigurationTypeImage
         	icon="icons/model.gif"
