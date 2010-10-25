@@ -23,7 +23,6 @@
       <import plugin="ptolemy.core" version="7.0.1" match="greaterOrEqual"/>
       <import plugin="ptolemy.domains.and.actors" version="7.0.1" match="greaterOrEqual"/>
       <import plugin="ptolemy.gui" version="7.0.1" match="greaterOrEqual"/>
-      <import plugin="com.springsource.org.apache.commons.beanutils" version="1.8.0" match="greaterOrEqual"/>
       <import plugin="com.springsource.slf4j.org.apache.commons.logging"/>
       <import plugin="org.eclipse.osgi"/>
       <import plugin="uk.ac.gda.libs"/>
@@ -44,6 +43,7 @@
       <import plugin="org.eclipse.core.runtime" version="3.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.2" match="greaterOrEqual"/>
       <import plugin="com.isencia.passerelle.engine"/>
+      <import plugin="com.springsource.slf4j.org.apache.log4j"/>
       <import plugin="org.eclipse.jface.text"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.draw2d" version="3.4.2" match="greaterOrEqual"/>
@@ -73,7 +73,6 @@
       <import plugin="org.apache.xml.resolver" version="1.2.0" match="compatible"/>
       <import plugin="org.apache.xml.serializer" version="2.7.1" match="compatible"/>
       <import plugin="org.eclipse.swt" version="3.2.0" match="compatible"/>
-      <import plugin="com.springsource.slf4j.org.apache.log4j"/>
    </requires>
 
    <plugin
