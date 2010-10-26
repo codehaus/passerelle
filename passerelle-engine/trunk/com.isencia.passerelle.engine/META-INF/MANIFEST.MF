@@ -58,7 +58,6 @@ Require-Bundle: ptolemy.core;bundle-version="7.0.1",
  org.apache.xerces;bundle-version="2.9.0",
  com.isencia.passerelle.commons;bundle-version="6.0.0",
  com.isencia.passerelle.ume;bundle-version="6.0.0",
- com.springsource.org.apache.commons.collections;bundle-version="3.2.1",
  com.microstar;bundle-version="1.2.0",
  diva;bundle-version="7.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6,
