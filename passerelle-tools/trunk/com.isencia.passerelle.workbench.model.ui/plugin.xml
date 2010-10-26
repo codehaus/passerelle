@@ -24,51 +24,6 @@
             id="com.isencia.passerelle.workbench.model.ui.wizards.PasserelleNewModelWizard">
       </wizard>
    </extension>
-    <extension
-         point="org.eclipse.debug.ui.launchShortcuts">
-       <shortcut
-             class="com.isencia.passerelle.workbench.model.ui.launch.LaunchShortcut"
-             icon="icons/ide.gif"
-             id="com.isencia.passerelle.workbench.model.ui.launch.launchShortcut"
-             label="Passerelle Model"
-             modes="run, debug">
-        <contextualLaunch>
-            <enablement>
-               <with variable="selection">
-                  <count value="1" />
-            		<iterate>
-                   		<test property="org.eclipse.debug.ui.matchesPattern" value="*.moml"/>
-               		</iterate>
-               </with>
-            </enablement>
-         </contextualLaunch>
-      </shortcut>
-   </extension>
-   <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
-    	<launchConfigurationTypeImage
-        	icon="icons/model.gif"
-        	configTypeID="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationType"
-        	id="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationTypeImage">
-    	</launchConfigurationTypeImage>
-	</extension>
-   
-   <extension
-         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
-      <launchConfigurationTabGroup
-            class="com.isencia.passerelle.workbench.model.ui.launch.LaunchConfigurationTabGroup"
-            id="com.isencia.passerelle.workbench.model.ui.launch.org.eclipse.debug.ui.launchConfigurationTabGroup"
-            type="com.isencia.passerelle.workbench.model.ui.launch.launchConfigurationType">
-         <launchMode
-               perspective="org.eclipse.debug.ui.DebugPerspective"
-               description="Debug"
-               mode="debug">
-         </launchMode>
-         <launchMode
-               description="Run"
-               mode="run">
-         </launchMode>
-      </launchConfigurationTabGroup>
-   </extension>
    
    <extension point="org.eclipse.ui.perspectiveExtensions">
 	<perspectiveExtension targetID="com.isencia.passerelle.workbench.model.ui.perspective">
