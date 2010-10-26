@@ -55,14 +55,41 @@ public class ModelLauncher {
 
 	        try {
 	        	// TODO Use startup of SherpaBeans to automatically find the dependent bundles
-	            initialPropsMap.put("osgi.bundles", "org.eclipse.equinox.common@2:start,org.eclipse.core.runtime@2:start,org.eclipse.core.jobs@3:start," +
-	            		"org.eclipse.equinox.registry@3:start,org.eclipse.equinox.preferences@3:start,org.eclipse.core.contenttype@3:start,org.eclipse.equinox.app@3:start," +
-	            		"com.microstar@3:start,ptolemy.core@3:start,org.apache.log4j,org.slf4j,org.slf4j.impl,org.jdom,mail,activation," +
-	            		"org.apache.commons.math,ptolemy.gui,diva,org.org.apache.commons.collection,org.apache.commons.beanutils,org.apache.xerces," +
-	            		"org.apache.xml.serializer,org.apache.commons.collections,org.apache.commons.beanutils,org.apache.commons.logging," +
-	            		"javax.xml,org.apache.xml.resolver,org.apache.commons.httpclient,org.apache.commons.codec,com.isencia.passerelle.engine.api,"+
-	            		"com.isencia.passerelle.workbench.model@3:start,com.isencia.passerelle.workbench.logging.development," +
-	            		"com.isencia.passerelle.workbench.logging.production");
+	            initialPropsMap.put("osgi.bundles", 
+	            		"org.eclipse.equinox.common@2:start," +
+	            		"org.eclipse.core.runtime@2:start," +
+	            		"org.eclipse.ant.core@3:start," +
+	            		"org.eclipse.core.expressions@3:start," +
+	            		"org.eclipse.core.filesystem@3:start," +
+	            		"org.eclipse.core.variables@3:start," +
+	            		"org.eclipse.core.contenttype@3:start," +
+	            		"org.eclipse.core.jobs@3:start," +
+	            		"org.eclipse.core.resources@3:start," +
+	            		"org.eclipse.equinox.registry@3:start," +
+	            		"org.eclipse.equinox.preferences@3:start," +
+	            		"org.eclipse.equinox.app@3:start," +
+	            		"org.apache.log4j," +
+	            		"org.slf4j," +
+	            		"org.slf4j.impl," +
+	            		"org.jdom," +
+	            		"mail," +
+	            		"activation," +
+	            		"com.microstar@3:start," +
+	            		"ptolemy.core@3:start," +
+	            		"javax.xml," +
+	            		"org.apache.commons.beanutils," +
+	            		"org.apache.commons.codec," +
+	            		"org.apache.commons.collections," +
+	            		"org.apache.commons.httpclient," +
+	            		"org.apache.commons.logging," +
+	            		"org.apache.commons.math," +
+	            		"org.apache.xerces," +
+	            		"org.apache.xml.serializer," +
+	            		"org.apache.xml.resolver," +
+	            		"com.isencia.passerelle.workbench.model@3:start,"
+	            		+ "com.isencia.passerelle.workbench.logging.development,"
+//	            		+ "com.isencia.passerelle.workbench.logging.production"
+	            		);
 	            
 	            initialPropsMap.put("osgi.clean", "true");
 	            EclipseStarter.setInitialProperties(initialPropsMap);
