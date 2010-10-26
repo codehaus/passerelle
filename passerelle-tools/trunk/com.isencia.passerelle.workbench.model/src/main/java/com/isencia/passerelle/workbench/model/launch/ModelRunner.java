@@ -26,8 +26,6 @@ public class ModelRunner implements IApplication {
 	@Override
 	public Object start(IApplicationContext applicationContext) throws Exception {
 		
-		logger.info("Starting EDNA Server"); // Well we will one day! TODO Use property for name of server.
-		
 		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		System.setProperty("eclipse.workspace.home", workspacePath);
 		logger.info("Workspace folder set to: "+workspacePath);
