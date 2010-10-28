@@ -42,8 +42,8 @@ public class PasserelleNewModelWizardPage extends WizardPage {
 	 */
 	public PasserelleNewModelWizardPage(ISelection selection) {
 		super("wizardPage");
-		setTitle("Multi-page Editor File");
-		setDescription("This wizard creates a new file with *.moml extension that can be opened by a multi-page editor.");
+		setTitle("New Workflow Model");
+		setDescription("Create a new workflow model.");
 		this.selection = selection;
 	}
 

@@ -13,11 +13,11 @@
    <extension
          point="org.eclipse.ui.newWizards">
       <category
-            name="Passerelle"
+            name="Workflows"
             id="com.isencia.passerelle.workbench.model.ui">
       </category>
       <wizard
-            name="Passerelle Model"
+            name="Workflow Model"
             icon="icons/model.gif"
             category="com.isencia.passerelle.workbench.model.ui"
             class="com.isencia.passerelle.workbench.model.ui.wizards.PasserelleNewModelWizard"
