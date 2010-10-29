@@ -18,9 +18,9 @@
    </license>
 
    <requires>
-      <import plugin="com.springsource.org.jdom"/>
-      <import plugin="com.springsource.slf4j.api"/>
       <import plugin="mail"/>
+      <import plugin="com.springsource.slf4j.api"/>
+      <import plugin="com.springsource.org.jdom"/>
       <import plugin="com.springsource.org.apache.commons.beanutils"/>
       <import plugin="org.apache.commons.httpclient"/>
       <import plugin="org.eclipse.osgi"/>
@@ -30,10 +30,8 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.ui.ide" version="3.4.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.debug.ui" version="3.4.2" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="3.4.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.resources" version="3.5.2" match="greaterOrEqual"/>
-      <import plugin="com.isencia.passerelle.engine"/>
       <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.core.resources" version="3.5.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.ui.views.properties.tabbed"/>
       <import plugin="org.eclipse.emf.edit.ui" version="2.4.1" match="greaterOrEqual"/>
