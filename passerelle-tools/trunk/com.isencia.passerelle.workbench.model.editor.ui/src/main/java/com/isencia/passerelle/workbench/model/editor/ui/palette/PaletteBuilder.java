@@ -148,8 +148,17 @@ public class PaletteBuilder {
 		try {
 			return bundle.loadClass(configurationElement.getAttribute("class"));
 		} catch (Exception e) {
-			logger.error("Cannot load class "+configurationElement.getAttribute("class"), e);
-			return null;
+			
+			// It might be loadable from the core actors plugin
+			// This allows people to create and populate the palette from 
+			// core paserelle classes.
+			final Bundle actors = Platform.getBundle("com.isencia.passerelle.actor");
+			try {
+				return actors.loadClass(configurationElement.getAttribute("class"));
+			} catch (Exception e1) {
+				logger.error("Cannot load class "+configurationElement.getAttribute("class"), e1);
+				return null;
+			}
 		}
 
 	}
