@@ -293,9 +293,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 			protected void configurePaletteViewer(PaletteViewer viewer) {
 				super.configurePaletteViewer(viewer);
 				// viewer.setCustomizer(new LogicPaletteCustomizer());
-				viewer
-						.addDragSourceListener(new TemplateTransferDragSourceListener(
-								viewer));
+				viewer.addDragSourceListener(new TemplateTransferDragSourceListener(viewer));
 			}
 
 			protected void hookPaletteViewer(PaletteViewer viewer) {
@@ -500,8 +498,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 				graphicalViewer);
 		KeyHandler keyHandler = new KeyHandler();
 
-		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0),
-				getActionRegistry().getAction(GEFActionConstants.DELETE));
+		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0),getActionRegistry().getAction(ActionFactory.DELETE.getId()));
 		graphicalViewerKeyHandler.setParent(keyHandler);
 		graphicalViewer.setKeyHandler(graphicalViewerKeyHandler);
 
@@ -515,8 +512,12 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 	 *         preferences
 	 */
 	protected FlyoutPreferences getPalettePreferences() {
+		// We want the palette to look like RCP Developer
 		final FlyoutPreferences prefs = super.getPalettePreferences();
 		prefs.setPaletteState(FlyoutPaletteComposite.STATE_PINNED_OPEN);
+		prefs.setDockLocation(PositionConstants.WEST);
+		prefs.setPaletteWidth(250); // EDNA Workbench has long actor names
+		
 		return prefs;
 	}
 

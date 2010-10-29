@@ -111,7 +111,8 @@
          point="com.isencia.passerelle.engine.actorGroups">
       <actorgroup
             id="com.isencia.passerelle.actor.actorgroup.general"
-            name="General">
+            name="General"
+            open="true">
       </actorgroup>
       <actorgroup
             id="com.isencia.passerelle.actor.actorgroup.utilities"

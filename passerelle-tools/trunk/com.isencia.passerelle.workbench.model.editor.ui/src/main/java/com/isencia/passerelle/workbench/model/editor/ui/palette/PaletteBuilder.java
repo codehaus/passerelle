@@ -35,9 +35,11 @@ public class PaletteBuilder {
 
 	public final static String PALETTE_CONTAINER_GENERAL = "General";
 	private static Map<String,ImageDescriptor> actorIconMap = new HashMap<String,ImageDescriptor>();
+	
 	public static ImageDescriptor getIcon(String className){
 		return actorIconMap.get(className);
 	}
+	
 	static public PaletteRoot createPalette(EditorPart parent){
 		PaletteRoot paletteRoot = new PaletteRoot();
 		paletteRoot.addAll(createCategories(paletteRoot,parent));
@@ -45,9 +47,12 @@ public class PaletteBuilder {
 	}
 	
 	static private List createCategories(PaletteRoot root, EditorPart parent){
+		
+		
 		List categories = new ArrayList();
 		
 		categories.add(createControlGroup(root));
+		
 		
 		// Find all ActorGroups and create a corresponding container
 		LinkedHashMap<String, PaletteContainer> paletteContainers = new LinkedHashMap<String, PaletteContainer>();
@@ -57,7 +62,8 @@ public class PaletteBuilder {
 				for (IConfigurationElement configurationElement : config) {
 					String nameAttribute = configurationElement.getAttribute("name");
 					String iconAttribute = configurationElement.getAttribute("icon");
-					String idAttribute = configurationElement.getAttribute("id");
+					String idAttribute   = configurationElement.getAttribute("id");
+					String openAttribute = configurationElement.getAttribute("open");
 					
 					ImageDescriptor des = null;
 					if ( iconAttribute != null ) {
@@ -68,8 +74,10 @@ public class PaletteBuilder {
 
 					}
 
+					final boolean paletteOpen = openAttribute!=null ?openAttribute.equalsIgnoreCase("true") : false;
+					
 					if( !paletteContainers.containsKey(nameAttribute)) {
-						PaletteContainer paletteContainer = createPaletteContainer(nameAttribute, des);
+						PaletteContainer paletteContainer = createPaletteContainer(nameAttribute, des, paletteOpen);
 						paletteContainers.put(idAttribute, paletteContainer);
 						categories.add(paletteContainer);
 					}
@@ -118,7 +126,7 @@ public class PaletteBuilder {
 					} else {
 						PaletteContainer defaultPaletteContainer = paletteContainers.get("");
 						if( defaultPaletteContainer==null) {
-							defaultPaletteContainer = createPaletteContainer("", null);
+							defaultPaletteContainer = createPaletteContainer("", null, false);
 							categories.add(defaultPaletteContainer);
 						}
 						defaultPaletteContainer.add(entry);
@@ -182,11 +190,24 @@ public class PaletteBuilder {
 		return controlGroup;
 	}
 
-	static private PaletteContainer createPaletteContainer(final String name,
-			                                               final ImageDescriptor image){
+	
+	/**
+	 * Change to make first palette open and others closed, as we will put the most important
+	 * actors in this palette.
+	 * @param name
+	 * @param image
+	 * @return
+	 */
+	static private PaletteContainer createPaletteContainer(final String          name,
+			                                               final ImageDescriptor image,
+			                                               final boolean         open){
 		
 		PaletteDrawer drawer = new PaletteDrawer(name, image);
-		drawer.setInitialState(PaletteDrawer.INITIAL_STATE_OPEN);
+		if (open) {
+		    drawer.setInitialState(PaletteDrawer.INITIAL_STATE_OPEN);
+		} else {
+			drawer.setInitialState(PaletteDrawer.INITIAL_STATE_CLOSED);
+		}
 		
 		return drawer;
 	}

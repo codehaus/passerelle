@@ -75,6 +75,13 @@ Such groups have no run-time impact, but can be used to organize actors e.g. in 
                </appinfo>
             </annotation>
          </attribute>
+         <attribute name="open" type="boolean">
+            <annotation>
+               <documentation>
+                  If the group should default to being open or not (default is false)
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
