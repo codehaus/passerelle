@@ -41,16 +41,15 @@ import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
+import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
-import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -87,59 +86,54 @@ import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
 import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
 
-public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
-		implements IPasserelleEditor, ITabbedPropertySheetPageContributor {
+public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
+		                           implements IPasserelleEditor, 
+		                                      ITabbedPropertySheetPageContributor {
 
-	@Override
-	public SelectionSynchronizer getSelectionSynchronizer() {
-		// TODO Auto-generated method stub
-		return super.getSelectionSynchronizer();
-	}
-
-	@Override
-	public GraphicalViewer getGraphicalViewer() {
-		// TODO Auto-generated method stub
-		return super.getGraphicalViewer();
-	}
-
-	private CompositeActor container;
-
-	public CompositeActor getContainer() {
-		if (container != null)
-			return container;
-		return model;
-	}
-
-	private RefreshCommand RefreshCommand;
-
-	private RefreshCommand getRefreshCommand() {
-		if (RefreshCommand == null) {
-			return RefreshCommand = new RefreshCommand();
-		}
-		return RefreshCommand;
-	}
-
+	// Static things
+	private static Logger logger = LoggerFactory.getLogger(PasserelleModelEditor.class);
 	protected static final String PALETTE_DOCK_LOCATION = "Dock location"; //$NON-NLS-1$
 	protected static final String PALETTE_SIZE = "Palette Size"; //$NON-NLS-1$
 	protected static final String PALETTE_STATE = "Palette state"; //$NON-NLS-1$
 	protected static final int DEFAULT_PALETTE_SIZE = 130;
+	
+	public static final int DELETE_KEYCODE = 127;
+	public static final int COPY_KEYCODE = 99;
+	public static final int PASTE_KEYCODE = 112;
+
+	
+	private CompositeActor container;
+	private RefreshCommand RefreshCommand;
+	private int            index;
+	
+	private List<String> stackActionIDs = new ArrayList<String>();
+	private List<String> editorActionIDs = new ArrayList<String>();
+	private List<Object> editPartActionIDs = new ArrayList<Object>();
+
+	private KeyHandler sharedKeyHandler;
+	protected boolean editorSaving = false;
+
+	private CompositeActor model = new CompositeActor();
+	private ResourceTracker resourceListener = new ResourceTracker();
+	private RulerComposite rulerComp;
+	private PasserelleModelMultiPageEditor parent;
+
 
 	public PasserelleModelEditor(PasserelleModelMultiPageEditor parent,
-			CompositeActor actor, CompositeActor model) {
+			                     CompositeActor                 actor,
+			                     CompositeActor                 model) {
 		this(parent, model);
 		this.container = actor;
 
 	}
 
 	public PasserelleModelEditor(PasserelleModelMultiPageEditor parent,
-			CompositeActor model) {
+			                     CompositeActor                 model) {
 		this.parent = parent;
 		this.model = model;
 		setEditDomain(parent.getDefaultEditDomain());
 
 	}
-
-	private int index;
 
 	public int getIndex() {
 		return index;
@@ -148,15 +142,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	public void setIndex(int index) {
 		this.index = index;
 	}
-
-	private List stackActionIDs = new ArrayList();
-	private List editorActionIDs = new ArrayList();
-	private List editPartActionIDs = new ArrayList();
-	private static Logger logger = LoggerFactory
-			.getLogger(PasserelleModelEditor.class);
-	public static final int DELETE_KEYCODE = 127;
-	public static final int COPY_KEYCODE = 99;
-	public static final int PASTE_KEYCODE = 112;
 
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		updateActions(getSelectionActions());
@@ -176,21 +161,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	protected ISelectionListener getSelectionListener() {
 		return selectionListener;
 	}
-
-	static {
-		// LogicPlugin.getDefault().getPreferenceStore().setDefault(
-		// PALETTE_SIZE, DEFAULT_PALETTE_SIZE);
-	}
-
-	private KeyHandler sharedKeyHandler;
-	private PaletteRoot root;
-	protected boolean editorSaving = false;
-
-	private CompositeActor model = new CompositeActor();
-	private ResourceTracker resourceListener = new ResourceTracker();
-	private RulerComposite rulerComp;
-	private PasserelleModelMultiPageEditor parent;
-
 	public PasserelleModelMultiPageEditor getParent() {
 
 		return parent;
@@ -319,7 +289,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 
 	protected PaletteViewerProvider createPaletteViewerProvider() {
 		return new PaletteViewerProvider(getEditDomain()) {
-			private IMenuListener menuListener;
 
 			protected void configurePaletteViewer(PaletteViewer viewer) {
 				super.configurePaletteViewer(viewer);
@@ -369,17 +338,6 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		return super.getAdapter(type);
 	}
 
-	@Override
-	public DefaultEditDomain getEditDomain() {
-		// TODO Auto-generated method stub
-		return super.getEditDomain();
-	}
-
-	@Override
-	public ActionRegistry getActionRegistry() {
-		// TODO Auto-generated method stub
-		return super.getActionRegistry();
-	}
 
 	protected Control getGraphicalControl() {
 		return rulerComp;
@@ -412,11 +370,13 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 		return model;
 	}
 
+	private PaletteRoot palletBuilder;
+
 	protected PaletteRoot getPaletteRoot() {
-		if (root == null) {
-			root = PaletteBuilder.createPalette(this);
+		if (palletBuilder == null) {
+			palletBuilder = PaletteBuilder.createPalette(this);
 		}
-		return root;
+		return palletBuilder;
 	}
 
 	public void gotoMarker(IMarker marker) {
@@ -673,6 +633,41 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			return false;
 		}
 	}
+
+	public CompositeActor getContainer() {
+		if (container != null)
+			return container;
+		return model;
+	}
+
+	private RefreshCommand getRefreshCommand() {
+		if (RefreshCommand == null) {
+			return RefreshCommand = new RefreshCommand();
+		}
+		return RefreshCommand;
+	}
+	
+	
+	@Override
+	public SelectionSynchronizer getSelectionSynchronizer() {
+		return super.getSelectionSynchronizer();
+	}
+
+	@Override
+	public GraphicalViewer getGraphicalViewer() {
+		return super.getGraphicalViewer();
+	}
+	
+	@Override
+	public DefaultEditDomain getEditDomain() {
+		return super.getEditDomain();
+	}
+
+	@Override
+	public ActionRegistry getActionRegistry() {
+		return super.getActionRegistry();
+	}
+
 
 	// protected void updateActions(List actionIds) {
 	// super.updateActions(actionIds);
