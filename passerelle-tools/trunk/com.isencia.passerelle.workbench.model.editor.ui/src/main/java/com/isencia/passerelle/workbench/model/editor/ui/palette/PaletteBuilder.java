@@ -56,9 +56,20 @@ public class PaletteBuilder {
 			if( config != null ) {
 				for (IConfigurationElement configurationElement : config) {
 					String nameAttribute = configurationElement.getAttribute("name");
+					String iconAttribute = configurationElement.getAttribute("icon");
 					String idAttribute = configurationElement.getAttribute("id");
+					
+					ImageDescriptor des = null;
+					if ( iconAttribute != null ) {
+						
+						final String bundleId = configurationElement.getDeclaringExtension().getContributor().getName();
+	                    des = Activator.getImageDescriptor(bundleId,iconAttribute);
+						if (des == null) des = Activator.getImageDescriptor(iconAttribute);
+
+					}
+
 					if( !paletteContainers.containsKey(nameAttribute)) {
-						PaletteContainer paletteContainer = createPaletteContainer(nameAttribute);
+						PaletteContainer paletteContainer = createPaletteContainer(nameAttribute, des);
 						paletteContainers.put(idAttribute, paletteContainer);
 						categories.add(paletteContainer);
 					}
@@ -107,7 +118,7 @@ public class PaletteBuilder {
 					} else {
 						PaletteContainer defaultPaletteContainer = paletteContainers.get("");
 						if( defaultPaletteContainer==null) {
-							defaultPaletteContainer = createPaletteContainer("");
+							defaultPaletteContainer = createPaletteContainer("", null);
 							categories.add(defaultPaletteContainer);
 						}
 						defaultPaletteContainer.add(entry);
@@ -136,8 +147,8 @@ public class PaletteBuilder {
 	}
 	
 	static private PaletteContainer createControlGroup(PaletteRoot root){
-		PaletteGroup controlGroup = new PaletteGroup(
-			"ControlGroup");
+		
+		PaletteGroup controlGroup = new PaletteGroup("ControlGroup");
 
 		List entries = new ArrayList();
 
@@ -160,22 +171,23 @@ public class PaletteBuilder {
 		entries.add(marqueeStack);
 		
 		tool = new ConnectionCreationToolEntry(
-			"Connection",
-			"Connection",
-			null,
-			Activator.getImageDescriptor("icons/connection16.gif"),
-			Activator.getImageDescriptor("icons/connection24.gif")
+				"Connection",
+				"Connection",
+				null,
+				Activator.getImageDescriptor("icons/connection16.gif"),
+				Activator.getImageDescriptor("icons/connection24.gif")
 		);
 		entries.add(tool);
 		controlGroup.addAll(entries);
 		return controlGroup;
 	}
 
-	static private PaletteContainer createPaletteContainer(String name){
+	static private PaletteContainer createPaletteContainer(final String name,
+			                                               final ImageDescriptor image){
 		
-		PaletteDrawer drawer = new PaletteDrawer(
-				//"Components", Activator.getImageDescriptor("icons/ide.gif"));//$NON-NLS-1$
-				name, null);//$NON-NLS-1$
+		PaletteDrawer drawer = new PaletteDrawer(name, image);
+		drawer.setInitialState(PaletteDrawer.INITIAL_STATE_OPEN);
+		
 		return drawer;
 	}
 
