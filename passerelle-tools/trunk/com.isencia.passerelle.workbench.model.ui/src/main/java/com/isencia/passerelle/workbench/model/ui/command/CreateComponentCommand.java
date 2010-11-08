@@ -3,7 +3,6 @@ package com.isencia.passerelle.workbench.model.ui.command;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,19 +11,17 @@ import org.slf4j.LoggerFactory;
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.TypedIOPort;
 import ptolemy.actor.TypedIORelation;
-import ptolemy.data.expr.FileParameter;
 import ptolemy.data.expr.Parameter;
-import ptolemy.data.expr.StringParameter;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.moml.Vertex;
 
+import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
-import com.isencia.passerelle.actor.Actor;
 
 public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
@@ -84,12 +81,11 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 					CompositeEntity parentModel = (CompositeEntity) parent;
 					String componentName = null;
 					if (model == null) {
-						componentName = ModelUtils
-								.findUniqueName(
-										parentModel,
-										clazz,
-										name.equalsIgnoreCase("INPUT") ? DEFAULT_INPUT_PORT
-												: DEFAULT_OUTPUT_PORT);
+						componentName = ModelUtils.findUniqueName(parentModel,
+										                          clazz,
+										                          name.equalsIgnoreCase("INPUT") ? DEFAULT_INPUT_PORT : DEFAULT_OUTPUT_PORT,
+										                          name);
+						componentName = ModelUtils.getLegalName(componentName);
 						Class constructorClazz = CompositeEntity.class;
 						if (clazz.getSimpleName().equals("TypedIOPort")) {
 							constructorClazz = ComponentEntity.class;
@@ -120,8 +116,8 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 							name = ((TypedIOPort) model).isInput() ? DEFAULT_INPUT_PORT
 									: DEFAULT_OUTPUT_PORT;
 						}
-						componentName = ModelUtils.findUniqueName(parentModel,
-								model.getClass(), name);
+						componentName = ModelUtils.findUniqueName(parentModel, model.getClass(), name, name);
+						componentName = ModelUtils.getLegalName(componentName);
 						if (model instanceof Vertex) {
 							TypedIORelation rel = new TypedIORelation(
 									parentModel, componentName);
@@ -139,7 +135,6 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 					createDefaultValues(child);
 					
 					if (location != null) {
-
 						ModelUtils.setLocation(child, location);
 					}
 					setChild(child);
