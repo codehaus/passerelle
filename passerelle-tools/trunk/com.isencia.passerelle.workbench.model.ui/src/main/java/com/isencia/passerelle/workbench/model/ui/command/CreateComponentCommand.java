@@ -1,6 +1,10 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +12,9 @@ import org.slf4j.LoggerFactory;
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.TypedIOPort;
 import ptolemy.actor.TypedIORelation;
+import ptolemy.data.expr.FileParameter;
+import ptolemy.data.expr.Parameter;
+import ptolemy.data.expr.StringParameter;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
 import ptolemy.kernel.util.NamedObj;
@@ -17,6 +24,7 @@ import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
+import com.isencia.passerelle.actor.Actor;
 
 public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 
@@ -127,6 +135,9 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 						}
 						ComponentUtility.setContainer(child, parentModel);
 					}
+					
+					createDefaultValues(child);
+					
 					if (location != null) {
 
 						ModelUtils.setLocation(child, location);
@@ -138,6 +149,7 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 				}
 
 			}
+
 		});
 	}
 
@@ -192,4 +204,39 @@ public class CreateComponentCommand extends org.eclipse.gef.commands.Command {
 		this.location = location;
 	}
 
+	private Map<Class<? extends Parameter>, String> defaultValueMap;
+	
+	/**
+	 * This method can be used to default configurable parameter values, when
+	 * the class is created.
+	 * @param clazz
+	 * @param filePath
+	 */
+	public void addConfiguratbleParameterValue(final Class<? extends Parameter> clazz,
+			                                   final String value) {
+		
+		if (defaultValueMap==null) defaultValueMap = new HashMap<Class<? extends Parameter>, String>(3);
+		defaultValueMap.put(clazz, value);
+	}
+
+	private void createDefaultValues(NamedObj child) throws Exception {
+		
+		if (defaultValueMap==null) return;
+		if (child instanceof Actor) {
+			final Actor actor = (Actor)child;
+			
+			for (Class<? extends Parameter> regClazz : defaultValueMap.keySet()) {
+				final Collection<? extends Parameter> params = actor.getConfigurableParameter(regClazz);
+				if (params!=null && !params.isEmpty()) {
+					if (params.size()==1) {
+						final Parameter param = params.iterator().next();
+						param.setExpression(defaultValueMap.get(regClazz));
+					} else {
+						throw new Exception("There are more than one parameters with class "+regClazz);
+					}
+				}
+			}
+		}
+		
+	}
 }

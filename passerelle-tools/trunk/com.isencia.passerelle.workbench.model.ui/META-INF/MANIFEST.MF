@@ -23,7 +23,8 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.isencia.passerelle.workbench.model.ui,
  com.isencia.passerelle.workbench.model.ui.command,
  com.isencia.passerelle.workbench.model.ui.utils
-Import-Package: org.eclipse.core.filesystem,
+Import-Package: com.isencia.passerelle.actor,
+ org.eclipse.core.filesystem,
  org.eclipse.gef.commands,
  org.eclipse.gef.ui.actions,
  org.slf4j

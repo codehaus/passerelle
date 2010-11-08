@@ -19,7 +19,6 @@ import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.PaletteStack;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
-import org.eclipse.gef.requests.CreationFactory;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.part.EditorPart;
@@ -263,23 +262,4 @@ public class PaletteBuilder {
 	}
 	*/
 	
-	
-	public static class ClassTypeFactory implements CreationFactory {
-
-		private Class<?> type;
-		private String name;
-		public ClassTypeFactory(Class<?> type,String name) {
-			this.type = type;
-			this.name = name;
-		}
-
-		public Object getNewObject() {
-			return name;
-		}
-
-		public Object getObjectType() {
-			return type;
-		}
-
-	}
 }
