@@ -2,6 +2,8 @@ package com.isencia.passerelle.workbench.model.editor.ui.dnd;
 
 import java.io.File;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
@@ -10,6 +12,8 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.dnd.AbstractTransferDropTargetListener;
 import org.eclipse.gef.requests.CreateRequest;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
@@ -22,10 +26,10 @@ import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.palette.ClassTypeFactory;
 import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
+import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
 
 public class FileTransferDropTargetListener  extends AbstractTransferDropTargetListener {
 
-   private String            filePath, fileName;
    private IDropClassFactory dropFactory;
    
    private static final Logger logger = LoggerFactory.getLogger(FileTransferDropTargetListener.class);
@@ -51,20 +55,46 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
    }
 
    protected void updateTargetRequest() {
-	   ((CreateRequest)getTargetRequest()).setLocation(getDropLocation());
+	   CreateRequest req = ((CreateRequest)getTargetRequest());
+	   if (req == null) return;
+	   req.setLocation(getDropLocation());
    }
    
    protected Request createTargetRequest() {
 	   CreateRequest request = new CreateRequest();
 	   
-	   final Class<? extends NamedObj> clazz = dropFactory.getClassForPath(filePath);
+	   final Class<? extends NamedObj> clazz = dropFactory.getClassForPath(getFilePath());
 	   if (clazz == null) return null;
 	   
-	   final ClassTypeFactory factory = new ClassTypeFactory(clazz, fileName);
+	   final ClassTypeFactory factory = new ClassTypeFactory(clazz, getFileName());
 	   request.setFactory(factory);
 	   return request;
    }
-   
+
+   private String getFilePath() {
+	   DropTargetEvent event = getCurrentEvent();
+	   if (event!=null&&event.data!=null) {
+	       return ((String[])event.data)[0];
+	   } else {
+		   final ISelection sel = EclipseUtils.getPage().getSelection();
+			if (!(sel instanceof IStructuredSelection)) return null;
+			
+			final IStructuredSelection ss = (IStructuredSelection) sel;
+			final Object          element = ss.getFirstElement();
+			if (element instanceof IFile) {
+				final IFile fileSel = (IFile)element;
+				return fileSel.getFullPath().toOSString();
+			}
+	   }
+	   
+	   return null;
+   }
+   private String getFileName() {
+	   final String filePath = getFilePath();
+	   if (filePath==null) return null;
+	   return (new File(filePath)).getName();
+   }
+
 	/**
 	 * Returns the current command from the target EditPart.
 	 * 
@@ -76,7 +106,7 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 			// We attempt to send the file parameter over if there is one
 			// in the actor we are adding.
 			final CreateComponentCommand cmd = (CreateComponentCommand)command;
-			cmd.addConfiguratbleParameterValue(FileParameter.class, filePath);
+			cmd.addConfiguratbleParameterValue(FileParameter.class, getFilePath());
 		}
 		return command;
 	}
@@ -86,13 +116,4 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 	   getCurrentEvent().detail = DND.DROP_COPY;
 	   super.handleDragOver();
    }
-   
-   protected void handleDrop() {
-	   
-	   DropTargetEvent event = getCurrentEvent();
-	   this.filePath = ((String[])event.data)[0];
-	   this.fileName = (new File(filePath)).getName();
-	   super.handleDrop();
-	   
-	}
 }
