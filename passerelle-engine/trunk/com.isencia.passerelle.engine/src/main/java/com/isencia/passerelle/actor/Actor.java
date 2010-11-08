@@ -18,12 +18,25 @@ package com.isencia.passerelle.actor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ptolemy.actor.Receiver;
+import ptolemy.actor.TypedAtomicActor;
+import ptolemy.actor.process.TerminateProcessException;
+import ptolemy.data.IntToken;
+import ptolemy.data.Token;
+import ptolemy.data.expr.Parameter;
+import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.util.Attribute;
+import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NameDuplicationException;
+import ptolemy.kernel.util.Settable;
 
 import com.isencia.passerelle.actor.gui.EditorIcon;
 import com.isencia.passerelle.actor.gui.IOptionsFactory;
@@ -47,18 +60,6 @@ import com.isencia.passerelle.message.MessageFactory;
 import com.isencia.passerelle.message.interceptor.IMessageCreator;
 import com.isencia.passerelle.statistics.ActorStatistics;
 import com.isencia.passerelle.statistics.StatisticsServiceFactory;
-
-import ptolemy.actor.Receiver;
-import ptolemy.actor.TypedAtomicActor;
-import ptolemy.actor.process.TerminateProcessException;
-import ptolemy.data.IntToken;
-import ptolemy.data.Token;
-import ptolemy.data.expr.Parameter;
-import ptolemy.kernel.CompositeEntity;
-import ptolemy.kernel.util.Attribute;
-import ptolemy.kernel.util.IllegalActionException;
-import ptolemy.kernel.util.NameDuplicationException;
-import ptolemy.kernel.util.Settable;
 
 /**
  * Base class for all Passerelle Actors. Uses Passerelle's custom parameter
@@ -170,7 +171,7 @@ import ptolemy.kernel.util.Settable;
  */
 public abstract class Actor extends TypedAtomicActor implements IMessageCreator {
 	// ~ Static variables/initializers
-	// ··························································································································
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	private static Logger logger = LoggerFactory.getLogger(Actor.class);
 
@@ -950,7 +951,50 @@ public abstract class Actor extends TypedAtomicActor implements IMessageCreator 
 	 * @return all configurable parameters
 	 */
 	final public Parameter[] getConfigurableParameters() {
-		return (Parameter[]) configurableParameters.toArray(new Parameter[0]);
+		return (Parameter[]) configurableParameters.toArray(new Parameter[configurableParameters.size()]);
+	}
+	
+	/**
+	 * Method attempts to find a Configurable parameter by class type.
+	 * This encapsulates finding a parameter by name rather than pushing that
+	 * find (current just a loop) to outside classes to implement.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	final public Collection<Parameter> getConfigurableParameter(final Class<? extends Parameter> type) {
+		if (configurableParameters==null)     return null;
+		if (configurableParameters.isEmpty()) return null;
+		
+		final Parameter[] params  = getConfigurableParameters();
+		final Collection<Parameter> ret = new HashSet<Parameter>(params.length);
+		for (int i = 0; i < params.length; i++) {
+			if (params[i].getClass().equals(type)) {
+				ret.add(params[i]);
+			}
+		}
+		return ret;
+	}
+	
+	/**
+	 * Method attempts to find a Configurable parameter by name.
+	 * This encapsulates finding a parameter by name rather than pushing that
+	 * find (current just a loop) to outside classes to implement.
+	 * 
+	 * @param name
+	 * @return
+	 */
+	final public Parameter getConfigurableParameter(final String name) {
+		if (name==null)                       return null;
+		if (configurableParameters==null)     return null;
+		if (configurableParameters.isEmpty()) return null;
+		final Parameter[] params = getConfigurableParameters();
+		for (int i = 0; i < params.length; i++) {
+			if (name.equals(params[i].getName())) {
+				return params[i];
+			}
+		}
+		return null;
 	}
 
 	/**
