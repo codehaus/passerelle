@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="com.isencia.passerelle.workbench.model.editor.ui.dropFactory" name="Drop Class Factory" schema="schema/com.isencia.passerelle.workbench.model.editor.ui.dropFactory.exsd"/>
 
    <extension
          point="org.eclipse.ui.editors">

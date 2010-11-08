@@ -50,8 +50,11 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.util.TransferDropTargetListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -78,6 +81,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
@@ -501,7 +505,9 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0),getActionRegistry().getAction(ActionFactory.DELETE.getId()));
 		graphicalViewerKeyHandler.setParent(keyHandler);
 		graphicalViewer.setKeyHandler(graphicalViewerKeyHandler);
-
+		
+		getGraphicalViewer().addDropTargetListener(
+			                   new FileTransferDropTargetListener(getGraphicalViewer()));
 	}
 	
 	/**
