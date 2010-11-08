@@ -200,7 +200,7 @@ public class ModelUtils {
 	}
 
 	public static String findUniqueActorName(CompositeEntity parentModel,
-			String name) {
+			                                 String name) {
 		String newName = name;
 		if (parentModel == null)
 			return newName;
@@ -216,6 +216,28 @@ public class ModelUtils {
 		}
 
 		return newName;
+	}
+
+	/**
+	 * Attempts to clean up names in the event that they are not compatible
+	 * @param newName
+	 * @return
+	 */
+	public static String getLegalName(final String name) {
+		String newName = name;
+		//newName = newName.replace(' ', '_');
+		if (name.indexOf('.')>-1) {
+		    newName = newName.substring(0,newName.lastIndexOf('.'));
+		}
+		newName = newName.replace('.', '_');
+		return newName;
+	}
+
+	public static boolean isNameLegal(String text) {
+		if (text==null)           return false;
+		if ("".equals(text))      return false;
+		if (text.indexOf('.')>-1) return false;
+		return true;
 	}
 
 	private static String generateUniqueTextAttributeName(String name,
@@ -264,7 +286,10 @@ public class ModelUtils {
 	}
 
 	public static String findUniqueName(CompositeEntity parentModel,
-			Class clazz, String startName) {
+			                            Class           clazz, 
+			                            String          startName,
+			                            String          actorName) {
+		
 		if (clazz.getSimpleName().equals("Vertex")) {
 			return generateUniqueVertexName(clazz.getSimpleName(), parentModel,
 					0, clazz);
@@ -274,7 +299,7 @@ public class ModelUtils {
 		} else if (clazz.getSimpleName().equals("TypedIOPort")) {
 			return generateUniquePortName(startName, parentModel, 0);
 		} else {
-			return findUniqueActorName(parentModel, clazz.getSimpleName());
+			return findUniqueActorName(parentModel, actorName!=null?actorName:clazz.getSimpleName());
 		}
 	}
 }

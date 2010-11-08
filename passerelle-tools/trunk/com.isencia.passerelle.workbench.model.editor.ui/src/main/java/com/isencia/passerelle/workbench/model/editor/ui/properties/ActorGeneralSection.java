@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.properties;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
@@ -19,6 +20,7 @@ import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
+import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class ActorGeneralSection extends AbstractPropertySection {
 	
@@ -38,12 +40,26 @@ public class ActorGeneralSection extends AbstractPropertySection {
 				final String text = nameText.getText();
 				if( text != null ) {
 					// Perform Change in a ChangeRequest so that all Listeners are notified
-					model.requestChange(new ModelChangeRequest(ActorGeneralSection.class, model, "changeName") {
-						protected void _execute() throws Exception {
-							model.setDisplayName(text);
-							model.setName(text);
-						}
-					});
+					if (ModelUtils.isNameLegal(text)) {
+						model.requestChange(new ModelChangeRequest(ActorGeneralSection.class, model, "changeName") {
+							protected void _execute() throws Exception {
+								model.setDisplayName(text);
+								model.setName(text);
+							}
+						});
+					} else {
+						MessageDialog.openError(getPart().getSite().getShell(),
+								               "Invalid Name",
+								               "The name '"+text+"' is not allowed.\n\n"+
+								               "Names should not contain '.'");
+						model.requestChange(new ModelChangeRequest(ActorGeneralSection.class, model, "changeName") {
+							protected void _execute() throws Exception {
+								model.setDisplayName(ModelUtils.getLegalName(text));
+								model.setName(ModelUtils.getLegalName(text));
+							}
+						});
+					}
+								               
 				}
 			}
 		}
