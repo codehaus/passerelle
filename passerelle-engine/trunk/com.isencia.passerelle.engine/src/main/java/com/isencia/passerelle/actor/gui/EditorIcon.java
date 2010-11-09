@@ -71,9 +71,23 @@ import diva.canvas.toolbox.LabelFigure;
  */
 public class EditorIcon extends XMLIcon {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8386583066030708920L;
+	
 	private static Font _labelFont = new Font("SansSerif", Font.PLAIN, 12);
     private static Font _parameterFont = new Font("SansSerif", Font.PLAIN, 9);
 
+    /**
+     * Must have argumentless contructor as will be loaded by MoMLParser
+     * @throws IllegalActionException 
+     * @throws NameDuplicationException 
+     */
+    public EditorIcon() throws NameDuplicationException, IllegalActionException {
+    	super((NamedObj)null, (String)null);
+    }
+    
 	/**
 	 * Create a new icon with the given name in the given container.
 	 * @param container The container.

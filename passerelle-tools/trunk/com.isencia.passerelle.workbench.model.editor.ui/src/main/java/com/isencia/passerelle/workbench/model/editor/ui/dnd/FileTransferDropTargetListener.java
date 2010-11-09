@@ -4,6 +4,8 @@ import java.io.File;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
@@ -71,10 +73,17 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 	   return request;
    }
 
+   /**
+    * Gets the file path relative to the workspace.
+    * This makes the node work when the workspace is exported.
+    * @return
+    */
    private String getFilePath() {
 	   DropTargetEvent event = getCurrentEvent();
 	   if (event!=null&&event.data!=null) {
-	       return ((String[])event.data)[0];
+	       final String fullPath = ((String[])event.data)[0];
+	       final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+	       return fullPath.substring(workspace.length(), fullPath.length());
 	   } else {
 		   final ISelection sel = EclipseUtils.getPage().getSelection();
 			if (!(sel instanceof IStructuredSelection)) return null;
@@ -83,7 +92,7 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 			final Object          element = ss.getFirstElement();
 			if (element instanceof IFile) {
 				final IFile fileSel = (IFile)element;
-				return fileSel.getFullPath().toOSString();
+				return fileSel.getRawLocation().toOSString();
 			}
 	   }
 	   
@@ -92,7 +101,7 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
    private String getFileName() {
 	   final String filePath = getFilePath();
 	   if (filePath==null) return null;
-	   return (new File(filePath)).getName();
+	   return (new Path(filePath)).lastSegment();
    }
 
 	/**
