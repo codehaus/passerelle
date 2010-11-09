@@ -11,6 +11,8 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.TypedIOPort;
 import ptolemy.actor.gui.ColorAttribute;
@@ -20,19 +22,32 @@ import ptolemy.data.type.BaseType;
 import ptolemy.data.type.Type;
 import ptolemy.kernel.util.AbstractSettableAttribute;
 import ptolemy.kernel.util.Attribute;
+import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.actor.Actor;
+import com.isencia.passerelle.util.ptolemy.ResourceParameter;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CheckboxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ColorPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FilePickerPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FloatPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.IntegerPropertyDescriptor;
+import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ResourcePropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
+import com.isencia.passerelle.workbench.util.ResourceUtils;
 
+/**
+ * This class configures the properties in the PropertiesView when editing a workflow.
+ * 
+ * @author unknown
+ *
+ */
 public class EntityPropertySource implements IPropertySource {
+	
+	private static final Logger logger = LoggerFactory.getLogger(EntityPropertySource.class);
+	
 	private NamedObj entity;
 	private IFigure figure;
 
@@ -216,15 +231,39 @@ public class EntityPropertySource implements IPropertySource {
 		}
 	}
 
-	protected void addPropertyDescriptor(
-			Collection<PropertyDescriptor> descriptors, Attribute parameter,
-			Type type) {
+	protected void addPropertyDescriptor(Collection<PropertyDescriptor> descriptors, 
+			                             Attribute parameter,
+			                             Type type) {
+		
 		if (parameter instanceof ColorAttribute) {
 			descriptors.add(new ColorPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName()));
+			
+		} else if (parameter instanceof ResourceParameter) {
+			
+			ResourcePropertyDescriptor des = new ResourcePropertyDescriptor(parameter.getName(), 
+					                                                        parameter.getDisplayName(),
+					                                                        ResourceUtils.getResource((ResourceParameter)parameter));
+			descriptors.add(des);
+
+	    // If we use this parameter, we can sent the file extensions to the editor
+		} else if (parameter instanceof com.isencia.passerelle.util.ptolemy.FileParameter) {
+			
+			FilePickerPropertyDescriptor des = new FilePickerPropertyDescriptor(parameter.getName(), 
+					                                                            parameter.getDisplayName());
+			final com.isencia.passerelle.util.ptolemy.FileParameter fp = (com.isencia.passerelle.util.ptolemy.FileParameter)parameter;
+			des.setFilter(fp.getFilterExtensions());
+
+			try {
+				if (fp.asFile()!=null) des.setCurrentPath(fp.asFile().getParent());
+			} catch (IllegalActionException e) {
+				logger.error("Cannot get file path!", e);
+			}
+			descriptors.add(des);
+			
 		} else if (parameter instanceof FileParameter) {
-			descriptors.add(new FilePickerPropertyDescriptor(parameter
-					.getName(), parameter.getDisplayName()));
+			descriptors.add(new FilePickerPropertyDescriptor(parameter.getName(), parameter.getDisplayName()));
+		
 		} else if (hasOptions(parameter)) {
 			descriptors.add(new ComboBoxPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName(), ((Parameter) parameter).getChoices()));
