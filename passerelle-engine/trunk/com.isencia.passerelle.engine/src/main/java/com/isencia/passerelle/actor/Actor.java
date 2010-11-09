@@ -969,7 +969,7 @@ public abstract class Actor extends TypedAtomicActor implements IMessageCreator 
 		final Parameter[] params  = getConfigurableParameters();
 		final Collection<Parameter> ret = new HashSet<Parameter>(params.length);
 		for (int i = 0; i < params.length; i++) {
-			if (params[i].getClass().equals(type)) {
+			if (type.isAssignableFrom(params[i].getClass())) {
 				ret.add(params[i]);
 			}
 		}

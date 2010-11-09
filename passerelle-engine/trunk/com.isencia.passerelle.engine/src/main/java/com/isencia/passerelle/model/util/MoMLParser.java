@@ -39,6 +39,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.TypedCompositeActor;
@@ -199,6 +202,9 @@ import com.microstar.xml.XmlParser;
  @Pt.AcceptedRating Red (johnr)
  */
 public class MoMLParser extends ptolemy.moml.MoMLParser {
+	
+	private static final Logger logger = LoggerFactory.getLogger(MoMLParser.class);
+	
     /** Construct a parser that creates a new workspace into which to
      *  put the entities created by the parse() method.
      */
@@ -2795,6 +2801,7 @@ public class MoMLParser extends ptolemy.moml.MoMLParser {
                     // there already is a property with this name, we
                     // don't handle this property
                     String value = (String) _attributes.get("value");
+                    
                     _handlePropertyElement(className, propertyName, value);
                 }
 
@@ -4997,9 +5004,18 @@ public class MoMLParser extends ptolemy.moml.MoMLParser {
                 try {
                     newClass = loadClass(className);
                 } catch (NoClassDefFoundError ex) {
-                    throw new XmlException("Failed to find class '" + className
-                            + "'", _currentExternalEntity(), _getLineNumber(),
-                            _getColumnNumber(), ex);
+                	
+                	// Something went wrong with loading icons
+                	// when the parser is in command line mode.
+                	// 
+                	if ("_icon".equals(propertyName)) {
+                		logger.debug("Property '_icon' cannot be loaded, ignoring.");
+                	} else {
+                	
+	                    throw new XmlException("Failed to find class '" + className
+	                            + "'", _currentExternalEntity(), _getLineNumber(),
+	                            _getColumnNumber(), ex);
+                	}
                 } catch (SecurityException ex) {
                     // An applet might throw this.
                     throw new XmlException("Failed to find class '" + className
