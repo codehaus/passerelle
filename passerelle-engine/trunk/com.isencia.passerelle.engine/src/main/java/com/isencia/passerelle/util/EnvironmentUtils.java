@@ -44,6 +44,9 @@ public class EnvironmentUtils {
 	 * If a system property be.isencia.home is defined, this is taken as the root folder.
 	 * If not, the current working directory of the Java process is taken.
 	 * 
+	 * NOTE Eclipse plugins and ModelRunner will set IPropertyNames.APP_HOME based on
+	 * the workspace definition.
+	 * 
 	 * @return
 	 */
 	public static String getApplicationRootFolder() {

@@ -92,7 +92,9 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 			final Object          element = ss.getFirstElement();
 			if (element instanceof IFile) {
 				final IFile fileSel = (IFile)element;
-				return fileSel.getRawLocation().toOSString();
+				final String fullPath = fileSel.getRawLocation().toOSString();
+				final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+				return fullPath.substring(workspace.length(), fullPath.length());
 			}
 	   }
 	   
