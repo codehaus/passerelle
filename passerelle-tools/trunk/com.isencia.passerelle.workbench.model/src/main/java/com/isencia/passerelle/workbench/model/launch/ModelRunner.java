@@ -28,7 +28,6 @@ public class ModelRunner implements IApplication {
 		
 		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		System.setProperty("eclipse.workspace.home", workspacePath);
-		System.setProperty("user.dir", workspacePath);
 		logger.info("Workspace folder set to: "+workspacePath);
 		
 		String model = System.getProperty("model");
