@@ -9,7 +9,9 @@ import org.eclipse.swt.widgets.FileDialog;
 
 public class FileBrowserEditor extends DialogCellEditor {
 
-	protected String stringValue = "";
+	protected String   stringValue = "";
+	protected String[] fileFilter;
+	protected String   currentPath;
 
 	public FileBrowserEditor(Composite aComposite) {
 		super(aComposite);
@@ -26,14 +28,26 @@ public class FileBrowserEditor extends DialogCellEditor {
 		Display display = cellEditorWindow.getDisplay();
 		FileDialog fd = new FileDialog(display.getActiveShell(), SWT.OPEN);
 		fd.setText("Open");
-		fd.setFilterPath("C:/");
-		String[] filterExt = { "*.txt", "*.doc", ".rtf", "*.*" };
-		fd.setFilterExtensions(filterExt);
+		if (currentPath!=null) {
+			fd.setFilterPath(currentPath);
+		}
+		 
+		if (fileFilter!=null) {
+			fd.setFilterExtensions(fileFilter);
+		}
 		if (getValue() != null) {
 			fd.setFileName((String) getValue());
 		}
 		String selected = fd.open();
 		return selected;
+	}
+
+	public void setFilter(String[] fileFilter) {
+		this.fileFilter = fileFilter;
+	}
+
+	public void setCurrentPath(String currentPath) {
+		this.currentPath = currentPath;
 	}
 
 }

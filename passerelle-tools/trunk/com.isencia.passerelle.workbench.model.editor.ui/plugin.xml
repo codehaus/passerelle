@@ -34,7 +34,7 @@
                 afterTab="com.isencia.passerelle.workbench.model.editor.ui.properties.tab.general"
                 category="actor"
                 id="com.isencia.passerelle.workbench.model.editor.ui.properties.tab.parameters"
-                label="Parameters">
+                label="Properties">
          	</propertyTab>	
          </propertyTabs>
    </extension>
