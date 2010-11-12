@@ -18,6 +18,7 @@ import ptolemy.actor.TypedIOPort;
 import ptolemy.actor.gui.ColorAttribute;
 import ptolemy.data.expr.FileParameter;
 import ptolemy.data.expr.Parameter;
+import ptolemy.data.expr.StringParameter;
 import ptolemy.data.type.BaseType;
 import ptolemy.data.type.Type;
 import ptolemy.kernel.util.AbstractSettableAttribute;
@@ -27,12 +28,14 @@ import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.util.ptolemy.ResourceParameter;
+import com.isencia.passerelle.util.ptolemy.StringChoiceParameter;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CheckboxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ColorPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FilePickerPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FloatPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.IntegerPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ResourcePropertyDescriptor;
+import com.isencia.passerelle.workbench.model.editor.ui.descriptor.StringChoicePropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
@@ -147,7 +150,7 @@ public class EntityPropertySource implements IPropertySource {
 				Parameter attribute = (Parameter) entity
 						.getAttribute((String) id);
 				String oldValue = attribute.getExpression();
-				if (hasOptions(attribute)) {
+				if (hasOptions(attribute) && !(attribute instanceof StringParameter)) {
 					attribute
 							.setExpression(((Parameter)attribute).getChoices()[(Integer) value]);
 				} else {
@@ -264,9 +267,24 @@ public class EntityPropertySource implements IPropertySource {
 		} else if (parameter instanceof FileParameter) {
 			descriptors.add(new FilePickerPropertyDescriptor(parameter.getName(), parameter.getDisplayName()));
 		
+		} else if (parameter instanceof StringChoiceParameter) {
+			// TODO This does not work unless the choices parse to strings.
+			final String[] choices = ((Parameter) parameter).getChoices();
+			final String[] value   = ((StringChoiceParameter)parameter).getValue();
+			final StringChoicePropertyDescriptor des = new StringChoicePropertyDescriptor(parameter.getName(),
+																                  parameter.getDisplayName(), 
+															                      choices,
+															                      value);
+			descriptors.add(des);
+
 		} else if (hasOptions(parameter)) {
-			descriptors.add(new ComboBoxPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName(), ((Parameter) parameter).getChoices()));
+			// TODO This does not work unless the choices parse to strings.
+			final String[] choices = ((Parameter) parameter).getChoices();
+			final ComboBoxPropertyDescriptor des = new ComboBoxPropertyDescriptor(parameter.getName(),
+																                  parameter.getDisplayName(), 
+															                      choices);
+			descriptors.add(des);
+			
 		} else if (BaseType.INT.equals(type)) {
 
 			descriptors.add(new IntegerPropertyDescriptor(parameter.getName(),
@@ -278,7 +296,7 @@ public class EntityPropertySource implements IPropertySource {
 		} else if (BaseType.BOOLEAN.equals(type)) {
 
 			descriptors.add(new CheckboxPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+					                                       parameter.getDisplayName()));
 		} else {
 
 			descriptors.add(new TextPropertyDescriptor(parameter.getName(),

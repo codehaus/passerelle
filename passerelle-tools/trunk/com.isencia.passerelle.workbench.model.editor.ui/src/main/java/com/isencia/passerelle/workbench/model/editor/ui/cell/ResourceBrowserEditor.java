@@ -37,13 +37,14 @@ public class ResourceBrowserEditor extends DialogCellEditor {
         		                     false,
         		                     new Object[]{currentValue},
         		                     null);
-		if (files!=null) {
-			final String fullPath = files[0].getRawLocation().toOSString();
-			final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-			return fullPath.substring(workspace.length(), fullPath.length());
-		} else {
-			return null;
-		}
+        
+		IResource value = currentValue;
+        if (files!=null && files.length>0) value = files[0];
+
+		final String fullPath = value.getRawLocation().toOSString();
+		final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+		return fullPath.substring(workspace.length(), fullPath.length());
+
 		
 	}
 

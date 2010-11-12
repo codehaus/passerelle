@@ -6,6 +6,7 @@ import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
+import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.ObliqueRouter;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
@@ -78,10 +79,10 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 	 * @return The created Figure.
 	 */
 	protected IFigure createFigure() {
-		PolylineConnection connection = new PolylineConnection();
+		
+		PolylineConnection connection = RouterFactory.getConnection();
 		// Relation channel = getRelation();
-		ManhattanConnectionRouter connectionRouter = new ManhattanConnectionRouter();
-		connection.setConnectionRouter(connectionRouter);
+	    connection.setConnectionRouter(RouterFactory.getRouter());
 		// PolygonDecoration arrow = new PolygonDecoration();
 		// arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
 		// arrow.setScale(5, 2.5);
