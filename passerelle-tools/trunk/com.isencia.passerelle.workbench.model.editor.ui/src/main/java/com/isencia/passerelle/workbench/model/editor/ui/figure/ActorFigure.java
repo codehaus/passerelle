@@ -3,8 +3,6 @@ package com.isencia.passerelle.workbench.model.editor.ui.figure;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.swing.colorchooser.ColorSelectionModel;
-
 import org.eclipse.draw2d.AbstractBorder;
 import org.eclipse.draw2d.BorderLayout;
 import org.eclipse.draw2d.Clickable;

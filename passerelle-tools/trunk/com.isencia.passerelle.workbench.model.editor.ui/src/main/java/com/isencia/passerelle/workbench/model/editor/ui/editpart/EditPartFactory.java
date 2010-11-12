@@ -24,6 +24,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMu
 import com.isencia.passerelle.workbench.model.ui.VertexRelation;
 
 public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
+	
 	private Set<AbstractBaseEditPart> parts = new HashSet<AbstractBaseEditPart>();
 	public Set<AbstractBaseEditPart> getParts() {
 		return parts;

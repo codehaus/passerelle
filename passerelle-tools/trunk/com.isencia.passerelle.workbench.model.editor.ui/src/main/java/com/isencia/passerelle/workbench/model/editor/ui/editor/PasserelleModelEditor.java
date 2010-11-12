@@ -50,11 +50,9 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.util.TransferDropTargetListener;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -77,14 +75,18 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CheckableActionGroup;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.RouterFactory.ROUTER_TYPE;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
@@ -238,19 +240,17 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		viewer.setRootEditPart(root);
 
 		viewer.setEditPartFactory(createEditPartFactory());
-		ContextMenuProvider provider = new PasserelleContextMenuProvider(
-				viewer, getActionRegistry());
+		ContextMenuProvider provider = new PasserelleContextMenuProvider(viewer, getActionRegistry());
 		viewer.setContextMenu(provider);
 		getSite()
 				.registerContextMenu(
 						"com.isencia.passerelle.workbench.model.editor.ui.editor.contextmenu", //$NON-NLS-1$
 						provider, viewer);
-		GraphicalViewerKeyHandler graphicalViewerKeyHandler = new GraphicalViewerKeyHandler(
-				viewer);
+		GraphicalViewerKeyHandler graphicalViewerKeyHandler = new GraphicalViewerKeyHandler(viewer);
 		graphicalViewerKeyHandler.setParent(getCommonKeyHandler());
 
 		graphicalViewerKeyHandler.put(KeyStroke.getPressed('X', SWT.CTRL, 0),
-				getActionRegistry().getAction(ActionFactory.CUT.getId()));
+				                      getActionRegistry().getAction(ActionFactory.CUT.getId()));
 		viewer.setKeyHandler(graphicalViewerKeyHandler);
 
 		// Zoom with the mouse wheel
@@ -468,14 +468,42 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 				getParent());
 		registry.registerAction(closeEditorAction);
 		getSelectionActions().add(closeEditorAction.getId());
+		
+		getEditorSite().getActionBars().getToolBarManager().add(new Separator(RouterAction.class.getName()+"Group"));
+		CheckableActionGroup group = new CheckableActionGroup();
+		action = new RouterAction((IWorkbenchPart) this,
+				                   PositionConstants.RIGHT,
+				                   ROUTER_TYPE.DIRECT);
+		if (getEditorSite().getActionBars().getToolBarManager().find(action.getId())==null) {
+			action.setText("Direct routing");
+			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_direct.gif"));
+			action.setEnabled(true);
+			getEditorSite().getActionBars().getToolBarManager().add(action);
+			group.add(action);
+		}
+		
+		action = new RouterAction((IWorkbenchPart) this,
+				                  PositionConstants.RIGHT,
+				                  ROUTER_TYPE.MANHATTAN);
+		if (getEditorSite().getActionBars().getToolBarManager().find(action.getId())==null) {
+			action.setText("Manhattan routing");
+			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_manhattan.gif"));
+			action.setEnabled(true);
+			getEditorSite().getActionBars().getToolBarManager().add(action);
+			group.add(action);
+	    }
 
-		// action = new UndoAction(this);
-		// registry.registerAction(action);
-		// getStackActions().add(action.getId());
-		//		
-		// action = new RedoAction(this);
-		// registry.registerAction(action);
-		// getStackActions().add(action.getId());
+		action = new RouterAction((IWorkbenchPart) this,
+				PositionConstants.RIGHT,
+				ROUTER_TYPE.TREE);
+		if (getEditorSite().getActionBars().getToolBarManager().find(action.getId())==null) {
+			action.setText("Tree routing");
+			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_tree.gif"));
+			action.setEnabled(true);
+			getEditorSite().getActionBars().getToolBarManager().add(action);
+			group.add(action);
+		}
+
 
 	}
 
@@ -498,8 +526,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		ScrollingGraphicalViewer graphicalViewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 		rulerComp.setGraphicalViewer(graphicalViewer);
 
-		GraphicalViewerKeyHandler graphicalViewerKeyHandler = new GraphicalViewerKeyHandler(
-				graphicalViewer);
+		GraphicalViewerKeyHandler graphicalViewerKeyHandler = new GraphicalViewerKeyHandler(graphicalViewer);
 		KeyHandler keyHandler = new KeyHandler();
 
 		keyHandler.put(KeyStroke.getPressed(SWT.DEL, 127, 0),getActionRegistry().getAction(ActionFactory.DELETE.getId()));
@@ -673,6 +700,10 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 	@Override
 	public ActionRegistry getActionRegistry() {
 		return super.getActionRegistry();
+	}
+
+	public void refresh() {
+		getGraphicalViewer().setContents(getDiagram());
 	}
 
 

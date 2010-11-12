@@ -1,10 +1,13 @@
 package com.isencia.passerelle.workbench.model.editor.ui.descriptor;
 
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.cell.CheckboxCellEditor;
 
 public class CheckboxPropertyDescriptor extends PropertyDescriptor {
@@ -14,14 +17,30 @@ public class CheckboxPropertyDescriptor extends PropertyDescriptor {
 		return super.getDisplayName();
 	}
 
+	private Image ticked, unticked;
 	/**
 	 * @param id
 	 * @param displayName
 	 */
 	public CheckboxPropertyDescriptor(Object id, String displayName) {
+		
 		super(id, displayName);
 		
-		// TODO Auto-generated constructor stub
+		ticked   = Activator.getImageDescriptor("icons/ticked.png").createImage();
+		unticked = Activator.getImageDescriptor("icons/unticked.gif").createImage();
+		
+		setLabelProvider(new LabelProvider() {
+			public Image getImage(Object element) {
+				if (Boolean.TRUE.equals(element)) {
+					return ticked;
+				} else {
+					return unticked;
+				}
+			}
+			public String getText(Object element) {
+				return null;
+			}			
+		});
 	}
 
 	/*

@@ -26,6 +26,9 @@ Export-Package: com.isencia.passerelle.workbench.model.editor.ui.dnd,
  com.isencia.passerelle.workbench.model.editor.ui.editor
 DynamicImport-Package: *
 Import-Package: com.isencia.passerelle.actor.io,
+ org.eclipse.gef.examples.logicdesigner.edit,
  org.eclipse.gef.examples.logicdesigner.model,
+ org.eclipse.gmf.runtime.draw2d.ui.figures,
+ org.eclipse.gmf.runtime.draw2d.ui.internal.routers,
  org.slf4j
 

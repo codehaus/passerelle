@@ -168,7 +168,7 @@ public class PaletteBuilder {
 
 		List entries = new ArrayList();
 
-		ToolEntry tool = new PanningSelectionToolEntry();
+		final ToolEntry tool = new PanningSelectionToolEntry();
 		entries.add(tool);
 		root.setDefaultEntry(tool);
 
@@ -186,14 +186,14 @@ public class PaletteBuilder {
 		marqueeStack.setUserModificationPermission(PaletteEntry.PERMISSION_NO_MODIFICATION);
 		entries.add(marqueeStack);
 		
-		tool = new ConnectionCreationToolEntry(
+		final ConnectionCreationToolEntry ctool = new ConnectionCreationToolEntry(
 				"Connection",
 				"Connection",
 				null,
 				Activator.getImageDescriptor("icons/connection16.gif"),
 				Activator.getImageDescriptor("icons/connection24.gif")
 		);
-		entries.add(tool);
+		entries.add(ctool);
 		controlGroup.addAll(entries);
 		return controlGroup;
 	}
