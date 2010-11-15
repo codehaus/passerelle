@@ -84,9 +84,10 @@ import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTarg
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CheckableActionGroup;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterAction;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory.ROUTER_TYPE;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.RouterFactory.ROUTER_TYPE;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
@@ -468,43 +469,10 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 				getParent());
 		registry.registerAction(closeEditorAction);
 		getSelectionActions().add(closeEditorAction.getId());
-		
-		getEditorSite().getActionBars().getToolBarManager().add(new Separator(RouterAction.class.getName()+"Group"));
-		CheckableActionGroup group = new CheckableActionGroup();
-		action = new RouterAction((IWorkbenchPart) this,
-				                   PositionConstants.RIGHT,
-				                   ROUTER_TYPE.DIRECT);
-		if (getEditorSite().getActionBars().getToolBarManager().find(action.getId())==null) {
-			action.setText("Direct routing");
-			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_direct.gif"));
-			action.setEnabled(true);
-			getEditorSite().getActionBars().getToolBarManager().add(action);
-			group.add(action);
-		}
-		
-		action = new RouterAction((IWorkbenchPart) this,
-				                  PositionConstants.RIGHT,
-				                  ROUTER_TYPE.MANHATTAN);
-		if (getEditorSite().getActionBars().getToolBarManager().find(action.getId())==null) {
-			action.setText("Manhattan routing");
-			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_manhattan.gif"));
-			action.setEnabled(true);
-			getEditorSite().getActionBars().getToolBarManager().add(action);
-			group.add(action);
-	    }
+	
 
-		action = new RouterAction((IWorkbenchPart) this,
-				PositionConstants.RIGHT,
-				ROUTER_TYPE.TREE);
-		if (getEditorSite().getActionBars().getToolBarManager().find(action.getId())==null) {
-			action.setText("Tree routing");
-			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_tree.gif"));
-			action.setEnabled(true);
-			getEditorSite().getActionBars().getToolBarManager().add(action);
-			group.add(action);
-		}
-
-
+		RouterFactory.createRouterActions(getEditorSite().getActionBars());
+		//RouterFactory.createConnectionActions(getEditorSite().getActionBars());
 	}
 
 	protected PasteNodeAction setPasteNodeAction() {
