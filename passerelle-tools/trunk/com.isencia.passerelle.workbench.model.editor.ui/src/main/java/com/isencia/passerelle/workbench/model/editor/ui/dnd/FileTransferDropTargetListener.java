@@ -1,13 +1,10 @@
 package com.isencia.passerelle.workbench.model.editor.ui.dnd;
 
-import java.io.File;
-
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.EditPartViewer;
 import org.eclipse.gef.Request;
@@ -83,7 +80,7 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 	   if (event!=null&&event.data!=null) {
 	       final String fullPath = ((String[])event.data)[0];
 	       final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-	       return fullPath.substring(workspace.length(), fullPath.length());
+	       return fullPath.substring(workspace.length()+1, fullPath.length()).replace('\\', '/');
 	   } else {
 		   final ISelection sel = EclipseUtils.getPage().getSelection();
 			if (!(sel instanceof IStructuredSelection)) return null;
@@ -94,7 +91,7 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 				final IFile fileSel = (IFile)element;
 				final String fullPath = fileSel.getRawLocation().toOSString();
 				final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-				return fullPath.substring(workspace.length(), fullPath.length());
+				return fullPath.substring(workspace.length()+1, fullPath.length()).replace('\\', '/');
 			}
 	   }
 	   
