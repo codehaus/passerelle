@@ -41,6 +41,7 @@
       <import plugin="org.eclipse.pde.ui" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="com.isencia.passerelle.actor"/>
       <import plugin="org.eclipse.gef.examples.logic"/>
+      <import plugin="org.eclipse.gmf.runtime.draw2d.ui"/>
       <import plugin="org.eclipse.jdt.launching" version="3.4.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.jdt.core" version="3.4.4" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.console" version="3.3.1" match="greaterOrEqual"/>
@@ -62,13 +63,6 @@
       <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
       <import plugin="org.eclipse.gmf.runtime.common.core" version="1.2.0" match="compatible"/>
       <import plugin="org.eclipse.gmf.runtime.common.ui" version="1.2.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.views" version="3.3.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.console" version="3.3.0" match="compatible"/>
-      <import plugin="org.eclipse.jface.text" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.ui.workbench.texteditor" version="3.4.0" match="compatible"/>
-      <import plugin="org.eclipse.core.resources" version="3.5.0" match="compatible"/>
-      <import plugin="org.eclipse.team.core" version="3.3.0" match="compatible"/>
-      <import plugin="org.eclipse.core.commands" version="3.4.0" match="compatible"/>
    </requires>
 
    <plugin
@@ -251,27 +245,6 @@
          download-size="0"
          install-size="0"
          version="1.4.1.v20100909-1300"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf"
-         download-size="0"
-         install-size="0"
-         version="1.4.1.v20100720-0030"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf.runtime.common.ui"
-         download-size="0"
-         install-size="0"
-         version="1.4.0.v20100518-2230"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.gmf.runtime.common.core"
-         download-size="0"
-         install-size="0"
-         version="1.4.0.v20100423-2359"
          unpack="false"/>
 
 </feature>
