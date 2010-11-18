@@ -1,5 +1,8 @@
 package com.isencia.passerelle.workbench.model.editor.ui.descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -87,7 +90,7 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 
 	private class ChoiceDialog extends Dialog {
 		
-		private Object[] selection;
+		private List<Object> selection;
 		
 		ChoiceDialog(Shell shell) {
 	        super(shell);
@@ -95,10 +98,10 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 	    }
 		
 		public String[] getSelections() {
-			if (selection==null||selection.length<1) return null;
-			final String [] ret = new String[selection.length];
+			if (selection==null||selection.size()<1) return null;
+			final String [] ret = new String[selection.size()];
 			for (int i = 0; i < ret.length; i++) {
-				ret[i] = selection[i]!=null  ? selection[i].toString() : "";
+				ret[i] = selection.get(i)!=null  ? selection.get(i).toString() : "";
 			}
 			return ret;
 		}
@@ -131,7 +134,22 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 			choiceTable.addCheckStateListener(new ICheckStateListener() {			
 				@Override
 				public void checkStateChanged(CheckStateChangedEvent event) {
-					selection = choiceTable.getCheckedElements();
+					if (selection==null) selection = new ArrayList<Object>(7);
+					
+			   		if (event!=null) {
+		    			final Object element = event.getElement();
+						if (!event.getChecked()) {
+							selection.remove(element);
+						} else {
+							if (!selection.contains(element)) {
+								selection.add(element);
+							}
+						}
+						
+					} else {
+						selection.clear();
+					}
+
 				}
 			});
 			

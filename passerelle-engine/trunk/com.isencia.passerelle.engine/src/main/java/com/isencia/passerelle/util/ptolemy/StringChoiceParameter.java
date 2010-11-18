@@ -51,6 +51,7 @@ public class StringChoiceParameter extends StringParameter {
 
 	public String[] getValue() {
 		final String    expr = getExpression();
+		if (expr == null || "".equals(expr)) return null;
 		final String [] vals = expr.split(","); // , in string value not supported yet
 		for (int i = 0; i < vals.length; i++) {
 			vals[i] = vals[i].trim();

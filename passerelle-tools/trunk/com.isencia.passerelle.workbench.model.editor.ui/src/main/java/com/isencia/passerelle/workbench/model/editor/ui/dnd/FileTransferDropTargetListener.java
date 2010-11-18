@@ -1,6 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.dnd;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -64,7 +64,7 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 	   
 	   final Class<? extends NamedObj> clazz = dropFactory.getClassForPath(getFilePath());
 	   if (clazz == null) return null;
-	   
+
 	   final ClassTypeFactory factory = new ClassTypeFactory(clazz, getFileName());
 	   request.setFactory(factory);
 	   return request;
@@ -87,9 +87,9 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 			
 			final IStructuredSelection ss = (IStructuredSelection) sel;
 			final Object          element = ss.getFirstElement();
-			if (element instanceof IFile) {
-				final IFile fileSel = (IFile)element;
-				final String fullPath = fileSel.getRawLocation().toOSString();
+			if (element instanceof IResource) {
+				final IResource res = (IResource)element;
+				final String fullPath = res.getRawLocation().toOSString();
 				final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 				return fullPath.substring(workspace.length()+1, fullPath.length()).replace('\\', '/');
 			}
