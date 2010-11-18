@@ -24,7 +24,7 @@
 -->
 
   <root>
-    <level value="debug" />
+    <level value="DEBUG" />
     <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />
     <!--   <appender-ref ref="SOCKET" /> -->

@@ -472,7 +472,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 	
 
 		RouterFactory.createRouterActions(getEditorSite().getActionBars());
-		//RouterFactory.createConnectionActions(getEditorSite().getActionBars());
+		RouterFactory.createConnectionActions(getEditorSite().getActionBars());
 	}
 
 	protected PasteNodeAction setPasteNodeAction() {

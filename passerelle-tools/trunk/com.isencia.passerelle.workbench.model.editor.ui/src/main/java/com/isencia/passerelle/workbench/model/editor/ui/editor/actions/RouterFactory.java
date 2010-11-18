@@ -14,6 +14,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
 
+import ptolemy.vergil.toolbox.MenuActionFactory;
+
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
@@ -114,9 +116,12 @@ public class RouterFactory {
 		
 		actionBars.getToolBarManager().add(new Separator(ConnectionAction.class.getName()+"Group"));
 
-		//TODO
-//		final MenuAction menu = new MenuAction("Connection types");
-//		actionBars.getToolBarManager().add(menu);
+		final MenuAction menu = new MenuAction("Connection types");
+		menu.setId(ConnectionAction.class.getName()+"DropDown");
+		if (actionBars.getToolBarManager().find(menu.getId())!=null) return;
+		menu.setImageDescriptor(Activator.getImageDescriptor("icons/connection_menu.gif"));
+		
+		actionBars.getToolBarManager().add(menu);
 		
 		CheckableActionGroup group = new CheckableActionGroup();
 
@@ -125,7 +130,8 @@ public class RouterFactory {
 			action.setText("Straight connections");
 			action.setImageDescriptor(Activator.getImageDescriptor("icons/connection_straight.gif"));
 			action.setEnabled(true);
-			actionBars.getToolBarManager().add(action);
+			action.setChecked(true);
+			menu.add(action);
 			group.add(action);
 		}
 
@@ -134,7 +140,7 @@ public class RouterFactory {
 			action.setText("Straight connections with jumps");
 			action.setImageDescriptor(Activator.getImageDescriptor("icons/connection_straight_jumps.gif"));
 			action.setEnabled(true);
-			actionBars.getToolBarManager().add(action);
+			menu.add(action);
 			group.add(action);
 		}
 
@@ -143,7 +149,7 @@ public class RouterFactory {
 			action.setText("Curved connections");
 			action.setImageDescriptor(Activator.getImageDescriptor("icons/connection_curved.gif"));
 			action.setEnabled(true);
-			actionBars.getToolBarManager().add(action);
+			menu.add(action);
 			group.add(action);
 		}
 		
@@ -152,7 +158,7 @@ public class RouterFactory {
 			action.setText("Curved connections with jumps");
 			action.setImageDescriptor(Activator.getImageDescriptor("icons/connection_curved_jumps.gif"));
 			action.setEnabled(true);
-			actionBars.getToolBarManager().add(action);
+			menu.add(action);
 			group.add(action);
 		}
 
@@ -180,13 +186,14 @@ public class RouterFactory {
 			group.add(action);
 	    }
 
-		action = new RouterAction(ROUTER_TYPE.TREE);
-		if (actionBars.getToolBarManager().find(action.getId())==null) {
-			action.setText("Tree routing");
-			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_tree.gif"));
-			action.setEnabled(true);
-			actionBars.getToolBarManager().add(action);
-			group.add(action);
-		}
+		// Tree is marked as internal so we will leave it for now.
+//		action = new RouterAction(ROUTER_TYPE.TREE);
+//		if (actionBars.getToolBarManager().find(action.getId())==null) {
+//			action.setText("Tree routing");
+//			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_tree.gif"));
+//			action.setEnabled(true);
+//			actionBars.getToolBarManager().add(action);
+//			group.add(action);
+//		}
 	}
 }
