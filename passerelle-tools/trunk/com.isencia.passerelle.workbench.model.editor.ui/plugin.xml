@@ -57,5 +57,21 @@
           </propertySection>	
          </propertySections>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.isencia.passerelle.workbench.model.editor.ui.PreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         id="com.isencia.passerelle.workbench.model.editor.ui.PasserelleCategory"
+         name="Workflow Preferences"
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="com.isencia.passerelle.workbench.model.editor.ui.PasserellePreferencePage"
+            id="com.isencia.passerelle.workbench.model.editor.ui.PasserellePreferences"
+            name="Workflow Preferences">
+      </page>
+   </extension>
 
 </plugin>

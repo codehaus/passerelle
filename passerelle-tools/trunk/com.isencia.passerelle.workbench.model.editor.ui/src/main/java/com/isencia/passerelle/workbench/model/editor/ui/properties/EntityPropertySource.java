@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.properties;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,8 @@ import ptolemy.kernel.util.NamedObj;
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.util.ptolemy.ResourceParameter;
 import com.isencia.passerelle.util.ptolemy.StringChoiceParameter;
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.model.editor.ui.PreferenceConstants;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CheckboxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ColorPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FilePickerPropertyDescriptor;
@@ -60,6 +63,7 @@ public class EntityPropertySource implements IPropertySource {
 		this.figure = figure;
 
 		initializeOptions(entity);
+		
 	}
 
 	private void initializeOptions(NamedObj entity) {
@@ -85,7 +89,14 @@ public class EntityPropertySource implements IPropertySource {
 	 */
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		Collection<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>();
-		List<Parameter> parameterList = entity.attributeList(Parameter.class);
+		
+		final List<Parameter> parameterList;
+		if (entity instanceof Actor && !Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.EXPERT)) {
+			parameterList = Arrays.asList(((Actor)entity).getConfigurableParameters());
+		} else {
+			parameterList = entity.attributeList(Parameter.class);
+		}
+
 		for (Parameter parameter : parameterList) {
 			addPropertyDescriptor(descriptors, parameter, parameter.getType());
 		}

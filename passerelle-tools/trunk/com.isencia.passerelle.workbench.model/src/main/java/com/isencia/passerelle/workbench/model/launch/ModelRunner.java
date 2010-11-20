@@ -24,13 +24,8 @@ public class ModelRunner implements IApplication {
 	}
 
 	@Override
-	public Object start(IApplicationContext applicationContext) throws Exception {
-		
-		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-		System.setProperty("eclipse.workspace.home", workspacePath);
-		System.setProperty("be.isencia.home",        workspacePath);
-		logger.info("Workspace folder set to: "+workspacePath);
-		
+	public Object start(IApplicationContext applicationContextMightBeNull) throws Exception {
+				
 		String model = System.getProperty("model");
 		runModel(model);
 		return  IApplication.EXIT_OK;
@@ -41,14 +36,24 @@ public class ModelRunner implements IApplication {
 		logger.info("Stopping Workflow");
 	}
 
-	private void runModel(String model) {
+	/**
+	 * Sometimes can be called 
+	 * @param modelPath
+	 */
+	public void runModel(String modelPath) {
+		
+		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+		System.setProperty("eclipse.workspace.home", workspacePath);
+		System.setProperty("be.isencia.home",        workspacePath);
+		logger.info("Workspace folder set to: "+workspacePath);
+
 		Reader reader = null;
 		try {
-			if( model==null) {
+			if( modelPath==null) {
 				throw new IllegalArgumentException("No model specified",null);
 			} else {
-				logger.info("Running model : " + model);
-				reader = new FileReader(model);
+				logger.info("Running model : " + modelPath);
+				reader = new FileReader(modelPath);
 				MoMLParser moMLParser = new MoMLParser();
 				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
 				executeModel(compositeActor);
@@ -57,10 +62,10 @@ public class ModelRunner implements IApplication {
 			logger.info(illegalArgumentException.getMessage());
 		} catch (Throwable e) {
 			e.printStackTrace();
-			logger.error("Cannot read "+model, e);
+			logger.error("Cannot read "+modelPath, e);
 
 		} finally {
-			logger.info("End model : "+model);
+			logger.info("End model : "+modelPath);
 			if (reader != null) {
 				try {
 					reader.close();

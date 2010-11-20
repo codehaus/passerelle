@@ -25,10 +25,12 @@
       </wizard>
    </extension>
    
+   <!--
    <extension point="org.eclipse.ui.perspectiveExtensions">
 	<perspectiveExtension targetID="com.isencia.passerelle.workbench.model.ui.perspective">
 		<actionSet id="org.eclipse.debug.ui.launchActionSet"/>
 	</perspectiveExtension>	
    </extension>
-   
+    -->
+ 
 </plugin>
