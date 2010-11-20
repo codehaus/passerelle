@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IURIEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -342,6 +343,18 @@ public class EclipseUtils {
         getEditorRegistry().getDefaultEditor(filename);
 		final IFileStore externalFile = EFS.getLocalFileSystem().fromLocalFile(new File(filename));
         page.openEditor(new FileStoreEditorInput(externalFile), desc.getId());
+	}
+	/**
+	 * Opens an external editor on a file path
+	 * @param file
+	 * @throws PartInitException
+	 */
+	public static IEditorPart openEditor(IFile file) throws PartInitException {
+		
+		final IWorkbenchPage page = EclipseUtils.getActivePage();
+		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
+        if (desc == null) desc =  PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName()+".txt");
+		return page.openEditor(new FileEditorInput(file), desc.getId());
 	}
 
 }

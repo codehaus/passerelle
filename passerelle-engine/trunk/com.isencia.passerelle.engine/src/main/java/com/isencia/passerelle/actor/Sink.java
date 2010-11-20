@@ -74,7 +74,8 @@ public abstract class Sink extends Actor {
 		passThroughParam.setTypeEquals(BaseType.BOOLEAN);
 		registerExpertParameter(passThroughParam);
 		
-		new CheckBoxStyle(passThroughParam, "style");
+		//For some reason this line stops subclasses registering more parameters.
+		//new CheckBoxStyle(passThroughParam, "style");
 
 		_attachText("_iconDescription", "<svg>\n" +
                 "<rect x=\"-20\" y=\"-20\" width=\"40\" " +

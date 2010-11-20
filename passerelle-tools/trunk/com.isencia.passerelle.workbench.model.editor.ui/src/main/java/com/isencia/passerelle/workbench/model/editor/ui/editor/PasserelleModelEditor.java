@@ -83,6 +83,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CheckableActionGroup;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.ExecutionFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory.ROUTER_TYPE;
@@ -471,8 +472,12 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		getSelectionActions().add(closeEditorAction.getId());
 	
 
+		// TODO Should use plugin extensions for this but for some reason
+		// they are not working.
 		RouterFactory.createRouterActions(getEditorSite().getActionBars());
 		RouterFactory.createConnectionActions(getEditorSite().getActionBars());
+		
+		ExecutionFactory.createWorkflowActions(getEditorSite().getActionBars());
 	}
 
 	protected PasteNodeAction setPasteNodeAction() {

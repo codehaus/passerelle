@@ -7,14 +7,18 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.AccessibleEditPart;
-import org.eclipse.gef.ConnectionEditPart;
-import org.eclipse.gef.EditPart;
-import org.eclipse.gef.EditPartListener;
 import org.eclipse.gef.GraphicalEditPart;
-import org.eclipse.gef.NodeListener;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.ui.views.properties.PropertySheet;
+import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,9 +26,10 @@ import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
 import ptolemy.kernel.util.NamedObj;
-import ptolemy.moml.Vertex;
 
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.INameable;
+import com.isencia.passerelle.workbench.model.editor.ui.PreferenceConstants;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
@@ -32,6 +37,7 @@ import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyComm
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
+import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
@@ -55,67 +61,6 @@ abstract public class AbstractBaseEditPart extends
 
 	public AbstractBaseEditPart() {
 		super();
-		addNodeListener(new NodeListener() {
-
-			@Override
-			public void removingSourceConnection(ConnectionEditPart arg0,
-					int arg1) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void removingTargetConnection(ConnectionEditPart arg0,
-					int arg1) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void sourceConnectionAdded(ConnectionEditPart arg0, int arg1) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void targetConnectionAdded(ConnectionEditPart arg0, int arg1) {
-				// TODO Auto-generated method stub
-
-			}
-
-		});
-		addEditPartListener(new EditPartListener() {
-
-			@Override
-			public void selectedStateChanged(EditPart arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void removingChild(EditPart arg0, int arg1) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partDeactivated(EditPart arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void partActivated(EditPart arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void childAdded(EditPart arg0, int arg1) {
-				// TODO Auto-generated method stub
-
-			}
-		});
 	}
 
 	private static final Logger logger = LoggerFactory
@@ -124,16 +69,34 @@ abstract public class AbstractBaseEditPart extends
 	private AccessibleEditPart acc;
 	protected IPropertySource propertySource = null;
 
+	private IPropertyChangeListener expertUpdater;
+
 	abstract protected AccessibleEditPart createAccessible();
 
 	public void activate() {
-		if (isActive())
-			return;
+		
+		if (isActive()) return;
 		super.activate();
 		if (getEntity() instanceof Changeable) {
 			Changeable changeable = (Changeable) getEntity();
 			changeable.addChangeListener(this);
 		}
+		
+		if (expertUpdater==null) expertUpdater = new IPropertyChangeListener() {
+			
+			@Override
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getProperty().equals(PreferenceConstants.EXPERT)) {
+					final PropertySheet sheet = (PropertySheet)EclipseUtils.getPage().findView(IPageLayout.ID_PROP_SHEET);
+					if (sheet!=null) {
+						TabbedPropertySheetPage page = (TabbedPropertySheetPage)sheet.getCurrentPage();
+						if(page != null)  page.refresh();
+					}
+				}
+			}
+		};
+		Activator.getDefault().getPreferenceStore().addPropertyChangeListener(expertUpdater);
+
 	}
 
 	/**
@@ -141,8 +104,10 @@ abstract public class AbstractBaseEditPart extends
 	 * from the model's list of listeners.
 	 */
 	public void deactivate() {
-		if (!isActive())
-			return;
+		
+		Activator.getDefault().getPreferenceStore().removePropertyChangeListener(expertUpdater);
+		
+		if (!isActive()) return;
 		if (getEntity() instanceof Changeable) {
 			Changeable changeable = (Changeable) getEntity();
 			changeable.removeChangeListener(this);
