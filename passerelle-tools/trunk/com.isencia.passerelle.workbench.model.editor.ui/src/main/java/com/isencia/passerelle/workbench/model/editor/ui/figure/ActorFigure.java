@@ -11,12 +11,7 @@ import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
-import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.draw2d.RectangleFigure;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Insets;
@@ -24,15 +19,13 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
-import com.isencia.passerelle.workbench.model.editor.ui.IBody;
-
-public class ActorFigure extends AbstractNodeFigure {
+public abstract class ActorFigure extends AbstractNodeFigure {
 
 	public final static Color ACTOR_BACKGROUND_COLOR = ColorConstants.gray;
 
 	private IFigure body = null;
-	private InputPorts inputPorts = null;
-	private OutputPorts outputPorts = null;
+	private Ports inputPorts = null;
+	private Ports outputPorts = null;
 	private HashMap<String, PortFigure> inputPortMap = new HashMap<String, PortFigure>();
 
 	public HashMap<String, PortFigure> getInputPortMap() {
@@ -52,29 +45,24 @@ public class ActorFigure extends AbstractNodeFigure {
 	}
 
 
-	protected IFigure generateBody(Image image, Clickable[] clickables) {
-		Body body = new Body();
-		body.setBorder(new LineBorder());
-		body.initImage(image);
-		for (Clickable clickable : clickables)
-			body.initClickable(clickable);
-		return (body);
-	}
+	protected abstract IFigure generateBody(Image image, Clickable[] clickables);
 
 	private class CompositeFigure extends Figure {
 
 		public CompositeFigure(Image image,Clickable[] clickables) {
-			ToolbarLayout layout = new ToolbarLayout();
-			layout.setVertical(false);
+			
+			BorderLayout layout = new BorderLayout();
 			setLayoutManager(layout);
 			setOpaque(false);
-			inputPorts = new InputPorts();
-			add(inputPorts);
+			
+			inputPorts = new Ports();
+			add(inputPorts, BorderLayout.LEFT);
+			
 			body = generateBody(image, clickables);
-			add(body);
+			if (body!=null) add(body, BorderLayout.CENTER);
 
-			outputPorts = new OutputPorts();
-			add(outputPorts);
+			outputPorts = new Ports();
+			add(outputPorts, BorderLayout.RIGHT);
 		}
 
 		@Override
@@ -121,68 +109,8 @@ public class ActorFigure extends AbstractNodeFigure {
 		}
 
 		@Override
-		public void paint(IFigure ifigure, Graphics g, Insets insets) {
-		}
-
-	}
-
-	private class InputPorts extends Ports {
-		public InputPorts() {
-			super();
-		}
-	}
-
-	private class OutputPorts extends Ports {
-		public OutputPorts() {
-			super();
-		}
-
-	}
-
-	private class Body extends RectangleFigure implements IBody {
-		/**
-		 * @param s
-		 */
-		public Body() {
-			BorderLayout layout = new BorderLayout();
-			setLayoutManager(layout);
-
-			setBackgroundColor(ACTOR_BACKGROUND_COLOR);
-			setOpaque(true);
-		}
-
-		public void initImage(Image image) {
-			if (image != null) {
-				ImageFigure imageFigure = new ImageFigure(image);
-				imageFigure.setAlignment(PositionConstants.WEST);
-				imageFigure.setBorder(new MarginBorder(5, 5, 0, 0));
-				// ImageFigure propertiesFgure = new
-				// ImageFigure(IMAGE_DESCRIPTOR_PROPERTIES.createImage());
-				// propertiesFgure.setAlignment(PositionConstants.EAST);
-				//			
-				// propertiesFgure.setBorder(new MarginBorder(5, 0, 0, 5));
-				add(imageFigure, BorderLayout.TOP);
-
-			}
-		}
-
-		public void initClickable(Clickable clickable) {
-			if (clickable != null) {
-				add(clickable, BorderLayout.BOTTOM);
-			}
-		}
-
-		protected void fillShape(Graphics graphics) {
-			graphics.pushState();
-			graphics.setForegroundColor(ColorConstants.white);
-			graphics.setBackgroundColor(getBackgroundColor());
-			graphics.fillGradient(getBounds(), true);
-			graphics.popState();
-		}
-
-		public Dimension getPreferredSize(int wHint, int hHint) {
-			Dimension size = getParent().getSize().getCopy();
-			return size;
+		public void paint(IFigure figure, Graphics graphics, Insets insets) {
+			//graphics.draw
 		}
 
 	}
@@ -208,7 +136,7 @@ public class ActorFigure extends AbstractNodeFigure {
 	 * @param displayname
 	 */
 	public PortFigure addInput(String portName, String displayName) {
-		InputPortFigure inputPortFigure = new InputPortFigure(portName);
+		ActorPortFigure inputPortFigure = new ActorPortFigure(portName);
 		inputPortFigure.setToolTip(new Label(displayName));
 		int x = 0;
 		int y = 0;
@@ -261,17 +189,13 @@ public class ActorFigure extends AbstractNodeFigure {
 	 * @param displayname
 	 */
 	public PortFigure addOutput(String portName, String displayName) {
-		OutputPortFigure outputPortFigure = new OutputPortFigure(portName);
+		ActorPortFigure outputPortFigure = new ActorPortFigure(portName);
 		outputPortFigure.setToolTip(new Label(displayName));
-		int x = 0;
-		int y = 0;
-		outputPortFigure.setLocation(new Point(x, y));
 		if (outputPorts != null) {
 			outputPorts.add(outputPortFigure);
 			outputPortMap.put(portName, outputPortFigure);
 		}
-		FixedConnectionAnchor anchor = new FixedConnectionAnchor(
-				outputPortFigure);
+		FixedConnectionAnchor anchor = new FixedConnectionAnchor(outputPortFigure);
 		anchor.offsetV = ANCHOR_HEIGTH / 2;
 		anchor.offsetH = ANCHOR_WIDTH - 1;
 		getSourceConnectionAnchors().add(anchor);

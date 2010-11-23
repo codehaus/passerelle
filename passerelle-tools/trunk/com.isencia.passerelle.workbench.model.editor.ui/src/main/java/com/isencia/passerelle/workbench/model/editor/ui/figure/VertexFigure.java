@@ -82,7 +82,7 @@ public class VertexFigure extends AbstractNodeFigure {
 		outputPorts = new OutputPorts();
 		add(outputPorts);
 
-		InputPortFigure inputPortFigure = new InputPortFigure(VERTEX_INPUT,ANCHOR_WIDTH,ANCHOR_HEIGTH,ColorConstants.black);
+		ActorPortFigure inputPortFigure = new ActorPortFigure(VERTEX_INPUT,ANCHOR_WIDTH,ANCHOR_HEIGTH,ColorConstants.black);
 		inputPortFigure.setToolTip(new Label(VERTEX_INPUT));
 		inputPortFigure.setLocation(new Point(0,0));
 		
@@ -92,7 +92,7 @@ public class VertexFigure extends AbstractNodeFigure {
 		addAnchor(getSourceConnectionAnchors(),inputAnchors,inputPortFigure,2 * ANCHOR_WIDTH,ANCHOR_HEIGTH / 2);
 		inputPorts.add(inputPortFigure);
 
-		OutputPortFigure outputPortFigure = new OutputPortFigure(VERTEX_OUTPUT,ANCHOR_WIDTH,ANCHOR_HEIGTH,ColorConstants.black);
+		ActorPortFigure outputPortFigure = new ActorPortFigure(VERTEX_OUTPUT,ANCHOR_WIDTH,ANCHOR_HEIGTH,ColorConstants.black);
 		inputPortFigure.setToolTip(new Label(VERTEX_OUTPUT));
 		inputPortFigure.setLocation(new Point(0,0));
 		

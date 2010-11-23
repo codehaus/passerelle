@@ -21,6 +21,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.accessibility.AccessibleControlEvent;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ActorEditPoli
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.PortFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.figure.RectangularActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
@@ -185,7 +187,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		// });
 //		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(),
 //				createImage(imageDescriptor), new Clickable[] { button });
-		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(),
+		ActorFigure actorFigure = getActorFigure(actorModel.getDisplayName(),
 				createImage(imageDescriptor), new Clickable[] {  });
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
@@ -204,8 +206,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		List<TypedIOPort> outputPortList = actorModel.outputPortList();
 		if (outputPortList != null) {
 			for (TypedIOPort outputPort : outputPortList) {
-				PortFigure portFigure = actorFigure.addOutput(outputPort
-						.getName(), outputPort.getDisplayName());
+				PortFigure portFigure = actorFigure.addOutput(outputPort.getName(), outputPort.getDisplayName());
 				if (outputPort instanceof ErrorPort) {
 					portFigure.setFillColor(COLOR_ERROR_PORT);
 				} else if (outputPort instanceof ControlPort) {
@@ -214,6 +215,17 @@ public class ActorEditPart extends AbstractNodeEditPart {
 			}
 		}
 		return actorFigure;
+	}
+
+	/**
+	 * Overide to return alternative actor figures
+	 * @param displayName
+	 * @param createImage
+	 * @param clickables
+	 * @return
+	 */
+	protected ActorFigure getActorFigure(String displayName, Image createImage, Clickable[] clickables) {
+		return new RectangularActorFigure(displayName, createImage, clickables);
 	}
 
 	public Object getAdapter(Class key) {

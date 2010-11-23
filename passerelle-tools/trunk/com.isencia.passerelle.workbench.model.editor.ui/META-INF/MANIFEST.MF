@@ -25,7 +25,9 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.isencia.passerelle.workbench.model.editor.ui.dnd,
- com.isencia.passerelle.workbench.model.editor.ui.editor
+ com.isencia.passerelle.workbench.model.editor.ui.editor,
+ com.isencia.passerelle.workbench.model.editor.ui.editpart,
+ com.isencia.passerelle.workbench.model.editor.ui.figure
 DynamicImport-Package: *
 Import-Package: com.isencia.passerelle.actor.io,
  org.eclipse.core.filesystem,

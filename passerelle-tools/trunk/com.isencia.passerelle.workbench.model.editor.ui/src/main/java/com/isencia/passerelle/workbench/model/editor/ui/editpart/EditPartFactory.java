@@ -1,9 +1,14 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.gef.EditPart;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.slf4j.Logger;
@@ -45,7 +50,7 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 	}
 
 	public EditPartFactory(PasserelleModelMultiPageEditor parent,
-			CompositeActor actor) {
+			               CompositeActor actor) {
 		super();
 		this.parent = parent;
 		this.actor = actor;
@@ -59,6 +64,7 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 	 * Create an EditPart based on the type of the model
 	 */
 	public EditPart createEditPart(EditPart context, Object model) {
+		
 		EditPart child = null;
 
 		// TODO Check what happens when we have sub-models !!!!
@@ -90,12 +96,32 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 
 			}
 		} else if (model instanceof TypedAtomicActor) {
-			if (model instanceof Source)
-				child = new ActorSourceEditPart();
-			else if (model instanceof Sink)
-				child = new ActorSinkEditPart();
-			else
-				child = new ActorEditPart();
+			
+			try {
+			    child = getEditPartFromExtensionPoint(model);
+			} catch (Exception e) {
+				logger.error("Cannot load editorClass for "+model.getClass().getName(), e);
+			}
+			
+			if (child==null) {
+				try {
+				    IActorFigureProvider prov = getFigureProviderFromExtensionPoint(model);
+				    if (prov != null) {
+				    	child = new CustomFigureEditPart(prov);
+				    }
+				} catch (Exception e) {
+					logger.error("Cannot load editorClass for "+model.getClass().getName(), e);
+				}
+				
+				if (child==null) {
+					if (model instanceof Source)
+						child = new ActorSourceEditPart();
+					else if (model instanceof Sink)
+						child = new ActorSinkEditPart();
+					else
+						child = new ActorEditPart();
+				}
+			}
 		}
 
 		if (child != null) {
@@ -109,6 +135,43 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		}
 		return child;
 	}
+	
+	private Map<String, IConfigurationElement> extensionParts;
+	private void createExtensionParts() {
+		if (extensionParts == null) {
+			extensionParts = new HashMap<String,IConfigurationElement>(7);
+			final IConfigurationElement[] elements = Platform.getExtensionRegistry().getConfigurationElementsFor("com.isencia.passerelle.engine.actors");
+            for (int i = 0; i < elements.length; i++) {
+				final String clazz     = elements[i].getAttribute("class");
+				final String editClass = elements[i].getAttribute("editorClass");
+				final String figProv   = elements[i].getAttribute("figureCustomizer");
+				if (clazz!=null&& (editClass!=null || figProv!=null)) {
+					extensionParts.put(clazz, elements[i]);
+				}
+			}
+		}
+	}
+	
+	private EditPart getEditPartFromExtensionPoint(Object model) throws CoreException {
+		
+		createExtensionParts();
+		if (extensionParts.containsKey(model.getClass().getName())) {
+            if (extensionParts.get(model.getClass().getName()).getAttribute("editorClass") == null) return null;
+			return (EditPart)extensionParts.get(model.getClass().getName()).createExecutableExtension("editorClass");
+		}
+		return null;
+	}
+	
+	private IActorFigureProvider getFigureProviderFromExtensionPoint(Object model) throws CoreException {
+
+		createExtensionParts();
+		if (extensionParts.containsKey( model.getClass().getName())) {
+			if (extensionParts.get(model.getClass().getName()).getAttribute("figureCustomizer") == null) return null;
+			return (IActorFigureProvider)extensionParts.get(model.getClass().getName()).createExecutableExtension("figureCustomizer");
+		}
+		return null;
+	}
+
 	private Vertex getVertex(Relation model) {
 		Enumeration attributes = model.getAttributes();
 		while (attributes.hasMoreElements()) {
