@@ -2,27 +2,28 @@ package com.isencia.passerelle.workbench.model.editor.ui.figure;
 
 import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.swt.graphics.Color;
 
 /**
- * Figure used to draw input ports
+ * Figure used to draw output ports
  * 
  * @author Dirk Jacobs
  * 
  */
-public class InputPortFigure extends PortFigure {
-	
-	public InputPortFigure(String name) {
+public class ActorPortFigure extends PortFigure {
+
+	public ActorPortFigure(String name) {
 		super(name);
 		setFillColor(ColorConstants.white);
 	}
-	public InputPortFigure(String name,int width,int height,Color color) {
+	public ActorPortFigure(String name,int width,int height,Color color) {
 		super(name,width,height);
 		setFillColor(color);
 	}
-	
 	protected void outlineShape(Graphics graphics) {
+		
 		graphics.setBackgroundColor(getFillColor());
 		graphics.setForegroundColor(ColorConstants.black);
 
@@ -35,5 +36,6 @@ public class InputPortFigure extends PortFigure {
 		graphics.fillPolygon(pts);
 		graphics.drawPolyline(pts);
 	}
+
 
 }
