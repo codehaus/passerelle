@@ -17,4 +17,5 @@ Export-Package: com.isencia.passerelle.workbench.model.activator,
 Bundle-ClassPath: config/,
  .
 Import-Package: com.isencia.passerelle.model.util,
+ org.eclipse.gef,
  org.slf4j
