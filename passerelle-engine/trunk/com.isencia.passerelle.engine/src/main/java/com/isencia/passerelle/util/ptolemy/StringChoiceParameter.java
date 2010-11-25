@@ -1,5 +1,7 @@
 package com.isencia.passerelle.util.ptolemy;
 
+import java.util.List;
+
 import ptolemy.data.expr.StringParameter;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NameDuplicationException;
@@ -12,6 +14,18 @@ public class StringChoiceParameter extends StringParameter {
 	private IAvailableChoices availableChoices;
 	private IAvailableChoices choiceType;;
 	
+	public StringChoiceParameter(final NamedObj    container, 
+								final String       name,
+								final List<String> choices,
+								final CHOICE_TYPE  type) throws IllegalActionException, NameDuplicationException {
+		this(container, name, new IAvailableChoices() {
+			
+			@Override
+			public String[] getChoices() {
+				return choices.toArray(new String[choices.size()]);
+			}
+		}, type);
+	}
 	public StringChoiceParameter(final NamedObj          container, 
 			                     final String            name,
 			                     final IAvailableChoices choices,
@@ -20,7 +34,7 @@ public class StringChoiceParameter extends StringParameter {
 		this.availableChoices = choices;
 		this.choiceType       = choices;
 	}
-	
+
 	/**
 	 * Interface used here so that can change choices as needed.
 	 */
