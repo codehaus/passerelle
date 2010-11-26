@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.dnd;
 
 import ptolemy.kernel.util.NamedObj;
+
 import com.isencia.passerelle.actor.io.FileReader;
 
 /**

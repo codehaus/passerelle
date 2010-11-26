@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.dnd;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -70,6 +71,8 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 	   return request;
    }
 
+   private boolean isFullPath = false;
+   private boolean isFolder   = false;
    /**
     * Gets the file path relative to the workspace.
     * This makes the node work when the workspace is exported.
@@ -78,23 +81,31 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
    private String getFilePath() {
 	   DropTargetEvent event = getCurrentEvent();
 	   if (event!=null&&event.data!=null) {
-	       final String fullPath = ((String[])event.data)[0];
+	       final String fullPath = ((String[])event.data)[0];	       
+	       if (isFullPath) return fullPath;
 	       final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 	       return fullPath.substring(workspace.length()+1, fullPath.length()).replace('\\', '/');
+	   
 	   } else {
 		   final ISelection sel = EclipseUtils.getPage().getSelection();
-			if (!(sel instanceof IStructuredSelection)) return null;
-			
-			final IStructuredSelection ss = (IStructuredSelection) sel;
-			final Object          element = ss.getFirstElement();
-			if (element instanceof IResource) {
-				final IResource res = (IResource)element;
-				final String fullPath = res.getRawLocation().toOSString();
-				final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-				return fullPath.substring(workspace.length()+1, fullPath.length()).replace('\\', '/');
-			}
+		   if (!(sel instanceof IStructuredSelection)) return null;
+
+		   final IStructuredSelection ss = (IStructuredSelection) sel;
+		   final Object          element = ss.getFirstElement();
+		   if (element instanceof IResource) {
+			   final IResource   res = (IResource)element;
+			   final String fullPath = res.getRawLocation().toOSString();
+			   isFullPath = res.isLinked();
+			   isFolder   = res instanceof IContainer;
+			   if (res.isLinked()) {
+				   return fullPath;
+			   } else {
+				   final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+				   return fullPath.substring(workspace.length()+1, fullPath.length()).replace('\\', '/');
+			   }
+		   }
 	   }
-	   
+
 	   return null;
    }
    private String getFileName() {
@@ -114,7 +125,12 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 			// We attempt to send the file parameter over if there is one
 			// in the actor we are adding.
 			final CreateComponentCommand cmd = (CreateComponentCommand)command;
-			cmd.addConfiguratbleParameterValue(FileParameter.class, getFilePath());
+			// Sets a parameter which is a FileParameter on drop and if can tries
+			// to set if the file is a link to a file outside the workspace or
+			// is a file in the workspace using a boolean parameter called "Relative Path"
+			cmd.addConfigurableParameterValue("Relative Path", !isFullPath);
+			cmd.addConfigurableParameterValue("Folder",        isFolder);
+			cmd.addConfigurableParameterValue(FileParameter.class, getFilePath());
 		}
 		return command;
 	}
