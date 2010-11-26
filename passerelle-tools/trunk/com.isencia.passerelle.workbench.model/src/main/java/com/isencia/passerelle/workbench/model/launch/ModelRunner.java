@@ -3,6 +3,10 @@ package com.isencia.passerelle.workbench.model.launch;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.equinox.app.IApplication;
@@ -23,9 +27,10 @@ public class ModelRunner implements IApplication {
 		return logger;
 	}
 
+	private long start;
 	@Override
 	public Object start(IApplicationContext applicationContextMightBeNull) throws Exception {
-				
+		
 		String model = System.getProperty("model");
 		runModel(model);
 		return  IApplication.EXIT_OK;
@@ -33,7 +38,10 @@ public class ModelRunner implements IApplication {
 
 	@Override
 	public void stop() {
-		logger.info("Stopping Workflow");
+		final long end  = System.currentTimeMillis();
+		// Did not like the DateFormat version, there may be something better than this.
+		final long time = end-start;
+        logger.info("Model completed in "+(time/(60*1000))+"m "+((time/1000)%60)+"s "+(time%1000)+"ms");
 	}
 
 	/**
@@ -42,6 +50,7 @@ public class ModelRunner implements IApplication {
 	 */
 	public void runModel(String modelPath) {
 		
+		start = System.currentTimeMillis();
 		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		System.setProperty("eclipse.workspace.home", workspacePath);
 		System.setProperty("be.isencia.home",        workspacePath);
