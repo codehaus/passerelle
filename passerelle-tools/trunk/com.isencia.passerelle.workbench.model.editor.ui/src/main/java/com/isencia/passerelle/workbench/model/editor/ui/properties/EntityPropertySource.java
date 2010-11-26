@@ -255,9 +255,7 @@ public class EntityPropertySource implements IPropertySource {
 			
 		} else if (parameter instanceof ResourceParameter) {
 			
-			ResourcePropertyDescriptor des = new ResourcePropertyDescriptor(parameter.getName(), 
-					                                                        parameter.getDisplayName(),
-					                                                        ResourceUtils.getResource((ResourceParameter)parameter));
+			ResourcePropertyDescriptor des = new ResourcePropertyDescriptor((ResourceParameter)parameter);
 			descriptors.add(des);
 
 	    // If we use this parameter, we can sent the file extensions to the editor
