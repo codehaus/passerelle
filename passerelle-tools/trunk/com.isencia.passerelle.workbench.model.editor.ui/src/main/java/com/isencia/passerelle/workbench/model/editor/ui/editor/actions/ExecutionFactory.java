@@ -9,7 +9,11 @@ public class ExecutionFactory {
 	public static void createWorkflowActions(IActionBars actionBars) {
 		
 		actionBars.getToolBarManager().add(new Separator(ExecutionFactory.class.getName()+"Group"));
-		IAction action = new RunAction();
+		createAction(new RunAction(), actionBars);
+		createAction(new StopAction(), actionBars);
+	}
+
+	private static void createAction(IAction action, IActionBars actionBars) {
 		if (actionBars.getToolBarManager().find(action.getId())==null) {
 			actionBars.getToolBarManager().add(action);
 		}

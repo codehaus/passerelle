@@ -50,7 +50,6 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -75,18 +74,14 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 
-import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CheckableActionGroup;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.ExecutionFactory;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory.ROUTER_TYPE;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;

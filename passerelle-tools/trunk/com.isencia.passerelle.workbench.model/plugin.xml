@@ -17,5 +17,11 @@
  		</run>
  	</application>
  </extension>
+    <extension
+          point="org.eclipse.core.runtime.preferences">
+       <initializer
+             class="com.isencia.passerelle.workbench.model.activator.PreferenceInitializer">
+       </initializer>
+    </extension>
  
 </plugin>
