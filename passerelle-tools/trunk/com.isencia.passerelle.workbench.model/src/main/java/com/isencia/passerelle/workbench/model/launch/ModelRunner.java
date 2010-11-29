@@ -14,6 +14,7 @@ import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Manager;
 
 import com.isencia.passerelle.model.util.MoMLParser;
+import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
 
 public class ModelRunner implements IApplication {
 	
@@ -24,6 +25,8 @@ public class ModelRunner implements IApplication {
 	}
 
 	private long start;
+	private RemoteManagerAgent modelAgent;
+	
 	@Override
 	public Object start(IApplicationContext applicationContextMightBeNull) throws Exception {
 		
@@ -34,6 +37,15 @@ public class ModelRunner implements IApplication {
 
 	@Override
 	public void stop() {
+		
+		if (modelAgent!=null) {
+			try {
+				modelAgent.stop();
+			} catch (Exception e) {
+				logger.error("Cannot stop the model agent.", e);
+			}
+		}
+		
 		final long end  = System.currentTimeMillis();
 		// Did not like the DateFormat version, there may be something better than this.
 		final long time = end-start;
@@ -61,7 +73,12 @@ public class ModelRunner implements IApplication {
 				reader = new FileReader(modelPath);
 				MoMLParser moMLParser = new MoMLParser();
 				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
-				executeModel(compositeActor);
+				
+				Manager manager = new Manager(compositeActor.workspace(), "model");
+				compositeActor.setManager(manager);
+				this.modelAgent = new RemoteManagerAgent(manager);
+				modelAgent.start();
+				manager.execute(); // Blocks
 			}
 		} catch (IllegalArgumentException illegalArgumentException) { 
 			logger.info(illegalArgumentException.getMessage());
@@ -78,12 +95,6 @@ public class ModelRunner implements IApplication {
 			}
 		}
 		stop();
-	}
-	
-	private static void executeModel(CompositeActor compositeActor) throws Exception {
-		Manager manager = new Manager(compositeActor.workspace(), "model");
-		compositeActor.setManager(manager);
-		manager.execute();
 	}
 
 	public static void main(String[] args) {
