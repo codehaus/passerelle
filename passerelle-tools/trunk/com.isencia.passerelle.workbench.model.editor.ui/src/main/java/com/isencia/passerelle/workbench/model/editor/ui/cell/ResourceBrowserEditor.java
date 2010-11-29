@@ -4,14 +4,10 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.emf.common.ui.dialogs.ResourceDialog;
 import org.eclipse.emf.common.ui.dialogs.WorkspaceResourceDialog;
 import org.eclipse.jface.viewers.DialogCellEditor;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +43,7 @@ public class ResourceBrowserEditor extends DialogCellEditor {
 		final IResource currentValue = ResourceUtils.getResource(param);
         final Actor     actor        = (Actor)param.getContainer();
         final Parameter folder       = (Parameter)actor.getAttribute("Folder");
+        final Parameter relative     = (Parameter)actor.getAttribute("Relative Path");
         boolean         isFolder     = false;
         try {
         	if (folder==null) {
@@ -79,8 +76,24 @@ public class ResourceBrowserEditor extends DialogCellEditor {
 		}
 
 		final String fullPath = value.getRawLocation().toOSString();
-		final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-		return fullPath.substring(workspace.length(), fullPath.length());
+		if (value.isLinked()) {
+			if (relative!=null) {
+				try {
+					relative.setToken(new BooleanToken(false));
+				} catch (IllegalActionException e) {
+					logger.error("Cannot set Relative Path parameter to false",e);
+				}
+			}
+			return fullPath;
+		} else {
+			try {
+				relative.setToken(new BooleanToken(true));
+			} catch (IllegalActionException e) {
+				logger.error("Cannot set Relative Path parameter to false",e);
+			}
+			final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+			return fullPath.substring(workspace.length(), fullPath.length());
+		}
 
 		
 	}
