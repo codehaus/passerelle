@@ -473,6 +473,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		RouterFactory.createConnectionActions(getEditorSite().getActionBars());
 		
 		ExecutionFactory.createWorkflowActions(getEditorSite().getActionBars());
+		
 	}
 
 	protected PasteNodeAction setPasteNodeAction() {

@@ -1,10 +1,13 @@
 package com.isencia.passerelle.workbench.model.jmx;
 
+import javax.management.NotificationBroadcaster;
+
+
 /**
  * The interface which is deployed 
  * for managing the workflow.
  */
-public interface RemoteManagerMBean {
+public interface RemoteManagerMBean extends NotificationBroadcaster {
 	
 
 	/**
