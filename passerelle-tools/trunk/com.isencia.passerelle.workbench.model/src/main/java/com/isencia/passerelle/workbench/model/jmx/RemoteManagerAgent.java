@@ -7,7 +7,6 @@ import java.rmi.registry.Registry;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -18,10 +17,10 @@ import javax.management.remote.JMXServiceURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ptolemy.actor.Manager;
+
 import com.isencia.passerelle.workbench.model.activator.Activator;
 import com.isencia.passerelle.workbench.model.activator.PreferenceConstants;
-
-import ptolemy.actor.Manager;
 
 public class RemoteManagerAgent {
 
@@ -31,7 +30,7 @@ public class RemoteManagerAgent {
 	private static JMXServiceURL serverUrl;
 	static {
 		try {
-			serverUrl   = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+getPort()+"/server");
+			serverUrl      = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+getPort()+"/server");
 			REMOTE_MANAGER = new ObjectName(RemoteManager.class.getPackage().getName()+":type=RemoteManager");
 		} catch (Exception e) {
 			logger.error("Cannot create ObjectName for remotemanager", e);
@@ -40,7 +39,7 @@ public class RemoteManagerAgent {
 
 	private RemoteManagerMBean remoteManager;
 	
-	public RemoteManagerAgent(final Manager manager) throws MalformedObjectNameException, NullPointerException {
+	public RemoteManagerAgent(final Manager manager) throws Exception {
 		this.remoteManager = new RemoteManager(manager);
 	}
 	
@@ -74,22 +73,29 @@ public class RemoteManagerAgent {
 		}
 	}
 	
-	public void stop() throws Exception {
-		
-		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-		if (mbs==null) return;
 
-		if (mbs.getObjectInstance(REMOTE_MANAGER)!=null) {
-			mbs.unregisterMBean(REMOTE_MANAGER);
-		}
-		
-		JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer(serverUrl, null, mbs);
-		cs.stop();
+	public void stop() {
+		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+	    try {
+		    if (mbs.getObjectInstance(REMOTE_MANAGER)!=null) {
+		    	mbs.unregisterMBean(REMOTE_MANAGER);
+		    }
+	    } catch (Exception w) {
+	    	logger.error("Cannot unregisterMBean "+REMOTE_MANAGER, w);
+	    }
+
 	}
-	
+
 	public static MBeanServerConnection getServerConnection() throws Exception {
 		
+		// The registry is run remotely and if it is not there, we cannot connect
+		// to the JMXConnectorFactory
+		final Registry reg = RemoteManagerAgent.getRegistry();
+		if (reg==null) return null;
+		if (reg.list()==null || reg.list().length<1) return null;
+		
 		JMXConnector                conn   = JMXConnectorFactory.connect(serverUrl);
+		if (conn==null) return null;
 		final MBeanServerConnection server = conn.getMBeanServerConnection();
 		return server;
 	}
@@ -98,7 +104,7 @@ public class RemoteManagerAgent {
 		
 		Registry registry = null;
 		try {
-			registry = LocateRegistry.getRegistry("localhost",8001);
+			registry = LocateRegistry.getRegistry(getPort());
 		} catch (RemoteException e) {
 			logger.error("Cannot locate registry", e);
 		}
@@ -109,17 +115,15 @@ public class RemoteManagerAgent {
 	 * 
 	 * @return
 	 */
-	private static Registry createRegistry() {
+	private static void createRegistry() {
 		
-		Registry registry = null;
-		if (registry==null) {
-			try {
-				registry = java.rmi.registry.LocateRegistry.createRegistry(getPort());
-			} catch (RemoteException e) {
-				logger.error("Cannot start registry", e);
+		try {
+			if (getRegistry()!=null) {
+				LocateRegistry.createRegistry(getPort());
 			}
+		} catch (RemoteException e) {
+			logger.error("Cannot start registry", e);
 		}
-		return registry;
 	}
 
 	private static int getPort() {

@@ -25,7 +25,6 @@ public class ModelRunner implements IApplication {
 	}
 
 	private long start;
-	private RemoteManagerAgent modelAgent;
 	
 	@Override
 	public Object start(IApplicationContext applicationContextMightBeNull) throws Exception {
@@ -37,14 +36,6 @@ public class ModelRunner implements IApplication {
 
 	@Override
 	public void stop() {
-		
-		if (modelAgent!=null) {
-			try {
-				modelAgent.stop();
-			} catch (Exception e) {
-				logger.error("Cannot stop the model agent.", e);
-			}
-		}
 		
 		final long end  = System.currentTimeMillis();
 		// Did not like the DateFormat version, there may be something better than this.
@@ -76,9 +67,11 @@ public class ModelRunner implements IApplication {
 				
 				Manager manager = new Manager(compositeActor.workspace(), "model");
 				compositeActor.setManager(manager);
-				this.modelAgent = new RemoteManagerAgent(manager);
+				RemoteManagerAgent modelAgent = new RemoteManagerAgent(manager);
 				modelAgent.start();
 				manager.execute(); // Blocks
+				
+				modelAgent.stop();
 			}
 		} catch (IllegalArgumentException illegalArgumentException) { 
 			logger.info(illegalArgumentException.getMessage());
