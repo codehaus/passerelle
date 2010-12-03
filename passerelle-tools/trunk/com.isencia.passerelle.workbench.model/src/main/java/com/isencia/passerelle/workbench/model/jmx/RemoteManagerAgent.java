@@ -86,17 +86,36 @@ public class RemoteManagerAgent {
 
 	}
 
-	public static MBeanServerConnection getServerConnection() throws Exception {
+	public static MBeanServerConnection getServerConnection(final long timeout) throws Exception {
+
+		long                  waited = 0;
+		MBeanServerConnection server = null;
 		
-		// The registry is run remotely and if it is not there, we cannot connect
-		// to the JMXConnectorFactory
-		final Registry reg = RemoteManagerAgent.getRegistry();
-		if (reg==null) return null;
-		if (reg.list()==null || reg.list().length<1) return null;
-		
-		JMXConnector                conn   = JMXConnectorFactory.connect(serverUrl);
-		if (conn==null) return null;
-		final MBeanServerConnection server = conn.getMBeanServerConnection();
+		while(waited<timeout) {
+			
+			waited+=100;
+			try {
+                
+				// The registry is run remotely and if it is not there, we cannot connect
+				// to the JMXConnectorFactory
+				final Registry reg = RemoteManagerAgent.getRegistry();
+				if (reg==null) return null;
+				if (reg.list()==null || reg.list().length<1) return null;
+				
+				JMXConnector                conn   = JMXConnectorFactory.connect(serverUrl);
+				if (conn==null) return null;
+				server = conn.getMBeanServerConnection();
+                break;
+                
+			} catch (Exception ne) {
+				if (waited>=timeout) {
+					throw ne;
+				} else {
+					Thread.sleep(100);
+					continue;
+				}
+			}
+		}
 		return server;
 	}
 

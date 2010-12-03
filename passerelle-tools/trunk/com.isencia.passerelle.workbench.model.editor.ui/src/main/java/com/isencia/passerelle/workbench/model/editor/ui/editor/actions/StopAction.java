@@ -33,19 +33,20 @@ public class StopAction extends ExecutionAction implements IEditorActionDelegate
 	public void run(IAction action) {
 	    
 		try { 
-			final MBeanServerConnection client = RemoteManagerAgent.getServerConnection();
-			addRefreshListener();
+			final MBeanServerConnection client = RemoteManagerAgent.getServerConnection(5000);
+			addRefreshListener(client);
 			client.invoke(RemoteManagerAgent.REMOTE_MANAGER, "stop", null, null);
             
 		} catch (Exception e) {
 			logger.error("Cannot read configuration", e);
+			refreshToolbars();
 		}
 		
  	}
 	
 	public boolean isEnabled() {
 		try { 
-			final MBeanServerConnection client = RemoteManagerAgent.getServerConnection();
+			final MBeanServerConnection client = RemoteManagerAgent.getServerConnection(100);
 			return client.getObjectInstance(RemoteManagerAgent.REMOTE_MANAGER)!=null;
 		} catch (Throwable e) {
 			return false;

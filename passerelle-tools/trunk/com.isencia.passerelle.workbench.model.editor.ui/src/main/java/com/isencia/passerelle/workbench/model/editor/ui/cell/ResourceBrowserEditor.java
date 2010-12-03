@@ -76,7 +76,7 @@ public class ResourceBrowserEditor extends DialogCellEditor {
 		}
 
 		final String fullPath = value.getRawLocation().toOSString();
-		if (value.isLinked()) {
+		if (value.isLinked() || (value instanceof IFile && value.getParent().isLinked())) {
 			if (relative!=null) {
 				try {
 					relative.setToken(new BooleanToken(false));

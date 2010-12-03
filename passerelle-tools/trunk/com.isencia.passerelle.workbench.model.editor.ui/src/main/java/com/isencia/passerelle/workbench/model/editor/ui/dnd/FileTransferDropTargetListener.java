@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.dnd;
 
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -95,9 +96,9 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 		   if (element instanceof IResource) {
 			   final IResource   res = (IResource)element;
 			   final String fullPath = res.getRawLocation().toOSString();
-			   isFullPath = res.isLinked();
+			   isFullPath = res.isLinked() || (res instanceof IFile && res.getParent().isLinked());
 			   isFolder   = res instanceof IContainer;
-			   if (res.isLinked()) {
+			   if (isFullPath) {
 				   return fullPath;
 			   } else {
 				   final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
