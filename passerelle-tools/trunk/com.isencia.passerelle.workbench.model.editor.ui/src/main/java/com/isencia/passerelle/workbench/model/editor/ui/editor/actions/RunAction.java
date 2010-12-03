@@ -7,6 +7,10 @@ import javax.management.MBeanServerConnection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
@@ -50,6 +54,9 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 			final IFile config = getModelRunner();
 			EclipseUtils.getPage().saveAllEditors(true);
 			
+			final IEditorPart editor = EclipseUtils.getPage().getActiveEditor();
+			if (editor!=null)  EclipseUtils.getPage().activate(editor);
+			
 			// Make sure that the current editor is the selected resource.
 			final IResource sel = getSelectedResource();
 			if (sel instanceof IFile)  EclipseUtils.openEditor((IFile)sel);
@@ -60,19 +67,57 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 			} else {
 				ILaunchConfiguration configuration = DebugPlugin.getDefault().getLaunchManager().getLaunchConfiguration(config);
 				DebugUITools.launch(configuration, ILaunchManager.RUN_MODE);
+				createModelListener();
 			}
 			
-			addRefreshListener();
 			
 		} catch (Exception e) {
 			logger.error("Cannot read configuration", e);
+			refreshToolbars();
 		}
+
+	}
+	
+	private void createModelListener() {
+		final Job job = new Job("Update run buttons") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				try {
+					logger.debug("Running run buttons update task");
+					int waited = 0;
+					// BODGE Sleep while starting and then refresh when service up.
+					while(DebugUITools.getCurrentProcess()==null) {
+						Thread.sleep(100);
+						waited+=100;
+						if (waited>=10000) break;
+					}
+					logger.debug("process "+DebugUITools.getCurrentProcess());
+					logger.debug("process "+DebugUITools.getCurrentProcess().getLabel());
+
+
+				} catch (Exception ignored) {
+					// try to wait, if not then die.
+				}
+				try {
+					logger.debug("Adding refresh listener");
+				    addRefreshListener();
+				} catch (Exception e) {
+					logger.error("Cannot add listener to be notified when run finished.", e);
+				}
+
+				return Status.OK_STATUS;
+			}
+		};
+		job.setUser(false);
+		job.setSystem(true);
+		job.setPriority(Job.INTERACTIVE);
+		job.schedule(1000);
 
 	}
 	
 	public boolean isEnabled() {
 		try { 
-			final MBeanServerConnection server = RemoteManagerAgent.getServerConnection();
+			final MBeanServerConnection server = RemoteManagerAgent.getServerConnection(100);
 			return server.getObjectInstance(RemoteManagerAgent.REMOTE_MANAGER)==null;
 		} catch (Throwable e) {
 			return true;

@@ -28,6 +28,7 @@ import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.actor.Actor;
+import com.isencia.passerelle.util.ptolemy.RegularExpressionParameter;
 import com.isencia.passerelle.util.ptolemy.ResourceParameter;
 import com.isencia.passerelle.util.ptolemy.StringChoiceParameter;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
@@ -37,12 +38,12 @@ import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ColorProperty
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FilePickerPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FloatPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.IntegerPropertyDescriptor;
+import com.isencia.passerelle.workbench.model.editor.ui.descriptor.RegularExpressionDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ResourcePropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.StringChoicePropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
-import com.isencia.passerelle.workbench.util.ResourceUtils;
 
 /**
  * This class configures the properties in the PropertiesView when editing a workflow.
@@ -273,6 +274,9 @@ public class EntityPropertySource implements IPropertySource {
 			}
 			descriptors.add(des);
 			
+		} else if (parameter instanceof RegularExpressionParameter) {
+			descriptors.add(new RegularExpressionDescriptor((RegularExpressionParameter)parameter));
+
 		} else if (parameter instanceof FileParameter) {
 			descriptors.add(new FilePickerPropertyDescriptor(parameter.getName(), parameter.getDisplayName()));
 		
@@ -297,11 +301,12 @@ public class EntityPropertySource implements IPropertySource {
 		} else if (BaseType.INT.equals(type)) {
 
 			descriptors.add(new IntegerPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+					                                      parameter.getDisplayName()));
+			
 		} else if (BaseType.FLOAT.equals(type)) {
 
 			descriptors.add(new FloatPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+					                                    parameter.getDisplayName()));
 		} else if (BaseType.BOOLEAN.equals(type)) {
 
 			descriptors.add(new CheckboxPropertyDescriptor(parameter.getName(),
@@ -309,7 +314,7 @@ public class EntityPropertySource implements IPropertySource {
 		} else {
 
 			descriptors.add(new TextPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+					                                   parameter.getDisplayName()));
 		}
 	}
 
