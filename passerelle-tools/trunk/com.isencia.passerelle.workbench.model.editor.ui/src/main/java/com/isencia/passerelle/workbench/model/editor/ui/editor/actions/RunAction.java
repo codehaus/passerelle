@@ -79,7 +79,9 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 	}
 	
 	private void createModelListener() {
-		final Job job = new Job("Update run buttons") {
+		
+		// Polling is horrible...
+		final Job job = new Job("Running workflow") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
 				try {
@@ -99,19 +101,27 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 					// try to wait, if not then die.
 				}
 				try {
-					logger.debug("Adding refresh listener");
-				    addRefreshListener();
+					logger.debug("Adding polling");
+					MBeanServerConnection client = RemoteManagerAgent.getServerConnection(10000);
+					while(client.isRegistered(RemoteManagerAgent.REMOTE_MANAGER)) {
+						refreshToolbars();
+						Thread.sleep(1000);
+						monitor.worked(1);
+					}
+					refreshToolbars();
 				} catch (Exception e) {
-					logger.error("Cannot add listener to be notified when run finished.", e);
+					logger.error("Cannot add polling to be notified when run finished.", e);
 				}
-
+				monitor.done();
 				return Status.OK_STATUS;
 			}
 		};
+		
+		// This makes the job show in the status but does not 
+		// pop up a dialog.
 		job.setUser(false);
-		job.setSystem(true);
-		job.setPriority(Job.INTERACTIVE);
-		job.schedule(1000);
+		job.setPriority(Job.SHORT);
+		job.schedule(500);
 
 	}
 	

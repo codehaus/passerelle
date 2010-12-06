@@ -91,25 +91,19 @@ public class RemoteManagerAgent {
 		long                  waited = 0;
 		MBeanServerConnection server = null;
 		
-		while(waited<timeout) {
+		while(timeout>waited) {
 			
 			waited+=100;
 			try {
-                
-				// The registry is run remotely and if it is not there, we cannot connect
-				// to the JMXConnectorFactory
-				final Registry reg = RemoteManagerAgent.getRegistry();
-				if (reg==null) return null;
-				if (reg.list()==null || reg.list().length<1) return null;
 				
-				JMXConnector                conn   = JMXConnectorFactory.connect(serverUrl);
-				if (conn==null) return null;
-				server = conn.getMBeanServerConnection();
-                break;
+				JMXConnector  conn = JMXConnectorFactory.connect(serverUrl);
+				server             = conn.getMBeanServerConnection();
+                if (server == null) throw new NullPointerException("MBeanServerConnection is null");
+				break;
                 
-			} catch (Exception ne) {
+			} catch (Throwable ne) {
 				if (waited>=timeout) {
-					throw ne;
+					throw new Exception("Cannot get connection", ne);
 				} else {
 					Thread.sleep(100);
 					continue;
