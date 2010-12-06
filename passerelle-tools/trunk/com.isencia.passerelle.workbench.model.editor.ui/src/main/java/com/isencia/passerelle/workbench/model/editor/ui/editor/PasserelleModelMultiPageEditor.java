@@ -75,6 +75,7 @@ import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.PageBook;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.eclipse.wst.sse.ui.StructuredTextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,7 +208,12 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		try {
 			createWorkflowPage();
 			
-			this.textEditor = new TextEditor() {
+			/**
+			 * Important use StructuredTextEditor and set .moml 
+			 * as an xml file using the eclipse content type 
+			 * extension point.
+			 */
+			this.textEditor = new StructuredTextEditor() {
 				@Override
 				public boolean isEditable() {
 					return false;

@@ -12,6 +12,9 @@
             contributorClass="com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleActionBarContributor"
             class="com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor"
             id="com.isencia.passerelle.workbench.model.editor.ui.editors.modelEditor">
+         <contentTypeBinding
+               contentTypeId="com.isencia.passerelle.workbench.model.editor.ui.moml">
+         </contentTypeBinding>
       </editor>
    </extension>
    <extension
@@ -72,6 +75,19 @@
             id="com.isencia.passerelle.workbench.model.editor.ui.PasserellePreferences"
             name="Workflow Preferences">
       </page>
+   </extension>
+   
+
+   <extension point="org.eclipse.core.contenttype.contentTypes">
+   
+        <content-type id="com.isencia.passerelle.workbench.model.editor.ui.moml" name="MOML" 	
+			          base-type="org.eclipse.core.runtime.xml"
+			          priority="low"
+			          file-extensions="moml">			
+			<property name="org.eclipse.core.runtime.charset" default="UTF-8"/>
+			<describer class="org.eclipse.core.runtime.content.XMLContentDescriber"/>
+		</content-type>
+   
    </extension>
 
 </plugin>
