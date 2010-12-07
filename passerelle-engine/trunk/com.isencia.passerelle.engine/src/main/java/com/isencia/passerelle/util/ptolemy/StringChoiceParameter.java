@@ -9,15 +9,23 @@ import ptolemy.kernel.util.NamedObj;
 
 public class StringChoiceParameter extends StringParameter {
 
-	public enum CHOICE_TYPE {SINGLE, MULTI}
 
 	private IAvailableChoices availableChoices;
-	private IAvailableChoices choiceType;;
+	private int               choiceType;
 	
+	/**
+	 *
+	 * @param container
+	 * @param name
+	 * @param choices
+	 * @param type  - one of SWT.MULTI or SWT.SINGLE
+	 * @throws IllegalActionException
+	 * @throws NameDuplicationException
+	 */
 	public StringChoiceParameter(final NamedObj    container, 
 								final String       name,
 								final List<String> choices,
-								final CHOICE_TYPE  type) throws IllegalActionException, NameDuplicationException {
+								final int          type) throws IllegalActionException, NameDuplicationException {
 		this(container, name, new IAvailableChoices() {
 			
 			@Override
@@ -26,13 +34,23 @@ public class StringChoiceParameter extends StringParameter {
 			}
 		}, type);
 	}
+	
+	/**
+	 * 
+	 * @param container
+	 * @param name
+	 * @param choices
+	 * @param type  - one of SWT.MULTI or SWT.SINGLE
+	 * @throws IllegalActionException
+	 * @throws NameDuplicationException
+	 */
 	public StringChoiceParameter(final NamedObj          container, 
 			                     final String            name,
 			                     final IAvailableChoices choices,
-			                     final CHOICE_TYPE type) throws IllegalActionException, NameDuplicationException {
+			                     final int type) throws IllegalActionException, NameDuplicationException {
 		super(container, name);
 		this.availableChoices = choices;
-		this.choiceType       = choices;
+		this.choiceType       = type;
 	}
 
 	/**
@@ -55,11 +73,11 @@ public class StringChoiceParameter extends StringParameter {
 		this.availableChoices = availableChoices;
 	}
 
-	public IAvailableChoices getChoiceType() {
+	public int getChoiceType() {
 		return choiceType;
 	}
 
-	public void setChoiceType(IAvailableChoices choiceType) {
+	public void setChoiceType(int choiceType) {
 		this.choiceType = choiceType;
 	}
 

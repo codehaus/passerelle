@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
+import com.isencia.passerelle.workbench.model.launch.ModelRunner;
 
 public class StopAction extends ExecutionAction implements IEditorActionDelegate {
 
@@ -33,9 +34,15 @@ public class StopAction extends ExecutionAction implements IEditorActionDelegate
 	public void run(IAction action) {
 	    
 		try { 
-			final MBeanServerConnection client = RemoteManagerAgent.getServerConnection(5000);
-			addRefreshListener(client);
-			client.invoke(RemoteManagerAgent.REMOTE_MANAGER, "stop", null, null);
+			if (System.getProperty("eclipse.debug.session")!=null) {
+			    ModelRunner.getRunningInstance().stop();
+				refreshToolbars();
+		    
+			} else {
+				final MBeanServerConnection client = RemoteManagerAgent.getServerConnection(5000);
+				addRefreshListener(client);
+				client.invoke(RemoteManagerAgent.REMOTE_MANAGER, "stop", null, null);
+			}
             
 		} catch (Exception e) {
 			logger.error("Cannot read configuration", e);
@@ -45,6 +52,9 @@ public class StopAction extends ExecutionAction implements IEditorActionDelegate
  	}
 	
 	public boolean isEnabled() {
+		if (System.getProperty("eclipse.debug.session")!=null) {
+			return ModelRunner.getRunningInstance()!=null;
+		}
 		try { 
 			final MBeanServerConnection client = RemoteManagerAgent.getServerConnection(100);
 			return client.getObjectInstance(RemoteManagerAgent.REMOTE_MANAGER)!=null;

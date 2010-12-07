@@ -62,9 +62,21 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 			if (sel instanceof IFile)  EclipseUtils.openEditor((IFile)sel);
 			
 			if (System.getProperty("eclipse.debug.session")!=null) {
-				final ModelRunner runner = new ModelRunner();
-				runner.runModel(sel.getLocation().toOSString());
-			} else {
+				final Job job = new Job("Run workflow debug mode") {
+					@Override
+					protected IStatus run(IProgressMonitor monitor) {
+						final ModelRunner runner = new ModelRunner();
+						runner.runModel(sel.getLocation().toOSString(), false);
+						return Status.OK_STATUS;
+					}
+				};
+				job.setUser(false);
+				job.setPriority(Job.LONG);
+				job.schedule();
+				
+				refreshToolbars();
+				
+			} else { // Normally the case in real application
 				ILaunchConfiguration configuration = DebugPlugin.getDefault().getLaunchManager().getLaunchConfiguration(config);
 				DebugUITools.launch(configuration, ILaunchManager.RUN_MODE);
 				createModelListener();
@@ -126,6 +138,9 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 	}
 	
 	public boolean isEnabled() {
+		if (System.getProperty("eclipse.debug.session")!=null) {
+			return ModelRunner.getRunningInstance()==null;
+		}
 		try { 
 			final MBeanServerConnection server = RemoteManagerAgent.getServerConnection(100);
 			return server.getObjectInstance(RemoteManagerAgent.REMOTE_MANAGER)==null;

@@ -281,13 +281,7 @@ public class EntityPropertySource implements IPropertySource {
 			descriptors.add(new FilePickerPropertyDescriptor(parameter.getName(), parameter.getDisplayName()));
 		
 		} else if (parameter instanceof StringChoiceParameter) {
-			// TODO This does not work unless the choices parse to strings.
-			final String[] choices = ((Parameter) parameter).getChoices();
-			final String[] value   = ((StringChoiceParameter)parameter).getValue();
-			final StringChoicePropertyDescriptor des = new StringChoicePropertyDescriptor(parameter.getName(),
-																                  parameter.getDisplayName(), 
-															                      choices,
-															                      value);
+			final StringChoicePropertyDescriptor des = new StringChoicePropertyDescriptor((StringChoiceParameter)parameter);
 			descriptors.add(des);
 
 		} else if (hasOptions(parameter)) {
