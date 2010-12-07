@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.descriptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -18,12 +19,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 
+import com.isencia.passerelle.util.ptolemy.StringChoiceParameter;
 import com.isencia.passerelle.workbench.util.DialogUtils;
 
 public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 	
-	private String[] availChoices;
-	private String[] currentValue;
+	private StringChoiceParameter param;
 
 	@Override
 	public String getDisplayName() {
@@ -34,10 +35,9 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 	 * @param id
 	 * @param displayName
 	 */
-	public StringChoicePropertyDescriptor(Object id, String displayName, String[] choices, String[] currentValue) {
-		super(id, displayName);
-		this.availChoices = choices;
-		this.currentValue = currentValue;
+	public StringChoicePropertyDescriptor(StringChoiceParameter param) {
+		super(param.getName(), param.getDisplayName());
+        this.param        = param;
 	}
 
 	/*
@@ -54,12 +54,14 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 			protected Object openDialogBox(Control container) {
 				final ChoiceDialog dialog = new ChoiceDialog(parent.getShell());
 				dialog.create();
-				dialog.getShell().setSize(300,400);
+				dialog.getShell().setSize(400,400);
 				dialog.getShell().setText("Choose values for '"+getDisplayName()+"'");
 				DialogUtils.centerDialog(parent.getShell(), dialog.getShell());
 				final int ok = dialog.open();
-				final String[] sel = ok==ChoiceDialog.OK ? dialog.getSelections() : currentValue;
-				return getStringValue(sel);
+				final String[] sel = ok==ChoiceDialog.OK ? dialog.getSelections() : param.getValue();
+				final Object stringValue = getStringValue(sel);
+				setValue(stringValue);
+				return stringValue;
 			}
 			
 		};
@@ -108,7 +110,7 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 
 		protected Control createDialogArea(Composite parent) {
 			
-			final CheckboxTableViewer choiceTable = CheckboxTableViewer.newCheckList(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+			final CheckboxTableViewer choiceTable = CheckboxTableViewer.newCheckList(parent, param.getChoiceType() | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
 			choiceTable.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
 			choiceTable.getTable().setLinesVisible(true);
 			choiceTable.getTable().setHeaderVisible(false);
@@ -123,31 +125,47 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 
 				@Override
 				public Object[] getElements(Object inputElement) {
-					return availChoices;
+					return param.getChoices();
 				}
 			});	
 			choiceTable.setInput(new String());
-			if (currentValue!=null) {
-				choiceTable.setCheckedElements(currentValue);
+			if (param.getValue()!=null) {
+				choiceTable.setCheckedElements(param.getValue());
+				if (selection==null) selection = new ArrayList<Object>(7);
+				selection.addAll(Arrays.asList(param.getValue()));
 			}
 			
-			choiceTable.addCheckStateListener(new ICheckStateListener() {			
+			choiceTable.addCheckStateListener(new ICheckStateListener() {
+				
+				boolean busy = false;
 				@Override
 				public void checkStateChanged(CheckStateChangedEvent event) {
-					if (selection==null) selection = new ArrayList<Object>(7);
 					
-			   		if (event!=null) {
-		    			final Object element = event.getElement();
-						if (!event.getChecked()) {
-							selection.remove(element);
-						} else {
-							if (!selection.contains(element)) {
-								selection.add(element);
-							}
-						}
+					if (busy) return;
+					try {
+						busy = true;
+						if (selection==null) selection = new ArrayList<Object>(7);
 						
-					} else {
-						selection.clear();
+				   		if (event!=null) {
+			    			final Object element = event.getElement();
+							if (!event.getChecked()) {
+								selection.remove(element);
+							} else {
+								if (param.getChoiceType()==SWT.SINGLE) {
+									selection.clear();
+									choiceTable.setAllChecked(false);
+									choiceTable.setChecked(event.getElement(), true);
+								}
+								if (!selection.contains(element)) {
+									selection.add(element);
+								}
+							}
+							
+						} else {
+							selection.clear();
+						}
+					} finally {
+						busy = false;
 					}
 
 				}

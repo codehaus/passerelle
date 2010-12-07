@@ -18,6 +18,12 @@ import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
 
 public class ModelRunner implements IApplication {
 	
+	
+	private static ModelRunner currentInstance;
+	public static ModelRunner getRunningInstance() {
+		return currentInstance;
+	}
+	
     private static Logger logger = LoggerFactory.getLogger(ModelRunner.class);   
     
 	public Logger getLogger() {
@@ -25,12 +31,13 @@ public class ModelRunner implements IApplication {
 	}
 
 	private long start;
+	private Manager manager;
 	
 	@Override
 	public Object start(IApplicationContext applicationContextMightBeNull) throws Exception {
 		
 		String model = System.getProperty("model");
-		runModel(model);
+		runModel(model, true);
 		return  IApplication.EXIT_OK;
 	}
 
@@ -40,6 +47,13 @@ public class ModelRunner implements IApplication {
 		final long end  = System.currentTimeMillis();
 		// Did not like the DateFormat version, there may be something better than this.
 		final long time = end-start;
+		if (manager!=null) {
+			try {
+				manager.stop();
+			} catch (Throwable ne) {
+				logger.error("Cannot stop manager for model.", ne);
+			}
+		}
         logger.info("Model completed in "+(time/(60*1000))+"m "+((time/1000)%60)+"s "+(time%1000)+"ms");
 	}
 
@@ -47,7 +61,7 @@ public class ModelRunner implements IApplication {
 	 * Sometimes can be called 
 	 * @param modelPath
 	 */
-	public void runModel(String modelPath) {
+	public void runModel(final String modelPath, final boolean requireService) {
 		
 		start = System.currentTimeMillis();
 		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
@@ -55,8 +69,11 @@ public class ModelRunner implements IApplication {
 		System.setProperty("be.isencia.home",        workspacePath);
 		logger.info("Workspace folder set to: "+workspacePath);
 
-		Reader reader = null;
+		Reader             reader     = null;
+		RemoteManagerAgent modelAgent = null;
 		try {
+			currentInstance = this;
+			
 			if( modelPath==null) {
 				throw new IllegalArgumentException("No model specified",null);
 			} else {
@@ -65,13 +82,14 @@ public class ModelRunner implements IApplication {
 				MoMLParser moMLParser = new MoMLParser();
 				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
 				
-				Manager manager = new Manager(compositeActor.workspace(), "model");
+				this.manager = new Manager(compositeActor.workspace(), "model");
 				compositeActor.setManager(manager);
-				RemoteManagerAgent modelAgent = new RemoteManagerAgent(manager);
-				modelAgent.start();
+				if (requireService) {
+					modelAgent = new RemoteManagerAgent(manager);
+					modelAgent.start();
+				}
 				manager.execute(); // Blocks
 				
-				modelAgent.stop();
 			}
 		} catch (IllegalArgumentException illegalArgumentException) { 
 			logger.info(illegalArgumentException.getMessage());
@@ -86,8 +104,13 @@ public class ModelRunner implements IApplication {
 					reader.close();
 				} catch (IOException e) {}
 			}
+			
+			if (modelAgent!=null) modelAgent.stop();
+			manager = null;
+
+			stop();
+			currentInstance = null;
 		}
-		stop();
 	}
 
 	public static void main(String[] args) {
@@ -104,7 +127,7 @@ public class ModelRunner implements IApplication {
 		}
 		
 		final ModelRunner runner = new ModelRunner();
-		runner.runModel(model);
+		runner.runModel(model, true);
 	}
 
 	

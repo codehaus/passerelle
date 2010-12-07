@@ -72,6 +72,6 @@ public abstract class ExecutionAction extends Action {
 		};
 		updateActionBars.setUser(false);
 		updateActionBars.setSystem(true);
-		updateActionBars.schedule(1000);
+		updateActionBars.schedule(100);
 	}
 }
