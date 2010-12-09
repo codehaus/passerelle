@@ -26,6 +26,10 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		if (System.getProperty("passerelle.workbench.version")==null) {
+			System.setProperty("passerelle.workbench.version", getBundle().getVersion().toString());
+		}
 		plugin = this;
 	}
 
