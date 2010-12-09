@@ -127,7 +127,7 @@ public class EntityPropertySource implements IPropertySource {
 		AbstractSettableAttribute attribute = (AbstractSettableAttribute) entity.getAttribute((String) id);
 		if (attribute instanceof ColorAttribute) {
 			return new org.eclipse.swt.graphics.RGB(0, 10, 10);
-		} else if (hasOptions(attribute)) {
+		} else if (hasOptions(attribute) && !(attribute instanceof StringParameter)) {
 			String[] options = ((Parameter)attribute).getChoices();
 			for (int i = 0; i < options.length; i++) {
 				if (options[i].equals(attribute.getExpression()))
@@ -159,12 +159,11 @@ public class EntityPropertySource implements IPropertySource {
 		entity.requestChange(new ModelChangeRequest(EntityPropertySource.class,
 				entity, "changeParameter") {
 			protected void _execute() throws Exception {
-				Parameter attribute = (Parameter) entity
-						.getAttribute((String) id);
+				Parameter attribute = (Parameter) entity.getAttribute((String) id);
 				String oldValue = attribute.getExpression();
+				
 				if (hasOptions(attribute) && !(attribute instanceof StringParameter)) {
-					attribute
-							.setExpression(((Parameter)attribute).getChoices()[(Integer) value]);
+					attribute.setExpression(((Parameter)attribute).getChoices()[(Integer) value]);
 				} else {
 					attribute.setExpression(value.toString());
 
@@ -177,7 +176,8 @@ public class EntityPropertySource implements IPropertySource {
 			}
 
 			private void changeNumberOfPortsOnFigure(final Object value,
-					Parameter attribute, String oldValue) {
+					                                 Parameter attribute, 
+					                                 String oldValue) {
 				try {
 
 					if (!oldValue.equals(value)) {
