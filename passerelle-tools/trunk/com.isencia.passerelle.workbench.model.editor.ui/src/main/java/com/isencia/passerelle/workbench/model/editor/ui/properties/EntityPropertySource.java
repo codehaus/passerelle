@@ -31,8 +31,10 @@ import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.util.ptolemy.RegularExpressionParameter;
 import com.isencia.passerelle.util.ptolemy.ResourceParameter;
 import com.isencia.passerelle.util.ptolemy.StringChoiceParameter;
+import com.isencia.passerelle.util.ptolemy.StringMapParameter;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.PreferenceConstants;
+import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CComboBoxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CheckboxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ColorPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.FilePickerPropertyDescriptor;
@@ -41,6 +43,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.descriptor.IntegerProper
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.RegularExpressionDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ResourcePropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.StringChoicePropertyDescriptor;
+import com.isencia.passerelle.workbench.model.editor.ui.descriptor.StringMapPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
@@ -163,9 +166,13 @@ public class EntityPropertySource implements IPropertySource {
 				String oldValue = attribute.getExpression();
 				
 				if (hasOptions(attribute) && !(attribute instanceof StringParameter)) {
-					attribute.setExpression(((Parameter)attribute).getChoices()[(Integer) value]);
+					attribute.setExpression(((Parameter)attribute).getChoices()[(Integer)value]);
 				} else {
-					attribute.setExpression(value.toString());
+					String v = null;
+					if (value!=null) {
+			            v = value.toString();
+					}
+					attribute.setExpression(v);
 
 				}
 				if (entity.getClass().getSimpleName().equals("Synchronizer")
@@ -250,6 +257,7 @@ public class EntityPropertySource implements IPropertySource {
 			                             Attribute parameter,
 			                             Type type) {
 		
+		// TODO Replace this long test with a map.
 		if (parameter instanceof ColorAttribute) {
 			descriptors.add(new ColorPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName()));
@@ -280,6 +288,10 @@ public class EntityPropertySource implements IPropertySource {
 		} else if (parameter instanceof FileParameter) {
 			descriptors.add(new FilePickerPropertyDescriptor(parameter.getName(), parameter.getDisplayName()));
 		
+		} else if (parameter instanceof StringMapParameter) {
+			final StringMapPropertyDescriptor des = new StringMapPropertyDescriptor((StringMapParameter)parameter);
+			descriptors.add(des);
+			
 		} else if (parameter instanceof StringChoiceParameter) {
 			final StringChoicePropertyDescriptor des = new StringChoicePropertyDescriptor((StringChoiceParameter)parameter);
 			descriptors.add(des);
@@ -287,9 +299,9 @@ public class EntityPropertySource implements IPropertySource {
 		} else if (hasOptions(parameter)) {
 			// TODO This does not work unless the choices parse to strings.
 			final String[] choices = ((Parameter) parameter).getChoices();
-			final ComboBoxPropertyDescriptor des = new ComboBoxPropertyDescriptor(parameter.getName(),
-																                  parameter.getDisplayName(), 
-															                      choices);
+			final CComboBoxPropertyDescriptor des = new CComboBoxPropertyDescriptor(parameter.getName(),
+																                    parameter.getDisplayName(), 
+															                        choices);
 			descriptors.add(des);
 			
 		} else if (BaseType.INT.equals(type)) {

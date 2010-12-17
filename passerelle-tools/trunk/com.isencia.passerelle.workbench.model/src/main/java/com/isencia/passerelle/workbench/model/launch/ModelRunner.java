@@ -53,6 +53,7 @@ public class ModelRunner implements IApplication {
 			} catch (Throwable ne) {
 				logger.error("Cannot stop manager for model.", ne);
 			}
+			manager = null;
 		}
         logger.info("Model completed in "+(time/(60*1000))+"m "+((time/1000)%60)+"s "+(time%1000)+"ms");
 	}
@@ -106,10 +107,12 @@ public class ModelRunner implements IApplication {
 			}
 			
 			if (modelAgent!=null) modelAgent.stop();
-			manager = null;
+			
+			manager         = null;
+			currentInstance = null;
 
 			stop();
-			currentInstance = null;
+			System.gc();
 		}
 	}
 
