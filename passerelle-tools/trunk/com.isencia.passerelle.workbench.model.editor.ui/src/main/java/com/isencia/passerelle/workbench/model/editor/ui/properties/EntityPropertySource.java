@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
@@ -26,6 +25,7 @@ import ptolemy.kernel.util.AbstractSettableAttribute;
 import ptolemy.kernel.util.Attribute;
 import ptolemy.kernel.util.IllegalActionException;
 import ptolemy.kernel.util.NamedObj;
+import ptolemy.kernel.util.StringAttribute;
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.util.ptolemy.RegularExpressionParameter;
@@ -162,22 +162,32 @@ public class EntityPropertySource implements IPropertySource {
 		entity.requestChange(new ModelChangeRequest(EntityPropertySource.class,
 				entity, "changeParameter") {
 			protected void _execute() throws Exception {
-				Parameter attribute = (Parameter) entity.getAttribute((String) id);
-				String oldValue = attribute.getExpression();
-				
-				if (hasOptions(attribute) && !(attribute instanceof StringParameter)) {
-					attribute.setExpression(((Parameter)attribute).getChoices()[(Integer)value]);
-				} else {
-					String v = null;
-					if (value!=null) {
-			            v = value.toString();
-					}
-					attribute.setExpression(v);
+				Attribute attribute = entity.getAttribute((String) id);
+				if (attribute instanceof Parameter) {
+					Parameter parameter = (Parameter) attribute;
+					String oldValue = parameter.getExpression();
 
-				}
-				if (entity.getClass().getSimpleName().equals("Synchronizer")
-						&& attribute.getName().equals("Extra nr of ports")) {
-					changeNumberOfPortsOnFigure(value, attribute, oldValue);
+					if (hasOptions(parameter)
+							&& !(parameter instanceof StringParameter)) {
+						parameter.setExpression(((Parameter) parameter)
+								.getChoices()[(Integer) value]);
+					} else {
+						String v = null;
+						if (value != null) {
+							v = value.toString();
+						}
+						parameter.setExpression(v);
+
+					}
+					if (entity.getClass().getSimpleName()
+							.equals("Synchronizer")
+							&& parameter.getName().equals("Extra nr of ports")) {
+						changeNumberOfPortsOnFigure(value, parameter, oldValue);
+					}
+
+				}else if (attribute instanceof StringAttribute){
+					StringAttribute parameter = (StringAttribute)attribute;
+					parameter.setExpression((String)value);
 				}
 
 			}
