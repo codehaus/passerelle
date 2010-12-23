@@ -106,8 +106,10 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	private RefreshCommand RefreshCommand;
 	protected OutlinePage outlinePage;
 
-	
 	public IPasserelleEditor getSelectedPage() {
+		IEditorPart ed = getEditor(getActivePage());
+		if (ed instanceof IPasserelleEditor)
+			return (IPasserelleEditor) ed;
 		return editor;
 	}
 
@@ -200,18 +202,17 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		super();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
 	}
-	
+
 	/**
 	 * Creates the pages of the multi-page editor.
 	 */
 	protected void createPages() {
 		try {
 			createWorkflowPage();
-			
+
 			/**
-			 * Important use StructuredTextEditor and set .moml 
-			 * as an xml file using the eclipse content type 
-			 * extension point.
+			 * Important use StructuredTextEditor and set .moml as an xml file
+			 * using the eclipse content type extension point.
 			 */
 			this.textEditor = new StructuredTextEditor() {
 				@Override
@@ -219,17 +220,19 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 					return false;
 				}
 			};
-			addPage(1, textEditor,   getEditorInput());
+			addPage(1, textEditor, getEditorInput());
 			setPageText(1, "XML");
-			
+
 		} catch (PartInitException e) {
-			logger.error("Cannot open passerelle editor "+getEditorInput().getName(), e);
+			logger.error("Cannot open passerelle editor "
+					+ getEditorInput().getName(), e);
 		}
 	}
 
 	/**
 	 * Creates page 0 of the multi-page editor, which contains a text editor.
-	 * @throws PartInitException 
+	 * 
+	 * @throws PartInitException
 	 */
 	private void createWorkflowPage() throws PartInitException {
 
@@ -256,7 +259,6 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		setPageText(idex, text);
 	}
 
-
 	public void doSave(final IProgressMonitor monitor) {
 		editorSaving = true;
 		SafeRunner.run(new SafeRunnable() {
@@ -265,7 +267,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 				StringWriter writer = new StringWriter();
 				diagram.exportMoML(writer);
 				IFile file = EclipseUtils.getIFile(getEditorInput());
-				if (file!=null) {
+				if (file != null) {
 					file.setContents(new ByteArrayInputStream(writer.toString()
 							.getBytes()), true, false, monitor);
 				} else {
@@ -317,7 +319,8 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 * The <code>MultiPageEditorExample</code> implementation of this method
 	 * checks that the input is an instance of <code>IFileEditorInput</code>.
 	 */
-	public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
+	public void init(IEditorSite site, IEditorInput editorInput)
+			throws PartInitException {
 		super.init(site, editorInput);
 	}
 
@@ -329,7 +332,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	}
 
 	protected boolean performSaveAs() {
-		
+
 		SaveAsDialog dialog = new SaveAsDialog(getSite().getWorkbenchWindow()
 				.getShell());
 		dialog.setOriginalFile(((IFileEditorInput) getEditorInput()).getFile());
@@ -372,7 +375,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 
 		try {
 			superSetInput(new FileEditorInput(file));
-	
+
 		} catch (Exception e) {
 			getLogger().error(
 					"Error during re-read of saved model file : "
@@ -385,15 +388,16 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 	 * Calculates the contents of page 2 when the it is activated.
 	 */
 	protected void pageChange(int newPageIndex) {
-		
+
 		getRefreshCommand().setModel(getDiagram());
 		getRefreshCommand().execute();
-		if (outlinePage != null) outlinePage.switchThumbnail(newPageIndex);
-	    
-		if (newPageIndex==1) { // Text Editor
+		if (outlinePage != null)
+			outlinePage.switchThumbnail(newPageIndex);
+
+		if (newPageIndex == 1) { // Text Editor
 			doSave(new NullProgressMonitor());
 		}
-		
+
 		super.pageChange(newPageIndex);
 	}
 
@@ -463,13 +467,14 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 
 		if (getEditorInput() != null) {
 			IFile file = EclipseUtils.getIFile(input);
-			if (file!=null) file.getWorkspace().addResourceChangeListener(resourceListener);
-		    setPartName(input.getName());
+			if (file != null)
+				file.getWorkspace().addResourceChangeListener(resourceListener);
+			setPartName(input.getName());
 		}
 	}
 
 	protected void setInput(IEditorInput input) {
-		
+
 		superSetInput(input);
 
 		File file = EclipseUtils.getFile(input);
@@ -477,7 +482,8 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		try {
 			is = new FileInputStream(file);
 			MoMLParser moMLParser = new MoMLParser();
-			CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, is);
+			CompositeActor compositeActor = (CompositeActor) moMLParser.parse(
+					null, is);
 			setDiagram(compositeActor);
 		} catch (Exception e) {
 			getLogger().error(
@@ -509,9 +515,10 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		}
 
 		public boolean visit(IResourceDelta delta) {
-			
+
 			final IFile file = EclipseUtils.getIFile(getEditorInput());
-			if (delta == null || !delta.getResource().equals(file)) return true;
+			if (delta == null || !delta.getResource().equals(file))
+				return true;
 
 			if (delta.getKind() == IResourceDelta.REMOVED) {
 				Display display = getSite().getShell().getDisplay();
@@ -569,12 +576,12 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		getSite().getWorkbenchWindow().getPartService().removePartListener(
 				partListener);
 		partListener = null;
-		
+
 		final IFile file = EclipseUtils.getIFile(getEditorInput());
-		if (file!=null) {
+		if (file != null) {
 			file.getWorkspace().removeResourceChangeListener(resourceListener);
 		}
-				
+
 		super.dispose();
 	}
 
@@ -583,9 +590,10 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		// "Save As"
 		// or close the editor.
 		public void partActivated(IWorkbenchPart part) {
-			if (part != PasserelleModelMultiPageEditor.this) return;
+			if (part != PasserelleModelMultiPageEditor.this)
+				return;
 			if (!EclipseUtils.getFile(getEditorInput()).exists()) {
-				//Shell shell = getSite().getShell();
+				// Shell shell = getSite().getShell();
 				// //// String title =
 				// LogicMessages.GraphicalEditor_FILE_DELETED_TITLE_UI;
 				// //// String message =
@@ -742,9 +750,11 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		public void switchThumbnail(int newPageIndex) {
 			// index = getActivePage();
 
+			IEditorPart newEditor = getEditor(newPageIndex);
+			if (newEditor instanceof PasserelleModelEditor)
+				editor = (PasserelleModelEditor) newEditor;
 			thumbnail = thumbnails.get(editor);
-			
-			
+
 			GraphicalViewer viewer = editor.getGraphicalViewer();
 			if (lws == null) {
 				lws = new LightweightSystem(overview);
@@ -794,7 +804,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 					}
 				};
 				editor.getEditor().addDisposeListener(disposeListener);
-				
+
 				return thumbnail;
 			}
 			return null;
@@ -828,6 +838,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 				editor.getEditor().removeDisposeListener(disposeListener);
 		}
 	}
+
 	// get the container of the page where the user is on this moment
 	@Override
 	public CompositeActor getSelectedContainer() {
