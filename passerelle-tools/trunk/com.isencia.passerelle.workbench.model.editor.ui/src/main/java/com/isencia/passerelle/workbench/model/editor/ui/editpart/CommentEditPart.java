@@ -40,6 +40,7 @@ public class CommentEditPart extends AbstractNodeEditPart {
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
 
+		
 		getLogger().debug("Change Executed");
 		Object source = changerequest.getSource();
 		if (changerequest instanceof ModelChangeRequest) {
