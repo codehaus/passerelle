@@ -35,8 +35,8 @@ import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.moml.Vertex;
-import be.isencia.passerelle.core.ControlPort;
-import be.isencia.passerelle.core.ErrorPort;
+import com.isencia.passerelle.core.ControlPort;
+import com.isencia.passerelle.core.ErrorPort;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ActorEditPolicy;
