@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Manager;
+import ptolemy.moml.MoMLParser;
 
-import com.isencia.passerelle.model.util.MoMLParser;
 import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
 
 public class ModelRunner implements IApplication {
