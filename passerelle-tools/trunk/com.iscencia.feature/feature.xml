@@ -33,8 +33,6 @@
       <import plugin="ptolemy.core"/>
       <import plugin="org.eclipse.core.runtime" version="3.4.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui" version="3.6.1" match="greaterOrEqual"/>
-      <import plugin="com.isencia.passerelle.engine"/>
       <import plugin="org.eclipse.gef"/>
       <import plugin="org.eclipse.ui.workbench" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.jface.text"/>
@@ -82,6 +80,7 @@
       <import plugin="org.eclipse.core.resources" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.ui.views" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.ui.ide" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.ui" version="3.5.1" match="greaterOrEqual"/>
    </requires>
 
    <plugin
