@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.4.0",
  org.eclipse.core.resources;bundle-version="3.5.0",
  com.microstar;bundle-version="1.2.0",
  ptolemy.core;bundle-version="7.0.1",
- org.eclipse.ui;bundle-version="3.6.1"
+ org.eclipse.ui;bundle-version="3.5.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.isencia.passerelle.workbench.model.activator,
@@ -18,7 +18,6 @@ Export-Package: com.isencia.passerelle.workbench.model.activator,
  com.isencia.passerelle.workbench.model.utils
 Bundle-ClassPath: config/,
  .
-Import-Package: com.isencia.passerelle.model.util,
- org.eclipse.gef,
+Import-Package: org.eclipse.gef,
  org.eclipse.ui.plugin,
  org.slf4j
