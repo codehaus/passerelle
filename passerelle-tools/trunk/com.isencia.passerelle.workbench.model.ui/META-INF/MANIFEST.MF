@@ -17,14 +17,14 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.variables;bundle-version="3.2.100",
  com.isencia.passerelle.workbench.model;bundle-version="1.0.1",
  ptolemy.core;bundle-version="7.0.1",
- ptolemy.gui;bundle-version="7.0.1"
+ ptolemy.gui;bundle-version="7.0.1",
+ com.isencia.passerelle.engine;bundle-version="5.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.isencia.passerelle.workbench.model.ui,
  com.isencia.passerelle.workbench.model.ui.command,
  com.isencia.passerelle.workbench.model.ui.utils
-Import-Package: com.isencia.passerelle.actor,
- org.eclipse.core.filesystem,
+Import-Package: org.eclipse.core.filesystem,
  org.eclipse.gef.commands,
  org.eclipse.gef.ui.actions,
  org.slf4j
