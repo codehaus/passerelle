@@ -1,7 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.properties;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +46,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.descriptor.StringMapProp
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
+import com.isencia.passerelle.actor.gui.PasserelleConfigurer;
 
 /**
  * This class configures the properties in the PropertiesView when editing a workflow.
@@ -93,12 +93,15 @@ public class EntityPropertySource implements IPropertySource {
 	 */
 	public IPropertyDescriptor[] getPropertyDescriptors() {
 		Collection<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>();
-		
-		final List<Parameter> parameterList;
-		if (entity instanceof Actor && !Activator.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.EXPERT)) {
-			parameterList = Arrays.asList(((Actor)entity).getConfigurableParameters());
-		} else {
-			parameterList = entity.attributeList(Parameter.class);
+
+		List<Parameter> parameterList = new ArrayList<Parameter>();
+		Iterator parameterIterator = entity.attributeList(Parameter.class)
+				.iterator();
+		while (parameterIterator.hasNext()) {
+			Parameter parameter = (Parameter) parameterIterator.next();
+			if (PasserelleConfigurer.isVisible(entity, parameter)) {
+				parameterList.add(parameter);
+			}
 		}
 
 		for (Parameter parameter : parameterList) {
@@ -159,12 +162,12 @@ public class EntityPropertySource implements IPropertySource {
 
 	public void setPropertyValue(final Object id, final Object value) {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
-		entity.requestChange(new ModelChangeRequest(EntityPropertySource.class,
+		entity.requestChange(new ModelChangeRequest(this.getClass(),
 				entity, "changeParameter") {
 			protected void _execute() throws Exception {
-				Attribute attribute = entity.getAttribute((String) id);
-				if (attribute instanceof Parameter) {
-					Parameter parameter = (Parameter) attribute;
+				Attribute attr = entity.getAttribute((String) id);
+				if (attr instanceof Parameter) {
+					Parameter parameter = (Parameter) attr;
 					String oldValue = parameter.getExpression();
 
 					if (hasOptions(parameter)
@@ -184,10 +187,13 @@ public class EntityPropertySource implements IPropertySource {
 							&& parameter.getName().equals("Extra nr of ports")) {
 						changeNumberOfPortsOnFigure(value, parameter, oldValue);
 					}
-
-				}else if (attribute instanceof StringAttribute){
-					StringAttribute parameter = (StringAttribute)attribute;
-					parameter.setExpression((String)value);
+				} else if (attr instanceof StringAttribute) {
+					StringAttribute attribute = (StringAttribute) attr;
+					String v = null;
+					if (value != null) {
+						v = value.toString();
+					}
+					attribute.setExpression(v);
 				}
 
 			}
@@ -278,11 +284,11 @@ public class EntityPropertySource implements IPropertySource {
 			descriptors.add(des);
 
 	    // If we use this parameter, we can sent the file extensions to the editor
-		} else if (parameter instanceof com.isencia.passerelle.util.ptolemy.FileParameter) {
+		} else if (parameter instanceof be.isencia.passerelle.util.ptolemy.FileParameter) {
 			
 			FilePickerPropertyDescriptor des = new FilePickerPropertyDescriptor(parameter.getName(), 
 					                                                            parameter.getDisplayName());
-			final com.isencia.passerelle.util.ptolemy.FileParameter fp = (com.isencia.passerelle.util.ptolemy.FileParameter)parameter;
+			final be.isencia.passerelle.util.ptolemy.FileParameter fp = (be.isencia.passerelle.util.ptolemy.FileParameter)parameter;
 			des.setFilter(fp.getFilterExtensions());
 
 			try {
