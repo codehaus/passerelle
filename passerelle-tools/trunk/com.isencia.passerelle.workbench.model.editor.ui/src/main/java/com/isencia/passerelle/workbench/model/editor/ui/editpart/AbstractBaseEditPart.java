@@ -175,8 +175,7 @@ abstract public class AbstractBaseEditPart extends
 		if (changerequest instanceof ModelChangeRequest) {
 			Class<?> type = ((ModelChangeRequest) changerequest).getType();
 
-			if (ActorGeneralSection.class.equals(type)
-					|| CommentPropertySource.class.equals(type)) {
+			if (ActorGeneralSection.class.equals(type)) {
 				if (source == this.getModel() && source instanceof NamedObj) {
 					String name = getName(source);
 					if ((getComponentFigure() instanceof INameable)

@@ -267,8 +267,7 @@ public class VertexEditPart extends AbstractNodeEditPart {
 		if (changerequest instanceof ModelChangeRequest) {
 			Class<?> type = ((ModelChangeRequest) changerequest).getType();
 
-			if (EntityPropertySource.class.equals(type)
-					|| CommentPropertySource.class.equals(type)) {
+			if (EntityPropertySource.class.equals(type)) {
 				if (source == this.getModel()) {
 					// Execute the dummy command force a dirty state
 					getViewer().getEditDomain().getCommandStack().execute(
