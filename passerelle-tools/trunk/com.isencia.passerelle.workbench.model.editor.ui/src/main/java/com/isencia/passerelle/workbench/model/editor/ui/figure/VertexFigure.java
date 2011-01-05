@@ -23,8 +23,9 @@ public class VertexFigure extends AbstractNodeFigure {
 	private OutputPorts outputPorts = null;
 	public final static int ANCHOR_WIDTH = 18;
 	public final static int ANCHOR_HEIGTH = 23;
-	private List<ConnectionAnchor> inputAnchors =new ArrayList<ConnectionAnchor>();
-	private List<ConnectionAnchor> outputAnchors =new ArrayList<ConnectionAnchor>();
+	private List<ConnectionAnchor> inputAnchors = new ArrayList<ConnectionAnchor>();
+	private List<ConnectionAnchor> outputAnchors = new ArrayList<ConnectionAnchor>();
+
 	public List<ConnectionAnchor> getOutputAnchors() {
 		return outputAnchors;
 	}
@@ -33,32 +34,34 @@ public class VertexFigure extends AbstractNodeFigure {
 		return inputAnchors;
 	}
 
-
-
-	public ConnectionAnchor getInputAnchor(double[] location,double[] vertexLocation) {
+	public ConnectionAnchor getInputAnchor(double[] location,
+			double[] vertexLocation) {
 		int index = 0;
 		double diff = 0;
-		for (ConnectionAnchor anchor:inputAnchors){
-			double anchorx = vertexLocation[0] + anchor.getReferencePoint().x ;
-			double anchory = vertexLocation[1] + anchor.getReferencePoint().y ;
-			double temp = Math.pow(anchorx - location[0],2) + Math.pow(anchory - location[1],2);
-			if (diff ==0 || temp < diff){
+		for (ConnectionAnchor anchor : inputAnchors) {
+			double anchorx = vertexLocation[0] + anchor.getReferencePoint().x;
+			double anchory = vertexLocation[1] + anchor.getReferencePoint().y;
+			double temp = Math.pow(anchorx - location[0], 2)
+					+ Math.pow(anchory - location[1], 2);
+			if (diff == 0 || temp < diff) {
 				diff = temp;
 				index = inputAnchors.indexOf(anchor);
 			}
 		}
 		return inputAnchors.get(index);
 	}
-	
-	public ConnectionAnchor getOutputAnchor(double[] location,double[] vertexLocation) {
+
+	public ConnectionAnchor getOutputAnchor(double[] location,
+			double[] vertexLocation) {
 		int index = 0;
 		double diff = 0;
-		for (ConnectionAnchor anchor:outputAnchors){
+		for (ConnectionAnchor anchor : outputAnchors) {
 			double anchorx = anchor.getReferencePoint().x + vertexLocation[0];
-			double anchory = anchor.getReferencePoint().y+ vertexLocation[1];
+			double anchory = anchor.getReferencePoint().y + vertexLocation[1];
 
-			double temp = Math.pow(anchorx - location[0],2) + Math.pow(anchory - location[1],2);
-			if (diff ==0 || temp < diff){
+			double temp = Math.pow(anchorx - location[0], 2)
+					+ Math.pow(anchory - location[1], 2);
+			if (diff == 0 || temp < diff) {
 				diff = temp;
 				index = outputAnchors.indexOf(anchor);
 			}
@@ -66,9 +69,9 @@ public class VertexFigure extends AbstractNodeFigure {
 
 		return outputAnchors.get(index);
 	}
-	
+
 	public VertexFigure(String name, Image image) {
-		super(name,false);
+		super(name, false);
 		ToolbarLayout layout = new ToolbarLayout();
 		layout.setVertical(false);
 		setLayoutManager(layout);
@@ -82,29 +85,42 @@ public class VertexFigure extends AbstractNodeFigure {
 		outputPorts = new OutputPorts();
 		add(outputPorts);
 
-		ActorPortFigure inputPortFigure = new ActorPortFigure(VERTEX_INPUT,ANCHOR_WIDTH,ANCHOR_HEIGTH,ColorConstants.black);
+		VertexPortFigure inputPortFigure = new VertexPortFigure(VERTEX_INPUT,
+				ANCHOR_WIDTH, ANCHOR_HEIGTH, ColorConstants.black);
 		inputPortFigure.setToolTip(new Label(VERTEX_INPUT));
-		inputPortFigure.setLocation(new Point(0,0));
-		
-		addAnchor(getSourceConnectionAnchors(),inputAnchors,inputPortFigure,0,ANCHOR_HEIGTH / 2);
-		addAnchor(getSourceConnectionAnchors(),inputAnchors,inputPortFigure,ANCHOR_WIDTH-1,0);
-		addAnchor(getSourceConnectionAnchors(),inputAnchors,inputPortFigure,ANCHOR_WIDTH-1,ANCHOR_HEIGTH - 1);
-		addAnchor(getSourceConnectionAnchors(),inputAnchors,inputPortFigure,2 * ANCHOR_WIDTH,ANCHOR_HEIGTH / 2);
+		inputPortFigure.setLocation(new Point(0, 0));
+
+		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
+				0, ANCHOR_HEIGTH / 2);
+		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
+				ANCHOR_WIDTH - 1, 0);
+		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
+				ANCHOR_WIDTH - 1, ANCHOR_HEIGTH - 1);
+		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
+				2 * ANCHOR_WIDTH, ANCHOR_HEIGTH / 2);
 		inputPorts.add(inputPortFigure);
 
-		ActorPortFigure outputPortFigure = new ActorPortFigure(VERTEX_OUTPUT,ANCHOR_WIDTH,ANCHOR_HEIGTH,ColorConstants.black);
+		VertexPortFigure outputPortFigure = new VertexPortFigure(VERTEX_OUTPUT,
+				ANCHOR_WIDTH, ANCHOR_HEIGTH, ColorConstants.black);
 		inputPortFigure.setToolTip(new Label(VERTEX_OUTPUT));
-		inputPortFigure.setLocation(new Point(0,0));
-		
-		addAnchor(getTargetConnectionAnchors(),outputAnchors,outputPortFigure, ANCHOR_WIDTH - 1,ANCHOR_HEIGTH / 2);
-		addAnchor(getTargetConnectionAnchors(),outputAnchors,outputPortFigure,0,ANCHOR_HEIGTH - 1);
-			addAnchor(getTargetConnectionAnchors(),outputAnchors,outputPortFigure,0,0);
-			addAnchor(getTargetConnectionAnchors(),outputAnchors,outputPortFigure, - ANCHOR_WIDTH + 1,ANCHOR_HEIGTH / 2);
+		inputPortFigure.setLocation(new Point(0, 0));
+
+		addAnchor(getTargetConnectionAnchors(), outputAnchors,
+				outputPortFigure, ANCHOR_WIDTH - 1, ANCHOR_HEIGTH / 2);
+		addAnchor(getTargetConnectionAnchors(), outputAnchors,
+				outputPortFigure, 0, ANCHOR_HEIGTH - 1);
+		addAnchor(getTargetConnectionAnchors(), outputAnchors,
+				outputPortFigure, 0, 0);
+		addAnchor(getTargetConnectionAnchors(), outputAnchors,
+				outputPortFigure, -ANCHOR_WIDTH + 1, ANCHOR_HEIGTH / 2);
 
 		outputPorts.add(outputPortFigure);
 	}
 
-	private FixedConnectionAnchor addAnchor(Vector<ConnectionAnchor> anchorVector ,List<ConnectionAnchor>  inputAnchors,PortFigure inputPortFigure,int offsetH,int offsetV) {
+	private FixedConnectionAnchor addAnchor(
+			Vector<ConnectionAnchor> anchorVector,
+			List<ConnectionAnchor> inputAnchors, PortFigure inputPortFigure,
+			int offsetH, int offsetV) {
 		FixedConnectionAnchor inputAnchor = new FixedConnectionAnchor(
 				inputPortFigure);
 		inputAnchor.offsetV = offsetV;
@@ -113,7 +129,7 @@ public class VertexFigure extends AbstractNodeFigure {
 		inputAnchors.add(inputAnchor);
 		return inputAnchor;
 	}
-	
+
 	private class Ports extends Figure {
 		public Ports() {
 			ToolbarLayout layout = new ToolbarLayout();
