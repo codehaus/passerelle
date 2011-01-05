@@ -56,8 +56,9 @@ public class CommentEditPart extends AbstractNodeEditPart {
 						// Execute the dummy command force a dirty state
 						getViewer().getEditDomain().getCommandStack().execute(
 								new ChangeActorPropertyCommand());
-						((INameable) getComponentFigure()).setName(name);
+						((CommentFigure) getFigure()).setName(name);
 						getFigure().repaint();
+						refresh();
 					}
 				}
 			} else if (SetConstraintCommand.class.equals(type)) {
@@ -65,14 +66,7 @@ public class CommentEditPart extends AbstractNodeEditPart {
 					refresh();
 				}
 			}
-			if (EntityPropertySource.class.equals(type)
-					|| CommentPropertySource.class.equals(type)) {
-				if (source == this.getModel()) {
-					// Execute the dummy command force a dirty state
-					getViewer().getEditDomain().getCommandStack().execute(
-							new ChangeActorPropertyCommand());
-				}
-			} else if (DeleteComponentCommand.class.equals(type)) {
+			if (DeleteComponentCommand.class.equals(type)) {
 				refreshSourceConnections();
 				refreshTargetConnections();
 			}
