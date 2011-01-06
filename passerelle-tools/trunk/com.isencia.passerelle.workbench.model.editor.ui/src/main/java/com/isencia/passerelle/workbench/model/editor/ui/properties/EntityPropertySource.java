@@ -49,15 +49,17 @@ import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 import com.isencia.passerelle.actor.gui.PasserelleConfigurer;
 
 /**
- * This class configures the properties in the PropertiesView when editing a workflow.
+ * This class configures the properties in the PropertiesView when editing a
+ * workflow.
  * 
  * @author unknown
- *
+ * 
  */
 public class EntityPropertySource implements IPropertySource {
-	
-	private static final Logger logger = LoggerFactory.getLogger(EntityPropertySource.class);
-	
+
+	private static final Logger logger = LoggerFactory
+			.getLogger(EntityPropertySource.class);
+
 	private NamedObj entity;
 	private IFigure figure;
 
@@ -67,7 +69,7 @@ public class EntityPropertySource implements IPropertySource {
 		this.figure = figure;
 
 		initializeOptions(entity);
-		
+
 	}
 
 	private void initializeOptions(NamedObj entity) {
@@ -130,17 +132,19 @@ public class EntityPropertySource implements IPropertySource {
 	}
 
 	public Object getPropertyValue(Object id) {
-		AbstractSettableAttribute attribute = (AbstractSettableAttribute) entity.getAttribute((String) id);
+		AbstractSettableAttribute attribute = (AbstractSettableAttribute) entity
+				.getAttribute((String) id);
 		if (attribute instanceof ColorAttribute) {
 			return new org.eclipse.swt.graphics.RGB(0, 10, 10);
-		} else if (hasOptions(attribute) && !(attribute instanceof StringParameter)) {
-			String[] options = ((Parameter)attribute).getChoices();
+		} else if (hasOptions(attribute)
+				&& !(attribute instanceof StringParameter)) {
+			String[] options = ((Parameter) attribute).getChoices();
 			for (int i = 0; i < options.length; i++) {
 				if (options[i].equals(attribute.getExpression()))
 					return i;
 			}
 		} else if (attribute instanceof Parameter) {
-			Parameter parameter = (Parameter)attribute;
+			Parameter parameter = (Parameter) attribute;
 			if (BaseType.INT.equals(parameter.getType())) {
 				return (new Integer(attribute.getExpression()));
 			} else if (BaseType.FLOAT.equals(parameter.getType())) {
@@ -162,8 +166,8 @@ public class EntityPropertySource implements IPropertySource {
 
 	public void setPropertyValue(final Object id, final Object value) {
 		// Perform Change in a ChangeRequest so that all Listeners are notified
-		entity.requestChange(new ModelChangeRequest(this.getClass(),
-				entity, "changeParameter") {
+		entity.requestChange(new ModelChangeRequest(this.getClass(), entity,
+				"changeParameter") {
 			protected void _execute() throws Exception {
 				Attribute attr = entity.getAttribute((String) id);
 				if (attr instanceof Parameter) {
@@ -199,8 +203,7 @@ public class EntityPropertySource implements IPropertySource {
 			}
 
 			private void changeNumberOfPortsOnFigure(final Object value,
-					                                 Parameter attribute, 
-					                                 String oldValue) {
+					Parameter attribute, String oldValue) {
 				try {
 
 					if (!oldValue.equals(value)) {
@@ -269,74 +272,82 @@ public class EntityPropertySource implements IPropertySource {
 		}
 	}
 
-	protected void addPropertyDescriptor(Collection<PropertyDescriptor> descriptors, 
-			                             Attribute parameter,
-			                             Type type) {
-		
+	protected void addPropertyDescriptor(
+			Collection<PropertyDescriptor> descriptors, Attribute parameter,
+			Type type) {
+
 		// TODO Replace this long test with a map.
 		if (parameter instanceof ColorAttribute) {
 			descriptors.add(new ColorPropertyDescriptor(parameter.getName(),
 					parameter.getDisplayName()));
-			
+
 		} else if (parameter instanceof ResourceParameter) {
-			
-			ResourcePropertyDescriptor des = new ResourcePropertyDescriptor((ResourceParameter)parameter);
+
+			ResourcePropertyDescriptor des = new ResourcePropertyDescriptor(
+					(ResourceParameter) parameter);
 			descriptors.add(des);
 
-	    // If we use this parameter, we can sent the file extensions to the editor
-		} else if (parameter instanceof be.isencia.passerelle.util.ptolemy.FileParameter) {
-			
-			FilePickerPropertyDescriptor des = new FilePickerPropertyDescriptor(parameter.getName(), 
-					                                                            parameter.getDisplayName());
-			final be.isencia.passerelle.util.ptolemy.FileParameter fp = (be.isencia.passerelle.util.ptolemy.FileParameter)parameter;
-			des.setFilter(fp.getFilterExtensions());
+			// If we use this parameter, we can sent the file extensions to the
+			// editor
+		} else if (parameter instanceof FileParameter) {
+
+			FilePickerPropertyDescriptor des = new FilePickerPropertyDescriptor(
+					parameter.getName(), parameter.getDisplayName());
+			final FileParameter fp = (FileParameter) parameter;
+			if (parameter instanceof com.isencia.passerelle.util.ptolemy.FileParameter) {
+				des.setFilter(((com.isencia.passerelle.util.ptolemy.FileParameter)fp).getFilterExtensions());
+			}
 
 			try {
-				if (fp.asFile()!=null) des.setCurrentPath(fp.asFile().getParent());
+				if (fp.asFile() != null)
+					des.setCurrentPath(fp.asFile().getParent());
 			} catch (IllegalActionException e) {
 				logger.error("Cannot get file path!", e);
 			}
 			descriptors.add(des);
-			
+
 		} else if (parameter instanceof RegularExpressionParameter) {
-			descriptors.add(new RegularExpressionDescriptor((RegularExpressionParameter)parameter));
+			descriptors.add(new RegularExpressionDescriptor(
+					(RegularExpressionParameter) parameter));
 
 		} else if (parameter instanceof FileParameter) {
-			descriptors.add(new FilePickerPropertyDescriptor(parameter.getName(), parameter.getDisplayName()));
-		
+			descriptors.add(new FilePickerPropertyDescriptor(parameter
+					.getName(), parameter.getDisplayName()));
+
 		} else if (parameter instanceof StringMapParameter) {
-			final StringMapPropertyDescriptor des = new StringMapPropertyDescriptor((StringMapParameter)parameter);
+			final StringMapPropertyDescriptor des = new StringMapPropertyDescriptor(
+					(StringMapParameter) parameter);
 			descriptors.add(des);
-			
+
 		} else if (parameter instanceof StringChoiceParameter) {
-			final StringChoicePropertyDescriptor des = new StringChoicePropertyDescriptor((StringChoiceParameter)parameter);
+			final StringChoicePropertyDescriptor des = new StringChoicePropertyDescriptor(
+					(StringChoiceParameter) parameter);
 			descriptors.add(des);
 
 		} else if (hasOptions(parameter)) {
 			// TODO This does not work unless the choices parse to strings.
 			final String[] choices = ((Parameter) parameter).getChoices();
-			final CComboBoxPropertyDescriptor des = new CComboBoxPropertyDescriptor(parameter.getName(),
-																                    parameter.getDisplayName(), 
-															                        choices);
+			final CComboBoxPropertyDescriptor des = new CComboBoxPropertyDescriptor(
+					parameter.getName(), parameter.getDisplayName(), choices);
 			descriptors.add(des);
-			
+
 		} else if (BaseType.INT.equals(type)) {
 
 			descriptors.add(new IntegerPropertyDescriptor(parameter.getName(),
-					                                      parameter.getDisplayName()));
-			
+					parameter.getDisplayName()));
+
 		} else if (BaseType.FLOAT.equals(type)) {
 
 			descriptors.add(new FloatPropertyDescriptor(parameter.getName(),
-					                                    parameter.getDisplayName()));
+					parameter.getDisplayName()));
 		} else if (BaseType.BOOLEAN.equals(type)) {
 
 			descriptors.add(new CheckboxPropertyDescriptor(parameter.getName(),
-					                                       parameter.getDisplayName()));
+					parameter.getDisplayName()));
 		} else {
 
 			descriptors.add(new TextPropertyDescriptor(parameter.getName(),
-					                                   parameter.getDisplayName()));
+					parameter.getDisplayName()));
 		}
 	}
 
