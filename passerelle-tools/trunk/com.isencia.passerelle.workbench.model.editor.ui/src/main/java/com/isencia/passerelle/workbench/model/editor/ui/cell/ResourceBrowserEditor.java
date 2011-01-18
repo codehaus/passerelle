@@ -57,7 +57,7 @@ public class ResourceBrowserEditor extends DialogCellEditor {
 		IResource value = currentValue;
 		if (isFolder) {
 			IContainer[] folders = WorkspaceResourceDialog.openFolderSelection(PlatformUI.getWorkbench().getDisplay().getActiveShell(), 
-                    "Choose file in workspace", 
+                    "Choose folder in workspace", 
                     "Please choose a folder from the workspace.\nIf your folder is outside please import the file to a project first.\nNote that if you want this node to be a file set the 'Folder' parameter to false.",
                     false,
                     new Object[]{currentValue},

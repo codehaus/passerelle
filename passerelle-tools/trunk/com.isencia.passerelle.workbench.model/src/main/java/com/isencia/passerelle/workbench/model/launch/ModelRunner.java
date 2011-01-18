@@ -62,7 +62,7 @@ public class ModelRunner implements IApplication {
 	 * Sometimes can be called 
 	 * @param modelPath
 	 */
-	public void runModel(final String modelPath, final boolean requireService) {
+	public void runModel(final String modelPath, final boolean separateVM) {
 		
 		start = System.currentTimeMillis();
 		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
@@ -85,7 +85,7 @@ public class ModelRunner implements IApplication {
 				
 				this.manager = new Manager(compositeActor.workspace(), "model");
 				compositeActor.setManager(manager);
-				if (requireService) {
+				if (separateVM) {
 					modelAgent = new RemoteManagerAgent(manager);
 					modelAgent.start();
 				}
@@ -113,6 +113,12 @@ public class ModelRunner implements IApplication {
 
 			stop();
 			System.gc();
+			
+			if (separateVM) {
+				// We have to do this in case daemons are started.
+				// We must exit this vm once the model is finished.
+				System.exit(1);
+			}
 		}
 	}
 

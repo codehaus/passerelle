@@ -64,7 +64,7 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
    protected Request createTargetRequest() {
 	   CreateRequest request = new CreateRequest();
 	   
-	   final Class<? extends NamedObj> clazz = dropFactory.getClassForPath(getFilePath());
+	   final Class<? extends NamedObj> clazz = dropFactory.getClassForPath(getSelected(), getFilePath());
 	   if (clazz == null) return null;
 
 	   final ClassTypeFactory factory = new ClassTypeFactory(clazz, getFileName());
@@ -88,13 +88,8 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 	       return fullPath.substring(workspace.length()+1, fullPath.length()).replace('\\', '/');
 	   
 	   } else {
-		   final ISelection sel = EclipseUtils.getPage().getSelection();
-		   if (!(sel instanceof IStructuredSelection)) return null;
-
-		   final IStructuredSelection ss = (IStructuredSelection) sel;
-		   final Object          element = ss.getFirstElement();
-		   if (element instanceof IResource) {
-			   final IResource   res = (IResource)element;
+		   final IResource res = getSelected();
+		   if (res!=null) {
 			   final String fullPath = res.getRawLocation().toOSString();
 			   isFullPath = res.isLinked() || (res instanceof IFile && res.getParent().isLinked());
 			   isFolder   = res instanceof IContainer;
@@ -109,6 +104,19 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 
 	   return null;
    }
+   
+   private IResource getSelected() {
+	   final ISelection sel = EclipseUtils.getPage().getSelection();
+	   if (!(sel instanceof IStructuredSelection)) return null;
+
+	   final IStructuredSelection ss = (IStructuredSelection) sel;
+	   final Object          element = ss.getFirstElement();
+	   if (element instanceof IResource) {
+		   return (IResource)element;
+	   }
+       return null;
+   }
+   
    private String getFileName() {
 	   final String filePath = getFilePath();
 	   if (filePath==null) return null;
