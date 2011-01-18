@@ -35,12 +35,17 @@ import ptolemy.kernel.util.NameDuplicationException;
  */
 public abstract class Transformer extends Actor {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -159597820654928220L;
+
 	private final static Logger logger = LoggerFactory.getLogger(Transformer.class);
 	
 	/**
 	 * Holds the last received message
 	 */
-	private ManagedMessage message = null;
+	protected ManagedMessage message = null;
 	
 	/** The input port.  This base class imposes no type constraints except
 	 *  that the type of the input cannot be greater than the type of the
