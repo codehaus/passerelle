@@ -35,9 +35,9 @@ import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.moml.Vertex;
+
 import com.isencia.passerelle.core.ControlPort;
 import com.isencia.passerelle.core.ErrorPort;
-
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ActorEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
@@ -45,7 +45,6 @@ import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.PortFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.RectangularActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
-import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
@@ -140,7 +139,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 * @return Figure of this EditPart
 	 */
 	protected IFigure createFigure() {
-		Actor actorModel = getActorModel();
+		Actor actorModel = getActor();
 		ImageDescriptor imageDescriptor = PaletteBuilder.getIcon(actorModel
 				.getClass().getName());
 		if (imageDescriptor == null) {
@@ -274,7 +273,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 * 
 	 * @return Model of this as an Actor.
 	 */
-	protected Actor getActorModel() {
+	public Actor getActor() {
 		return (Actor) getModel();
 	}
 
@@ -411,7 +410,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		getLogger().debug("Get Source port  based on anchor");
 
 		ActorFigure anchorFigure = getComponentFigure();
-		List outputPortList = getActorModel().outputPortList();
+		List outputPortList = getActor().outputPortList();
 		for (Iterator iterator = outputPortList.iterator(); iterator.hasNext();) {
 			Port port = (Port) iterator.next();
 			String connectionAnchorName = anchorFigure
@@ -433,7 +432,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		getLogger().debug("Get Target port  based on anchor");
 
 		ActorFigure anchorFigure = getComponentFigure();
-		List inputPortList = getActorModel().inputPortList();
+		List inputPortList = getActor().inputPortList();
 		for (Iterator iterator = inputPortList.iterator(); iterator.hasNext();) {
 			Port port = (Port) iterator.next();
 			if (port.getName() != null
