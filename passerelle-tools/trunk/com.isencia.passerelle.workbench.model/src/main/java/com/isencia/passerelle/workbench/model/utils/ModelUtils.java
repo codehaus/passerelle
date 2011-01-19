@@ -150,6 +150,10 @@ public class ModelUtils {
 
 	@SuppressWarnings("unchecked")
 	public static double[] getLocation(NamedObj model) {
+		if (model instanceof Locatable){
+			Locatable locationAttribute = (Locatable)model;
+			return locationAttribute.getLocation();
+		}
 		List<Attribute> attributes = model.attributeList(Locatable.class);
 		if (attributes == null || attributes.size() == 0) {
 			return new double[] { 0.0D, 0.0D };
@@ -160,6 +164,17 @@ public class ModelUtils {
 
 	@SuppressWarnings("unchecked")
 	public static void setLocation(NamedObj model, double[] location) {
+		if (model instanceof Locatable){
+			try {
+				((Locatable)model).setLocation(location);
+				NamedObj cont = model.getContainer();
+				cont.attributeChanged((Attribute)model);
+			} catch (IllegalActionException e) {
+				// TODO Auto-generated catch block
+				logger.error("Unable to change location of component", e);
+			}
+			
+		}
 		List<Attribute> attributes = model.attributeList(Locatable.class);
 		if (attributes == null)
 			return;
