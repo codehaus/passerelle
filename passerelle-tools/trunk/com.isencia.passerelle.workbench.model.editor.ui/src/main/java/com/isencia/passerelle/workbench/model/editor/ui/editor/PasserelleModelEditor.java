@@ -38,6 +38,7 @@ import org.eclipse.gef.ui.actions.StackAction;
 import org.eclipse.gef.ui.actions.ToggleGridAction;
 import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
+import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
@@ -50,14 +51,19 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -81,6 +87,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.ExecutionFactory;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.OpenFileAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
@@ -398,7 +405,9 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 	}
 
 	protected void createActions() {
+		
 		super.createActions();
+		
 		ActionRegistry registry = getActionRegistry();
 		IAction action;
 
@@ -474,6 +483,8 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		
 		ExecutionFactory.createWorkflowActions(getEditorSite().getActionBars());
 		
+		registry.registerAction(new OpenFileAction(this));
+
 	}
 
 	protected PasteNodeAction setPasteNodeAction() {
@@ -504,8 +515,38 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		
 		getGraphicalViewer().addDropTargetListener(
 			                   new FileTransferDropTargetListener(getGraphicalViewer()));
+
+		FigureCanvas fc = getEditor();
+		createFigureMenu(fc);
 	}
 	
+	private void createFigureMenu(final FigureCanvas fc) {
+		
+		final ActionRegistry registry = getActionRegistry();
+
+		final MenuManager man = new MenuManager();
+		man.add(registry.getAction(OpenFileAction.ID));
+		man.add(new Separator(getClass().getName()+".separator1"));
+		man.add(registry.getAction(ActionFactory.UNDO.getId()));
+		man.add(registry.getAction(ActionFactory.REDO.getId()));
+		man.add(new Separator(getClass().getName()+".separator2"));
+		man.add(registry.getAction(ActionFactory.COPY.getId()));
+		man.add(registry.getAction(ActionFactory.PASTE.getId()));
+		
+		// For some reason need to refresh action or it does not update
+		// enabled state.
+		fc.addMenuDetectListener(new MenuDetectListener() {		
+			@Override
+			public void menuDetected(MenuDetectEvent e) {
+				((OpenFileAction)registry.getAction(OpenFileAction.ID)).refresh();
+			}
+		});
+		
+		// Send the menu
+		final Menu rightClickMenu = man.createContextMenu(fc);
+		fc.setMenu(rightClickMenu);
+	}
+
 	/**
 	 * By default, this method returns a FlyoutPreferences object that stores
 	 * the flyout settings in the GEF plugin. Sub-classes may override.
