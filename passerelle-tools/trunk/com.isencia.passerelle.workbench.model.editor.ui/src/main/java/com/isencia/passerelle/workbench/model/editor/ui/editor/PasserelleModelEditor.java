@@ -38,7 +38,6 @@ import org.eclipse.gef.ui.actions.StackAction;
 import org.eclipse.gef.ui.actions.ToggleGridAction;
 import org.eclipse.gef.ui.actions.ToggleRulerVisibilityAction;
 import org.eclipse.gef.ui.actions.ToggleSnapToGeometryAction;
-import org.eclipse.gef.ui.actions.WorkbenchPartAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite;
@@ -51,6 +50,7 @@ import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.gef.ui.parts.SelectionSynchronizer;
 import org.eclipse.gef.ui.rulers.RulerComposite;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
@@ -69,6 +69,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.part.IPageSite;
@@ -80,14 +81,14 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 
-import com.isencia.passerelle.workbench.model.editor.ui.CloseEditorAction;
-import com.isencia.passerelle.workbench.model.editor.ui.CopyNodeAction;
-import com.isencia.passerelle.workbench.model.editor.ui.CutNodeAction;
-import com.isencia.passerelle.workbench.model.editor.ui.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CloseEditorAction;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CopyNodeAction;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.ExecutionFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.OpenFileAction;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
@@ -475,15 +476,22 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		registry.registerAction(closeEditorAction);
 		getSelectionActions().add(closeEditorAction.getId());
 	
-
+		final IToolBarManager man = getEditorSite().getActionBars().getToolBarManager();
+		final Separator sep = new Separator(getClass().getName()+".openActions");
+		if (man.find(sep.getId())==null) man.add(sep);
+		registry.registerAction(new OpenFileAction(this, OpenFileAction.ID1));
+		if (man.find(OpenFileAction.ID1)==null) man.add(registry.getAction(OpenFileAction.ID1));
+		getSelectionActions().add(OpenFileAction.ID1);
+		registry.registerAction(new OpenFileAction(this, OpenFileAction.ID2));
+		if (man.find(OpenFileAction.ID2)==null) man.add(registry.getAction(OpenFileAction.ID2));
+		getSelectionActions().add(OpenFileAction.ID2);
+		
 		// TODO Should use plugin extensions for this but for some reason
 		// they are not working.
 		RouterFactory.createRouterActions(getEditorSite().getActionBars());
 		RouterFactory.createConnectionActions(getEditorSite().getActionBars());
 		
 		ExecutionFactory.createWorkflowActions(getEditorSite().getActionBars());
-		
-		registry.registerAction(new OpenFileAction(this));
 
 	}
 
@@ -525,7 +533,8 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		final ActionRegistry registry = getActionRegistry();
 
 		final MenuManager man = new MenuManager();
-		man.add(registry.getAction(OpenFileAction.ID));
+		man.add(registry.getAction(OpenFileAction.ID1));
+		man.add(registry.getAction(OpenFileAction.ID2));
 		man.add(new Separator(getClass().getName()+".separator1"));
 		man.add(registry.getAction(ActionFactory.UNDO.getId()));
 		man.add(registry.getAction(ActionFactory.REDO.getId()));
@@ -533,16 +542,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		man.add(registry.getAction(ActionFactory.COPY.getId()));
 		man.add(registry.getAction(ActionFactory.PASTE.getId()));
 		
-		// For some reason need to refresh action or it does not update
-		// enabled state.
-		fc.addMenuDetectListener(new MenuDetectListener() {		
-			@Override
-			public void menuDetected(MenuDetectEvent e) {
-				((OpenFileAction)registry.getAction(OpenFileAction.ID)).refresh();
-			}
-		});
-		
-		// Send the menu
+		// Send the menu, we overide the menu here that is configured by RCP
 		final Menu rightClickMenu = man.createContextMenu(fc);
 		fc.setMenu(rightClickMenu);
 	}

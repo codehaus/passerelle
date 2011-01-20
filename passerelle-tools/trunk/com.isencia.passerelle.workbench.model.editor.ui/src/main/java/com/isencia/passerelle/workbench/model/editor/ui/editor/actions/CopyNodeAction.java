@@ -1,4 +1,4 @@
-package com.isencia.passerelle.workbench.model.editor.ui;
+package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,14 +7,10 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.editparts.AbstractEditPart;
 import org.eclipse.gef.ui.actions.SelectionAction;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
-
-import ptolemy.actor.IORelation;
-import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
@@ -99,12 +95,6 @@ public class CopyNodeAction extends SelectionAction {
 		if (cmd != null && cmd.canExecute()) {
 			cmd.execute();
 		}
-	}
-
-	@Override
-	protected void setSelection(ISelection selection) {
-		// TODO Auto-generated method stub
-		super.setSelection(selection);
 	}
 
 }

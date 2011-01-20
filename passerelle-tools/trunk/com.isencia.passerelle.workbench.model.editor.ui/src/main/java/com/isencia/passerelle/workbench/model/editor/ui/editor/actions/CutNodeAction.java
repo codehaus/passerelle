@@ -1,4 +1,4 @@
-package com.isencia.passerelle.workbench.model.editor.ui;
+package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 import java.util.Enumeration;
 import java.util.Iterator;

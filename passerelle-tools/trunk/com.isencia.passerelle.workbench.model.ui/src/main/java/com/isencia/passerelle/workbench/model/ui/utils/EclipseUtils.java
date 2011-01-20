@@ -331,18 +331,21 @@ public class EclipseUtils {
 	    return ResourceUtil.getAdapter(sourceObject, adapterType, true);
 	}
 
+	public static IEditorPart openExternalEditor(String filename) throws PartInitException {
+		return EclipseUtils.openExternalEditor(new File(filename));
+	}
 	/**
 	 * Opens an external editor on a file path
 	 * @param filename
 	 * @throws PartInitException
 	 */
-	public static void openExternalEditor(String filename) throws PartInitException {
+	public static IEditorPart openExternalEditor(File filename) throws PartInitException {
 		
 		final IWorkbenchPage page = EclipseUtils.getActivePage();
 		IEditorDescriptor desc = PlatformUI.getWorkbench().
-        getEditorRegistry().getDefaultEditor(filename);
-		final IFileStore externalFile = EFS.getLocalFileSystem().fromLocalFile(new File(filename));
-        page.openEditor(new FileStoreEditorInput(externalFile), desc.getId());
+        getEditorRegistry().getDefaultEditor(filename.getAbsolutePath());
+		final IFileStore externalFile = EFS.getLocalFileSystem().fromLocalFile(filename);
+        return page.openEditor(new FileStoreEditorInput(externalFile), desc.getId());
 	}
 	/**
 	 * Opens an external editor on a file path
