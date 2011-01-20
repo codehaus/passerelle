@@ -87,7 +87,7 @@ public class ResourceBrowserEditor extends DialogCellEditor {
 			return fullPath;
 		} else {
 			try {
-				relative.setToken(new BooleanToken(true));
+				if (relative!=null) relative.setToken(new BooleanToken(true));
 			} catch (IllegalActionException e) {
 				logger.error("Cannot set Relative Path parameter to false",e);
 			}

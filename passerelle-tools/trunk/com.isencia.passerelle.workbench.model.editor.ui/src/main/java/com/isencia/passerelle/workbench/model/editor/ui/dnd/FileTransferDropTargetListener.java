@@ -5,6 +5,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -19,6 +20,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.ui.IContributorResourceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,6 +115,9 @@ public class FileTransferDropTargetListener  extends AbstractTransferDropTargetL
 	   final Object          element = ss.getFirstElement();
 	   if (element instanceof IResource) {
 		   return (IResource)element;
+	   }
+	   if (element instanceof IContributorResourceAdapter) {
+		   return ((IContributorResourceAdapter)element).getAdaptedResource((IAdaptable)element);
 	   }
        return null;
    }

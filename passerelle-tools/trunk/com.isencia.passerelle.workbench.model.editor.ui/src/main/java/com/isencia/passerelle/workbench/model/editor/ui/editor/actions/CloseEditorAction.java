@@ -1,4 +1,4 @@
-package com.isencia.passerelle.workbench.model.editor.ui;
+package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -7,6 +7,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.model.editor.ui.WorkbenchUtility;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 
 public class CloseEditorAction extends SelectionAction {

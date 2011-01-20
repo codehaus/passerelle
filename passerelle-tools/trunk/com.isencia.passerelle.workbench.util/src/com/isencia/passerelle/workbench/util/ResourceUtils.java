@@ -20,6 +20,7 @@ public class ResourceUtils {
 		if (path.endsWith("\"")) {
 			path = path.substring(0,path.length()-1);
 		}
+		if (path==null||"".equals(path)||"\"\"".equals(path)) return null;
 		final IWorkspace space = ResourcesPlugin.getWorkspace();
 		final IResource  ret   = space.getRoot().findMember(path);
 		return ret;
