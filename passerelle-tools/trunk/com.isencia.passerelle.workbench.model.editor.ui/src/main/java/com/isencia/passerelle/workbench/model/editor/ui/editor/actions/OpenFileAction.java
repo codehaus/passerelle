@@ -71,6 +71,7 @@ public class OpenFileAction extends SelectionAction {
 			try {
 				
 				final Object         res      = ob.getResource();
+				EclipseUtils.getActivePage().saveAllEditors(false);
 				
 				// Allows difference actors to open
 				// special editor parts which configure
