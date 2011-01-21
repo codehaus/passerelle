@@ -65,9 +65,13 @@ public class ModelRunner implements IApplication {
 	public void runModel(final String modelPath, final boolean separateVM) {
 		
 		start = System.currentTimeMillis();
+		
+		//TODO Check that path works when model is run... Edna actors currently use 
+		// workspace to get resources.
+		// When run from command line may need to set variable for workspace.
 		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		System.setProperty("eclipse.workspace.home", workspacePath);
-		System.setProperty("be.isencia.home",        workspacePath);
+		System.setProperty("be.isencia.home",        workspacePath);		
 		logger.info("Workspace folder set to: "+workspacePath);
 
 		Reader             reader     = null;
