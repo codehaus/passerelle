@@ -4,7 +4,16 @@ public class ResourceObject {
 
 	private Object resource;
 	private String resourceTypeName;
+	private String editorId;
 	
+	public String getEditorId() {
+		return editorId;
+	}
+
+	public void setEditorId(String editorId) {
+		this.editorId = editorId;
+	}
+
 	public void setResource(Object resource) {
 		this.resource = resource;
 	}

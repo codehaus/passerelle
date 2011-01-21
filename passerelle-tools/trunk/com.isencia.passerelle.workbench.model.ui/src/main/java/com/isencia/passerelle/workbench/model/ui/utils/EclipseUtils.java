@@ -341,12 +341,17 @@ public class EclipseUtils {
 	 */
 	public static IEditorPart openExternalEditor(File filename) throws PartInitException {
 		
-		final IWorkbenchPage page = EclipseUtils.getActivePage();
 		IEditorDescriptor desc = PlatformUI.getWorkbench().
         getEditorRegistry().getDefaultEditor(filename.getAbsolutePath());
+		return openExternalEditor(filename, desc.getId());
+ 	}
+	
+	public static IEditorPart openExternalEditor(File filename, String id) throws PartInitException {
+		final IWorkbenchPage page = EclipseUtils.getActivePage();
 		final IFileStore externalFile = EFS.getLocalFileSystem().fromLocalFile(filename);
-        return page.openEditor(new FileStoreEditorInput(externalFile), desc.getId());
+	    return page.openEditor(new FileStoreEditorInput(externalFile), id);
 	}
+
 	/**
 	 * Opens an external editor on a file path
 	 * @param file
@@ -354,12 +359,15 @@ public class EclipseUtils {
 	 */
 	public static IEditorPart openEditor(IFile file) throws PartInitException {
 		
-		final IWorkbenchPage page = EclipseUtils.getActivePage();
 		IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
         if (desc == null) desc =  PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName()+".txt");
-		return page.openEditor(new FileEditorInput(file), desc.getId());
+	    return openEditor(file, desc.getId());
 	}
-
+	
+	public static IEditorPart openEditor(IFile file, String id) throws PartInitException {
+		final IWorkbenchPage page = EclipseUtils.getActivePage();
+		return page.openEditor(new FileEditorInput(file), id);
+	}
 }
 
 	

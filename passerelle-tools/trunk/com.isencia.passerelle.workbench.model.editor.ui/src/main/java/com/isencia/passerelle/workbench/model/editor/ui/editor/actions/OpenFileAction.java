@@ -65,17 +65,29 @@ public class OpenFileAction extends SelectionAction {
 	
 	public void run() {
 		
-		final IResourceActor resActor = getResourceActor();
+		final IResourceActor resActor = getResourceActor();		    
 		final ResourceObject ob       = getResourceObject();
 		if (ob!=null) {
 			try {
+				
 				final Object         res      = ob.getResource();
 				
+				// Allows difference actors to open
+				// special editor parts which configure
+				// their behavior.
 				IEditorPart part = null;
 				if (res instanceof IFile) {
-					part = EclipseUtils.openEditor((IFile)res);
+					if (ob.getEditorId()!=null) {
+						part = EclipseUtils.openEditor((IFile)res, ob.getEditorId());
+					} else {
+					    part = EclipseUtils.openEditor((IFile)res);
+					}
 				} else if (res instanceof File) {
-					part = EclipseUtils.openExternalEditor((File)res);
+					if (ob.getEditorId()!=null) {
+						part = EclipseUtils.openExternalEditor((File)res, ob.getEditorId());
+					} else {
+				        part = EclipseUtils.openExternalEditor((File)res);
+					}
 				}
 				
 				if (resActor instanceof IPartListenerActor) {
@@ -111,7 +123,11 @@ public class OpenFileAction extends SelectionAction {
 				final Actor         actor= part.getActor();
 				
 				if (actor instanceof IResourceActor) {
-					return (IResourceActor)actor;
+					IResourceActor resActor = (IResourceActor)actor;
+					if (resActor !=null) {
+					    resActor.setMomlResource(EclipseUtils.getIFile(((IEditorPart)getWorkbenchPart()).getEditorInput()));
+					}
+					return resActor;
 				}
 			}
 		}

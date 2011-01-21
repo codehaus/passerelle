@@ -52,6 +52,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -222,6 +223,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 			};
 			addPage(1, textEditor, getEditorInput());
 			setPageText(1, "XML");
+			//setPageImage(1, Activator.getImageDescriptor("icons/xml.png").createImage());
 
 		} catch (PartInitException e) {
 			logger.error("Cannot open passerelle editor "
@@ -242,6 +244,8 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		editor.setIndex(index);
 		setPageText(index, "Workflow");
 		pages.add(0, editor.getDiagram());
+		
+		//setPageImage(0, Activator.getImageDescriptor("icons/workflow.gif").createImage());
 	}
 
 	void removePage(PasserelleModelEditor editor) {
