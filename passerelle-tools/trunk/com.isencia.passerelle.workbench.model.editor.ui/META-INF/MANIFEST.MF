@@ -41,4 +41,5 @@ Import-Package: com.isencia.passerelle.actor.io,
  org.eclipse.gmf.runtime.draw2d.ui.internal.routers,
  org.eclipse.wst.sse.ui,
  org.slf4j
+Bundle-ClassPath: .
 

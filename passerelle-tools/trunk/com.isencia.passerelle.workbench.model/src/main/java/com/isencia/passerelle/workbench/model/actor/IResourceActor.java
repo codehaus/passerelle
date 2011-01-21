@@ -1,5 +1,8 @@
 package com.isencia.passerelle.workbench.model.actor;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+
 
 
 
@@ -16,6 +19,18 @@ package com.isencia.passerelle.workbench.model.actor;
 public interface IResourceActor {
 
 	/**
+	 * This method is called to set the moml file which
+	 * is interacting with the IResourceActor.
+	 * 
+	 * In this way the actor knows which moml file part
+	 * is requesting which of its resources. It is called
+	 * before getResource(...)
+	 * 
+	 * @param iFile
+	 */
+	public void setMomlResource(IResource momlFile);
+
+	/**
 	 * 
 	 * @return
 	 */
@@ -27,6 +42,7 @@ public interface IResourceActor {
 	 * @return
 	 */
 	public ResourceObject getResource(final int iresource);
+
 	
 
 }
