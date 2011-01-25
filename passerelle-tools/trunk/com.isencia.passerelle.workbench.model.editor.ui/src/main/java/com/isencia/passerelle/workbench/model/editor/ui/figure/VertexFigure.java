@@ -21,8 +21,8 @@ public class VertexFigure extends AbstractNodeFigure {
 	public static final String VERTEX_INPUT = "vertexInput";
 	private InputPorts inputPorts = null;
 	private OutputPorts outputPorts = null;
-	public final static int ANCHOR_WIDTH = 18;
-	public final static int ANCHOR_HEIGTH = 23;
+	public final static int ANCHOR_WIDTH = 9;
+	public final static int ANCHOR_HEIGTH = 16;
 	private List<ConnectionAnchor> inputAnchors = new ArrayList<ConnectionAnchor>();
 	private List<ConnectionAnchor> outputAnchors = new ArrayList<ConnectionAnchor>();
 
@@ -93,9 +93,9 @@ public class VertexFigure extends AbstractNodeFigure {
 		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
 				0, ANCHOR_HEIGTH / 2);
 		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
-				ANCHOR_WIDTH - 1, 0);
+				ANCHOR_WIDTH , 0);
 		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
-				ANCHOR_WIDTH - 1, ANCHOR_HEIGTH - 1);
+				ANCHOR_WIDTH, ANCHOR_HEIGTH);
 		addAnchor(getSourceConnectionAnchors(), inputAnchors, inputPortFigure,
 				2 * ANCHOR_WIDTH, ANCHOR_HEIGTH / 2);
 		inputPorts.add(inputPortFigure);

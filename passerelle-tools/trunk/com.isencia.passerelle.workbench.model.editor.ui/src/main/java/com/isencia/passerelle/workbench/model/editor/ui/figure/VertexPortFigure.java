@@ -39,7 +39,7 @@ public class VertexPortFigure extends PortFigure {
 		}
 
 		graphics.fillPolygon(pts);
-		graphics.drawPolyline(pts);
+//		graphics.drawPolyline(pts);
 	}
 
 }
