@@ -11,6 +11,13 @@ import javax.management.StandardMBean;
 
 import ptolemy.actor.Manager;
 
+/**
+ * Service run by the workflow to allow the RCP workbench
+ * to interfact with the service.
+ * 
+ * @author gerring
+ *
+ */
 public class RemoteManager extends StandardMBean implements RemoteManagerMBean {
 
 	private static final String STOP_CODE        = "ptolemy.actor.Manager.stop";

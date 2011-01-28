@@ -1,6 +1,5 @@
 package com.isencia.passerelle.workbench.model.actor;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 
 
