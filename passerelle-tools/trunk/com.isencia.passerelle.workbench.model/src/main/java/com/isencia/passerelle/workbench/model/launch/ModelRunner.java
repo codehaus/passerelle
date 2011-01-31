@@ -84,6 +84,7 @@ public class ModelRunner implements IApplication {
 			} else {
 				logger.info("Running model : " + modelPath);
 				reader = new FileReader(modelPath);
+				MoMLParser.purgeAllModelRecords();
 				MoMLParser moMLParser = new MoMLParser();
 				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
 				
