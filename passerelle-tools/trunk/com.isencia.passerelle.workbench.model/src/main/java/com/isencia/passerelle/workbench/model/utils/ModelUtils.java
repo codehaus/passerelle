@@ -11,10 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Actor;
+import ptolemy.actor.CompositeActor;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.TypedIOPort;
 import ptolemy.kernel.ComponentEntity;
 import ptolemy.kernel.CompositeEntity;
+import ptolemy.kernel.InstantiableNamedObj;
 import ptolemy.kernel.Port;
 import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.Attribute;
@@ -315,6 +317,35 @@ public class ModelUtils {
 			return generateUniquePortName(startName, parentModel, 0);
 		} else {
 			return findUniqueActorName(parentModel, actorName!=null?actorName:clazz.getSimpleName());
+		}
+	}
+
+	/**
+	 * Currently does not do much as toplevel.getEntity(...) does this search.
+	 * @param toplevel
+	 * @param actorName
+	 * @return
+	 */
+	public static ComponentEntity findEntityByName(CompositeActor toplevel, String actorName) {
+		
+		ComponentEntity entity  = toplevel.getEntity(actorName);
+        if (entity != null) return entity;
+        
+		return null;
+	}
+
+	private static void printChildren(InstantiableNamedObj entity) {
+		
+		if (entity==null) return;
+		final List childs = entity.getChildren();
+		if (childs==null) return;
+        for (Object o : childs) {
+			if (o instanceof NamedObj) {
+				System.out.println(((NamedObj)o).getName());
+			}
+			if (o instanceof InstantiableNamedObj) {
+				printChildren((InstantiableNamedObj)o);
+			}
 		}
 	}
 }
