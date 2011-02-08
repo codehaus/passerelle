@@ -85,4 +85,19 @@ public class ResourceParameter extends ptolemy.data.expr.FileParameter {
 	public FileFilter getFilter() {
 		return fileFilter;
 	}
+
+	private int resourceType = 0;
+
+	/**
+	 * Will 
+	 * @return
+	 */
+	public int getResourceType() {
+		return resourceType;
+	}
+
+	public void setResourceType(int resourceType) {
+		this.resourceType = resourceType;
+	}
+	
 }
