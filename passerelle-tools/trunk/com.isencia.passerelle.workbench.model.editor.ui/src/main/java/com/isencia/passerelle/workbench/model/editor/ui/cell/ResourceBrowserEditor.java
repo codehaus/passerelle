@@ -46,7 +46,9 @@ public class ResourceBrowserEditor extends DialogCellEditor {
         final Parameter relative     = (Parameter)actor.getAttribute("Relative Path");
         boolean         isFolder     = false;
         try {
-        	if (folder==null) {
+        	if (param.getResourceType()==IResource.FOLDER){
+           		isFolder = true;
+        	} else if (folder==null) {
         		isFolder = currentValue!=null ? currentValue instanceof IContainer : false;
         	} else {
         		isFolder     = ((BooleanToken)folder.getToken()).booleanValue();
