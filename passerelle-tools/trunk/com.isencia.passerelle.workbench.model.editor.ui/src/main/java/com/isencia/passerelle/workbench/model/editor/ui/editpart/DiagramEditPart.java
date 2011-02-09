@@ -28,7 +28,6 @@ import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
 import org.eclipse.swt.accessibility.AccessibleEvent;
-import org.eclipse.ui.part.MultiPageEditorPart;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.util.ChangeRequest;
@@ -41,8 +40,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.DiagramXYLayo
  * hold the entire model. It is sort of a blank board where all other EditParts
  * get added.
  */
-public class DiagramEditPart extends ContainerEditPart implements
-		LayerConstants {
+public class DiagramEditPart extends ContainerEditPart implements LayerConstants {
 	public CompositeActor getActor() {
 		return actor;
 	}
@@ -123,8 +121,7 @@ public class DiagramEditPart extends ContainerEditPart implements
 					SnapToGeometry.PROPERTY_SNAP_ENABLED);
 			if (val != null && val.booleanValue())
 				snapStrategies.add(new SnapToGeometry(this));
-			val = (Boolean) getViewer().getProperty(
-					SnapToGrid.PROPERTY_GRID_ENABLED);
+			val = (Boolean) getViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED);
 			if (val != null && val.booleanValue())
 				snapStrategies.add(new SnapToGrid(this));
 

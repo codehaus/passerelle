@@ -6,6 +6,7 @@ import org.eclipse.draw2d.ManhattanConnectionRouter;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.ObliqueRouter;
+import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.RectilinearRouter;
 import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.TreeRouter;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.Separator;
@@ -13,8 +14,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
-
-import ptolemy.vergil.toolbox.MenuActionFactory;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
@@ -27,7 +26,7 @@ public class RouterFactory {
 	
 	public enum ROUTER_TYPE {
 		DIRECT(new BendpointConnectionRouter()), 
-		MANHATTAN(new ManhattanConnectionRouter()), 
+		MANHATTAN(new RectilinearRouter()), 
 		TREE(new TreeRouter()), 
 		OBLIQUE(new ObliqueRouter());
 		
