@@ -22,6 +22,8 @@ import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
 import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
+import org.eclipse.gef.SnapToGeometry;
+import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -135,7 +137,6 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 			                     CompositeActor                 model) {
 		this(parent, model);
 		this.container = actor;
-
 	}
 
 	public PasserelleModelEditor(PasserelleModelMultiPageEditor parent,
@@ -395,14 +396,16 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 	}
 
 	protected void initializeGraphicalViewer() {
+		
 		super.initializeGraphicalViewer();
 		getGraphicalViewer().setContents(getDiagram());
 		getGraphicalViewer().addDropTargetListener(
 				new PasserelleTemplateTransferDropTargetListener(
 						getGraphicalViewer()));
-		// getGraphicalViewer().addDropTargetListener((TransferDropTargetListener)
-		// new TextTransferDropTargetListener(
-		// getGraphicalViewer(), TextTransfer.getInstance()));
+		
+		if (getGraphicalViewer().getProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED)==null) {
+			getGraphicalViewer().setProperty(SnapToGeometry.PROPERTY_SNAP_ENABLED, true);
+		}
 	}
 
 	protected void createActions() {

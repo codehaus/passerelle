@@ -1,12 +1,14 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.ManhattanConnectionRouter;
+import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gef.AccessibleEditPart;
+import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPartListener;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.ObliqueRouter;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
@@ -26,11 +28,11 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationEndpo
  * Implements a Relation Editpart to represent a Wire like connection.
  * 
  */
-public class RelationEditPart extends AbstractConnectionEditPart implements ChangeListener {
+public class RelationEditPart extends AbstractConnectionEditPart implements ChangeListener, EditPartListener {
 
 	private static Logger logger = LoggerFactory.getLogger(RelationEditPart.class);
 	
-	public static final Color alive = new Color(Display.getDefault(), 0, 74,
+	private static final Color alive = new Color(Display.getDefault(), 0, 74,
 			168), dead = new Color(Display.getDefault(), 0, 0, 0);
 
 	private AccessibleEditPart acc;
@@ -41,10 +43,16 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 	
 	public void activate() {
 		super.activate();
+		if (getSource()!=null) {
+			getSource().addEditPartListener(this);
+		}
 	}
 
 	public void deactivate() {
 		super.deactivate();
+		if (getSource()!=null) {
+			getSource().removeEditPartListener(this);
+		}
 	}
 
 	public void activateFigure() {
@@ -81,22 +89,9 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 	 */
 	protected IFigure createFigure() {
 		
-		PolylineConnection connection = RouterFactory.getConnection();
-		// Relation channel = getRelation();
+		final PolylineConnection connection = RouterFactory.getConnection();	    
 	    connection.setConnectionRouter(RouterFactory.getRouter());
-		// PolygonDecoration arrow = new PolygonDecoration();
-		// arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
-		// arrow.setScale(5, 2.5);
-		// connection.setTargetDecoration(arrow);
-		/*
-		 * List bendPoints = toBendPoints(channel.getBendPoints());
-		 * BendpointConnectionRouter router = new BendpointConnectionRouter();
-		 * router.setConstraint(connection, bendPoints);
-		 * connection.setConnectionRouter(router); PolygonDecoration arrow = new
-		 * PolygonDecoration();
-		 * arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP); arrow.setScale(5,
-		 * 2.5); connection.setTargetDecoration(arrow);
-		 */
+	    
 		return connection;
 	}
 
@@ -121,25 +116,26 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 		return (Relation) getModel();
 	}
 
-	/**
-	 * Returns the Figure associated with this, which draws the Wire.
-	 * 
-	 * @return Figure of this.
-	 */
-	protected IFigure getWireFigure() {
-		return (PolylineConnection) getFigure();
-	}
 
 	/**
 	 * Refreshes the visual aspects of this, based upon the model (Wire). It
 	 * changes the wire color depending on the state of Wire.
 	 * 
 	 */
-	protected void refreshVisuals() {
-		/*
-		 * if (getWire().getValue()) getWireFigure().setForegroundColor(alive);
-		 * else getWireFigure().setForegroundColor(dead);
-		 */
+	protected void updateSelected() {
+		
+    	final EditPart source = getSource();
+	    if (source!=null) {
+	    	
+	    	final int      sel    = source.getSelected();
+	    	final Polyline line   = (Polyline)getFigure();
+	    	if (sel!=SELECTED_NONE) {
+	    		line.setLineWidth(2);
+
+			} else {
+	    		line.setLineWidth(1);
+			}
+	    }
 	}
 
 	@Override
@@ -150,6 +146,23 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 	@Override
 	public void changeFailed(ChangeRequest change, Exception exception) {
 		getLogger().error("Error executing ChangeRequest",exception);
+	}
+
+	@Override
+	public void childAdded(EditPart child, int index) {}
+
+	@Override
+	public void partActivated(EditPart editpart) { }
+
+	@Override
+	public void partDeactivated(EditPart editpart) { }
+
+	@Override
+	public void removingChild(EditPart child, int index) {}
+
+	@Override
+	public void selectedStateChanged(EditPart editpart) {
+		updateSelected();
 	}
 
 }
