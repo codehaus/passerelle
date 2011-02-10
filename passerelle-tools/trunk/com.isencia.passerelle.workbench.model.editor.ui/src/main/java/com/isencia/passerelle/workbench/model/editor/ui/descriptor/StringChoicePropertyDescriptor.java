@@ -3,11 +3,13 @@ package com.isencia.passerelle.workbench.model.editor.ui.descriptor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -116,6 +118,15 @@ public class StringChoicePropertyDescriptor extends PropertyDescriptor {
 			choiceTable.getTable().setHeaderVisible(false);
 			
 			choiceTable.setUseHashlookup(true);
+			
+			final Map<String,String> visMap = param.getVisibleChoices();
+			if (visMap!=null) {
+				choiceTable.setLabelProvider(new ColumnLabelProvider() {
+					public String getText(Object element) {
+						return visMap.get(element);
+					}
+				});
+			}
 			choiceTable.setContentProvider(new IStructuredContentProvider() {
 
 				@Override

@@ -2,6 +2,7 @@ package com.isencia.passerelle.workbench.model.editor.ui.descriptor;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -64,7 +65,7 @@ public class StringMapPropertyDescriptor extends PropertyDescriptor {
 				
 				final MapDialog dialog = new MapDialog(parent.getShell(), originalMap);
 				dialog.create();
-				dialog.getShell().setSize(400,400);
+				dialog.getShell().setSize(700,400);
 				dialog.getShell().setText("Map values for '"+getDisplayName()+"'");
 				DialogUtils.centerDialog(parent.getShell(), dialog.getShell());
 				final int ok = dialog.open();
@@ -92,7 +93,7 @@ public class StringMapPropertyDescriptor extends PropertyDescriptor {
 		MapDialog(Shell shell, final Map<String,String> originalMap) {
 	        super(shell);
 	        setShellStyle(SWT.MODELESS | SWT.SHELL_TRIM | SWT.BORDER);
-	        map = new HashMap<String,String>(originalMap!=null?originalMap.size():3);
+	        map = new LinkedHashMap<String,String>(originalMap!=null?originalMap.size():3);
 	        if (originalMap!=null) map.putAll(originalMap);
 	    }
 
@@ -104,23 +105,27 @@ public class StringMapPropertyDescriptor extends PropertyDescriptor {
 			mapTable.getTable().setHeaderVisible(true);
 			mapTable.setUseHashlookup(true);	
 			
-			final TableViewerColumn key = new TableViewerColumn(mapTable, SWT.CENTER, 0);
+			final TableViewerColumn key = new TableViewerColumn(mapTable, SWT.LEFT, 0);
 			key.setLabelProvider(new ColumnLabelProvider() {
 				public String getText(Object element) {
-					return ((Map.Entry<String,String>)element).getKey();
+					final String key = ((Map.Entry<String,String>)element).getKey();
+					if (param.getKeyMap()!=null) {
+						return param.getKeyMap().get(key);
+					}
+					return key;
 				}
 			});
 			key.getColumn().setText("Data Name");
-			key.getColumn().setWidth(150);
+			key.getColumn().setWidth(300);
 			
-			final TableViewerColumn value = new TableViewerColumn(mapTable, SWT.RIGHT, 1);
+			final TableViewerColumn value = new TableViewerColumn(mapTable, SWT.LEFT, 1);
 			value.setLabelProvider(new ColumnLabelProvider() {
 				public String getText(Object element) {
 					return ((Map.Entry<String,String>)element).getValue();
 				}
 			});
 			value.getColumn().setText("Variable Name");
-			value.getColumn().setWidth(150);
+			value.getColumn().setWidth(300);
 
 			
 			mapTable.setColumnProperties(new String[]{"key","value"});
