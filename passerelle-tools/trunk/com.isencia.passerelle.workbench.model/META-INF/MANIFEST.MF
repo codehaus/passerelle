@@ -19,6 +19,7 @@ Export-Package: com.isencia.passerelle.workbench.model.activator,
  com.isencia.passerelle.workbench.model.utils
 Bundle-ClassPath: config/,
  .
-Import-Package: org.eclipse.gef,
+Import-Package: org.apache.commons.digester.substitution,
+ org.eclipse.gef,
  org.eclipse.ui.plugin,
  org.slf4j
