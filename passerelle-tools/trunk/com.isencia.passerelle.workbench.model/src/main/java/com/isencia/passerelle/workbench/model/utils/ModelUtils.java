@@ -385,8 +385,6 @@ public class ModelUtils {
 	 * @return
 	 */
 	public static IProject getProject(final Actor actor) {
-
-		logger.debug("Looking for containing folder");
 		
 		// Get top level actor, which knows the project we have.
 		CompositeActor comp = (CompositeActor)actor.getContainer();

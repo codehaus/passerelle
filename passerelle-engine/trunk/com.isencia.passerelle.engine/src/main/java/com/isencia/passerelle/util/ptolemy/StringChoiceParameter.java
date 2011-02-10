@@ -1,6 +1,7 @@
 package com.isencia.passerelle.util.ptolemy;
 
 import java.util.List;
+import java.util.Map;
 
 import ptolemy.data.expr.StringParameter;
 import ptolemy.kernel.util.IllegalActionException;
@@ -32,6 +33,11 @@ public class StringChoiceParameter extends StringParameter {
 			public String[] getChoices() {
 				return choices.toArray(new String[choices.size()]);
 			}
+
+			@Override
+			public Map<String,String> getVisibleChoices() {
+				return null;
+			}
 		}, type);
 	}
 	
@@ -60,6 +66,9 @@ public class StringChoiceParameter extends StringParameter {
 		return availableChoices.getChoices();
 	}
 
+	public Map<String,String> getVisibleChoices() {
+		return availableChoices.getVisibleChoices();
+	}
 	/**
 	 * 
 	 */

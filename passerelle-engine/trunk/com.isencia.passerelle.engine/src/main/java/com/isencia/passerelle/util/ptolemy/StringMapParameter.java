@@ -45,4 +45,7 @@ public class StringMapParameter extends StringParameter {
 	public Map<String, String> getMap() {
 		return choices.getMap();
 	}
+	public Map<String, String> getKeyMap() {
+		return choices.getVisibleKeyChoices();
+	}
 }
