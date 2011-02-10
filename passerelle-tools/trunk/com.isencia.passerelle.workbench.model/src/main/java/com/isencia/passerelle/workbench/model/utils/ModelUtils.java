@@ -3,10 +3,17 @@ package com.isencia.passerelle.workbench.model.utils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.digester.substitution.MultiVariableExpander;
+import org.apache.commons.digester.substitution.VariableSubstitutor;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -347,5 +354,65 @@ public class ModelUtils {
 				printChildren((InstantiableNamedObj)o);
 			}
 		}
+	}
+
+	/**
+	 * This names the parent actor workspace name after the eclipse project being
+	 * used and this is used by actors to determine which eclipse project they are
+	 * executing in.
+	 * 
+	 * @param compositeActor
+	 * @param modelPath
+	 * @throws IllegalActionException
+	 * @throws NameDuplicationException
+	 */
+	public static void setCompositeProjectName(final CompositeActor compositeActor,
+			                                   final String         modelPath) throws IllegalActionException, NameDuplicationException {
+		
+		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+
+		// We must tell the composite actor the containing project name
+		final String relPath = modelPath.substring(workspacePath.length());
+		final IFile  projFile= (IFile)ResourcesPlugin.getWorkspace().getRoot().findMember(relPath);
+		compositeActor.workspace().setName(projFile.getProject().getName());
+	}
+
+	/**
+	 * Attempts to find the project from the top CompositeActor
+	 * by using the workspace name.
+	 * 
+	 * @param actor
+	 * @return
+	 */
+	public static IProject getProject(final Actor actor) {
+
+		logger.debug("Looking for containing folder");
+		
+		// Get top level actor, which knows the project we have.
+		CompositeActor comp = (CompositeActor)actor.getContainer();
+		while(comp.getContainer()!=null) {
+			comp = (CompositeActor)comp.getContainer();
+		}
+		
+		return (IProject)ResourcesPlugin.getWorkspace().getRoot().findMember(comp.workspace().getName());
+	}
+
+	/**
+	 * substutes variables in the string as determined from the actor.
+	 * @param filePath
+	 * @param dataExportTransformer
+	 */
+	public static String substitute(final String sub, final Actor actor) {
+		
+		final Map<String,String> variables = new HashMap<String,String>(3);
+		variables.put("project.name", getProject(actor).getName());
+		variables.put("actor.name",   actor.getName());
+		
+		MultiVariableExpander expander = new MultiVariableExpander( );
+		expander.addSource("$", variables);
+		// Create a substitutor with the expander
+		VariableSubstitutor substitutor = new VariableSubstitutor(expander);
+		
+		return substitutor.substitute(sub);       		
 	}
 }

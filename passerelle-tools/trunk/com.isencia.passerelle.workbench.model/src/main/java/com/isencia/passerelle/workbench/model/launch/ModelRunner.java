@@ -15,6 +15,7 @@ import ptolemy.actor.Manager;
 import ptolemy.moml.MoMLParser;
 
 import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
+import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class ModelRunner implements IApplication {
 	
@@ -84,9 +85,12 @@ public class ModelRunner implements IApplication {
 			} else {
 				logger.info("Running model : " + modelPath);
 				reader = new FileReader(modelPath);
+				
 				MoMLParser.purgeAllModelRecords();
+				MoMLParser.purgeModelRecord(modelPath);
 				MoMLParser moMLParser = new MoMLParser();
 				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
+				ModelUtils.setCompositeProjectName(compositeActor, modelPath);
 				
 				this.manager = new Manager(compositeActor.workspace(), "model");
 				compositeActor.setManager(manager);

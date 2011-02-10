@@ -52,7 +52,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -91,6 +90,7 @@ import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
 import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
 import com.isencia.passerelle.workbench.model.ui.utils.FileUtils;
+import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -101,9 +101,13 @@ import com.isencia.passerelle.workbench.model.ui.utils.FileUtils;
  * <li>page 2 shows the words in page 0 in sorted order
  * </ul>
  */
-public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
-		implements IPasserelleMultiPageEditor, IResourceChangeListener {
+public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implements IPasserelleMultiPageEditor, IResourceChangeListener {
 
+
+	private static Logger logger = LoggerFactory.getLogger(PasserelleModelMultiPageEditor.class);
+	
+	private CompositeActor model = new CompositeActor();
+	protected boolean editorSaving = false;
 	private RefreshCommand RefreshCommand;
 	protected OutlinePage outlinePage;
 
@@ -124,11 +128,6 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		}
 		return RefreshCommand;
 	}
-
-	private static Logger logger = LoggerFactory.getLogger(PasserelleModelMultiPageEditor.class);
-	
-	private CompositeActor model = new CompositeActor();
-	protected boolean editorSaving = false;
 
 	public Object getAdapter(Class type) {
 		if (type == IContentOutlinePage.class) {
@@ -245,7 +244,6 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		setPageText(index, "Workflow");
 		pages.add(0, editor.getDiagram());
 		
-		//setPageImage(0, Activator.getImageDescriptor("icons/workflow.gif").createImage());
 	}
 
 	void removePage(PasserelleModelEditor editor) {
@@ -443,7 +441,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		}
 	}
 
-	public void setDiagram(CompositeActor diagram) {
+	private void setDiagram(CompositeActor diagram) {
 		model = diagram;
 	}
 
@@ -486,9 +484,11 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart
 		try {
 			is = new FileInputStream(file);
 			MoMLParser moMLParser = new MoMLParser();
-			CompositeActor compositeActor = (CompositeActor) moMLParser.parse(
-					null, is);
+			CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, is);
+			ModelUtils.setCompositeProjectName(compositeActor, file.getAbsolutePath());
+			
 			setDiagram(compositeActor);
+			
 		} catch (Exception e) {
 			getLogger().error(
 					"Error during reading/parsing of model file : "
