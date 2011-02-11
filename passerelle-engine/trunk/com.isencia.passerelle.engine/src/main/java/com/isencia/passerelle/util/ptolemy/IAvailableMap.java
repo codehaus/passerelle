@@ -1,5 +1,6 @@
 package com.isencia.passerelle.util.ptolemy;
 
+import java.util.Collection;
 import java.util.Map;
 
 public interface IAvailableMap {
@@ -11,5 +12,12 @@ public interface IAvailableMap {
 	 * @return
 	 */
 	public Map<String,String> getVisibleKeyChoices();
+	
+	/**
+	 * If there are selections made which should be highlighted
+	 * this method can return something non-null.
+	 *
+	 */
+	public Collection<String> getSelectedChoices();
 
 }

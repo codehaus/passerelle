@@ -1,5 +1,6 @@
 package com.isencia.passerelle.util.ptolemy;
 
+import java.util.Collection;
 import java.util.Map;
 
 import ptolemy.data.expr.StringParameter;
@@ -47,5 +48,8 @@ public class StringMapParameter extends StringParameter {
 	}
 	public Map<String, String> getKeyMap() {
 		return choices.getVisibleKeyChoices();
+	}
+	public Collection<String> getSelected() {
+		return choices.getSelectedChoices();
 	}
 }
