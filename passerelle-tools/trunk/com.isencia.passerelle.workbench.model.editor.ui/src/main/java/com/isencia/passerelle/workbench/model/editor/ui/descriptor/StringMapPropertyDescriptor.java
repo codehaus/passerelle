@@ -1,6 +1,5 @@
 package com.isencia.passerelle.workbench.model.editor.ui.descriptor;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -18,6 +17,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -31,6 +32,7 @@ import com.isencia.passerelle.workbench.util.MapUtils;
 
 public class StringMapPropertyDescriptor extends PropertyDescriptor {
 	
+
 	private StringMapParameter param;
 
 	@Override
@@ -103,10 +105,15 @@ public class StringMapPropertyDescriptor extends PropertyDescriptor {
 			mapTable.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
 			mapTable.getTable().setLinesVisible(true);
 			mapTable.getTable().setHeaderVisible(true);
-			mapTable.setUseHashlookup(true);	
+			mapTable.setUseHashlookup(true);
+			
+			final Font     orig = mapTable.getTable().getFont();
+			final FontData[] fd = orig.getFontData();
+			final FontData   fu = new FontData(fd[0].getName(), fd[0].getHeight(), SWT.BOLD);
+			final Font bold = new Font(orig.getDevice(), fu);
 			
 			final TableViewerColumn key = new TableViewerColumn(mapTable, SWT.LEFT, 0);
-			key.setLabelProvider(new ColumnLabelProvider() {
+			key.setLabelProvider(new BoldColumnLabelProvider(bold) {
 				public String getText(Object element) {
 					final String key = ((Map.Entry<String,String>)element).getKey();
 					if (param.getKeyMap()!=null) {
@@ -114,12 +121,13 @@ public class StringMapPropertyDescriptor extends PropertyDescriptor {
 					}
 					return key;
 				}
+
 			});
 			key.getColumn().setText("Data Name");
 			key.getColumn().setWidth(300);
 			
 			final TableViewerColumn value = new TableViewerColumn(mapTable, SWT.LEFT, 1);
-			value.setLabelProvider(new ColumnLabelProvider() {
+			value.setLabelProvider(new BoldColumnLabelProvider(bold) {
 				public String getText(Object element) {
 					return ((Map.Entry<String,String>)element).getValue();
 				}
@@ -188,5 +196,29 @@ public class StringMapPropertyDescriptor extends PropertyDescriptor {
 			return map;
 		}				
 	};
+	
+	public class BoldColumnLabelProvider extends ColumnLabelProvider {
+		
+		private Font bold;
+
+		public BoldColumnLabelProvider(Font bold) {
+			this.bold = bold;
+		}
+
+		public Font getFont(Object element) {
+			if (param.getSelected()!=null) {
+				final String key = ((Map.Entry<String,String>)element).getKey();
+				if (param.getSelected().contains(key)) {
+					return bold;
+				}
+			}
+			return null;
+		}
+
+		public void dispose() {
+			super.dispose();
+			bold.dispose();
+		}
+	}
 
 }
