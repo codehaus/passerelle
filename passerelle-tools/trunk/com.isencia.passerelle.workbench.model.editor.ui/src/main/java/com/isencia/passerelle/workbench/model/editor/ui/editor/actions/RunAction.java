@@ -2,6 +2,7 @@ package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 
 import java.net.URL;
+import java.util.Map;
 
 import javax.management.MBeanServerConnection;
 
@@ -12,8 +13,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.model.IDebugTarget;
+import org.eclipse.debug.core.model.IExpression;
+import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
@@ -30,6 +35,17 @@ import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
 import com.isencia.passerelle.workbench.model.launch.ModelRunner;
 import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
 
+/**
+ * This action is run on the workbench and starts the workflow.
+ * 
+ * The workflow notifies with a jmx service whose port is defined by
+ * the system property "com.isencia.jmx.service.port" before the action
+ * is run. It is variable as the workbench will attempt to find a free port
+ * for it to connect to the worklow.
+ * 
+ * @author gerring
+ *
+ */
 @SuppressWarnings("restriction")
 public class RunAction extends ExecutionAction implements IEditorActionDelegate {
 
@@ -61,7 +77,7 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 			final IResource sel = getSelectedResource();
 			if (sel instanceof IFile)  EclipseUtils.openEditor((IFile)sel);
 			
-			if (System.getProperty("eclipse.debug.session")!=null) {
+            if (System.getProperty("eclipse.debug.session")!=null) {
 				final Job job = new Job("Run workflow debug mode") {
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
@@ -77,7 +93,9 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 				refreshToolbars();
 				
 			} else { // Normally the case in real application
-				ILaunchConfiguration configuration = DebugPlugin.getDefault().getLaunchManager().getLaunchConfiguration(config);
+				// TODO Find way of sending port, addSystemProperty not working
+				WorkflowLaunchConfiguration configuration = new WorkflowLaunchConfiguration(config);
+				configuration.addSystemProperty("com.isencia.jmx.service.port");
 				DebugUITools.launch(configuration, ILaunchManager.RUN_MODE);
 				createModelListener();
 			}

@@ -86,19 +86,37 @@ public class ModelRunner implements IApplication {
 				logger.info("Running model : " + modelPath);
 				reader = new FileReader(modelPath);
 				
+				// In debug mode the same model can be run in the
+				// same VM several times. We purge before running for this reason.
 				MoMLParser.purgeAllModelRecords();
 				MoMLParser.purgeModelRecord(modelPath);
+				
 				MoMLParser moMLParser = new MoMLParser();
 				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
+				
+				// The workspace is named after the RCP project. This enables actors
+				// running to determine which RCP project they are associated with and
+				// if they need to create folders or files, where to do that. For instance
+				// edna nodes have no end of auxiliary files which the user may need access to.
 				ModelUtils.setCompositeProjectName(compositeActor, modelPath);
 				
 				this.manager = new Manager(compositeActor.workspace(), "model");
 				compositeActor.setManager(manager);
-				if (separateVM) {
+				
+				// The manager JMX service is used to control the workflow from 
+				// the RCP workspace. This starts the registry on a port and has two
+				// JMX objects in the registry, one for calling method on the workbench 
+				// from actors and one for giving access to controlling the workflow.
+				// If this has been set up the property "com.isencia.jmx.service.port"
+				// will have been set to the free port being used. Otherwise the workflow
+				// service will not be added to the registry.
+				logger.debug("The jmx port is set to : '"+System.getProperty("com.isencia.jmx.service.port")+"'");
+				if (separateVM && System.getProperty("com.isencia.jmx.service.port")!=null) {
 					modelAgent = new RemoteManagerAgent(manager);
 					modelAgent.start();
 				}
-				manager.execute(); // Blocks
+				
+				manager.execute(); // Blocks until done
 				
 			}
 		} catch (IllegalArgumentException illegalArgumentException) { 
