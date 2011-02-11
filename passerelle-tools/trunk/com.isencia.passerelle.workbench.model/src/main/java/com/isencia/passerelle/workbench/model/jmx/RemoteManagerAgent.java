@@ -1,9 +1,6 @@
 package com.isencia.passerelle.workbench.model.jmx;
 
 import java.lang.management.ManagementFactory;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -19,28 +16,32 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.Manager;
 
-import com.isencia.passerelle.workbench.model.activator.Activator;
-import com.isencia.passerelle.workbench.model.activator.PreferenceConstants;
-
 public class RemoteManagerAgent {
 
 	public static       ObjectName    REMOTE_MANAGER;
 	
 	private static Logger logger = LoggerFactory.getLogger(RemoteManagerAgent.class);
-	private static JMXServiceURL serverUrl;
 	static {
 		try {
-			serverUrl      = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+getPort()+"/server");
 			REMOTE_MANAGER = new ObjectName(RemoteManager.class.getPackage().getName()+":type=RemoteManager");
 		} catch (Exception e) {
 			logger.error("Cannot create ObjectName for remotemanager", e);
 		}
 	}
 
-	private RemoteManagerMBean remoteManager;
+	private final RemoteManagerMBean remoteManager;
+	private final JMXServiceURL      serverUrl;
 	
+	/**
+	 * There must be a regostry started on port before using this class.
+	 * @param manager
+	 * @param port
+	 * @throws Exception
+	 */
 	public RemoteManagerAgent(final Manager manager) throws Exception {
 		this.remoteManager = new RemoteManager(manager);
+		final int port     = Integer.parseInt(System.getProperty("com.isencia.jmx.service.port"));
+		this.serverUrl     = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+port+"/workflow");
 	}
 	
 	/**
@@ -52,7 +53,6 @@ public class RemoteManagerAgent {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		
 		try {
-			RemoteManagerAgent.createRegistry();
 			
 			// Uniquely identify the MBeans and register them with the MBeanServer 
 		    try {
@@ -68,6 +68,8 @@ public class RemoteManagerAgent {
 			JMXConnectorServer cs = JMXConnectorServerFactory.newJMXConnectorServer(serverUrl, null, mbs);
 			cs.start();
 			
+			logger.debug("Workflow service started on "+serverUrl);
+
 		} catch(Exception e) {
 			logger.error("Cannot connect manager agent to provide rmi access to ptolomy manager", e);
 		}
@@ -86,8 +88,22 @@ public class RemoteManagerAgent {
 
 	}
 
+	/**
+	 * The system property "com.isencia.jmx.service.port" should have been set
+	 * by the workbench activator before this is called.
+	 * 
+	 * There must be a registry started on this port and defined with "com.isencia.jmx.service.port"
+	 * 
+	 * @param timeout
+	 * @return
+	 * @throws Exception
+	 */
 	public static MBeanServerConnection getServerConnection(final long timeout) throws Exception {
 
+		if (System.getProperty("com.isencia.jmx.service.port")==null) {
+			throw new Exception("You must start the registry before calling this method and set the property 'com.isencia.jmx.service.port'");
+		}
+		
 		long                  waited = 0;
 		MBeanServerConnection server = null;
 		
@@ -95,7 +111,8 @@ public class RemoteManagerAgent {
 			
 			waited+=100;
 			try {
-				
+				final int     port          = Integer.parseInt(System.getProperty("com.isencia.jmx.service.port"));
+				JMXServiceURL serverUrl     = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+port+"/workflow");
 				JMXConnector  conn = JMXConnectorFactory.connect(serverUrl);
 				server             = conn.getMBeanServerConnection();
                 if (server == null) throw new NullPointerException("MBeanServerConnection is null");
@@ -112,40 +129,4 @@ public class RemoteManagerAgent {
 		}
 		return server;
 	}
-
-	private static Registry getRegistry() {
-		
-		Registry registry = null;
-		try {
-			registry = LocateRegistry.getRegistry(getPort());
-		} catch (RemoteException e) {
-			logger.error("Cannot locate registry", e);
-		}
-		return registry;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	private static void createRegistry() {
-		
-		try {
-			if (getRegistry()!=null) {
-				LocateRegistry.createRegistry(getPort());
-			}
-		} catch (RemoteException e) {
-			logger.error("Cannot start registry", e);
-		}
-	}
-
-	private static int getPort() {
-		
-		if (System.getProperty("port")!=null) {
-			return Integer.parseInt(System.getProperty("port"));
-		}
-		
-		return Activator.getDefault().getPreferenceStore().getInt(PreferenceConstants.REMOTE_MANAGER_PORT);
-	}
-
 }

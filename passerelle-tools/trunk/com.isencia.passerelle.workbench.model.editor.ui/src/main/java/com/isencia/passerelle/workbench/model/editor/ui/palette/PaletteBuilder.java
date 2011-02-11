@@ -30,8 +30,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 
 public class PaletteBuilder {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(PaletteBuilder.class);
+	private static Logger logger = LoggerFactory.getLogger(PaletteBuilder.class);
 
 	public final static String PALETTE_CONTAINER_GENERAL = "General";
 	private static Map<String, ImageDescriptor> actorIconMap = new HashMap<String, ImageDescriptor>();
@@ -62,6 +61,8 @@ public class PaletteBuilder {
 				for (IConfigurationElement configurationElement : config) {
 					String nameAttribute = configurationElement
 							.getAttribute("name");
+					logger.debug("Found category "+nameAttribute+" from "+configurationElement);
+					
 					String iconAttribute = configurationElement
 							.getAttribute("icon");
 					String idAttribute = configurationElement
@@ -87,9 +88,9 @@ public class PaletteBuilder {
 							: false;
 
 					if (!paletteContainers.containsKey(nameAttribute)) {
-						PaletteContainer paletteContainer = createPaletteContainer(
-								nameAttribute, des, paletteOpen);
+						PaletteContainer paletteContainer = createPaletteContainer(nameAttribute, des, paletteOpen);
 						paletteContainers.put(idAttribute, paletteContainer);
+						logger.debug("Created category "+nameAttribute);
 						categories.add(paletteContainer);
 					}
 				}
@@ -107,6 +108,8 @@ public class PaletteBuilder {
 				for (IConfigurationElement configurationElement : config) {
 					String nameAttribute = configurationElement
 							.getAttribute("name");
+					logger.debug("Found actor "+nameAttribute+" from "+configurationElement.getAttribute("id"));
+
 					String groupAttribute = configurationElement
 							.getAttribute("group");
 					String iconAttribute = configurationElement
@@ -139,9 +142,10 @@ public class PaletteBuilder {
 								imageDescriptor//$NON-NLS-1$
 						);
 
-						PaletteContainer paletteContainer = paletteContainers
-								.get(groupAttribute);
+						PaletteContainer paletteContainer = paletteContainers.get(groupAttribute);
+
 						if (paletteContainer != null) {
+							logger.debug("Adding actor "+nameAttribute+" to "+paletteContainer.getId());
 							paletteContainer.add(entry);
 						} else {
 							PaletteContainer defaultPaletteContainer = paletteContainers
@@ -151,6 +155,7 @@ public class PaletteBuilder {
 										"", null, false);
 								categories.add(defaultPaletteContainer);
 							}
+							logger.debug("Adding actor "+nameAttribute+" to "+defaultPaletteContainer.getId());
 							defaultPaletteContainer.add(entry);
 						}
 					}
@@ -163,9 +168,8 @@ public class PaletteBuilder {
 		return categories;
 	}
 
-	private static Class<?> loadClass(
-			final IConfigurationElement configurationElement,
-			final String bundleId) {
+	private static Class<?> loadClass(final IConfigurationElement configurationElement,
+			                          final String                bundleId) {
 
 		final Bundle bundle = Platform.getBundle(bundleId);
 		try {
@@ -175,14 +179,11 @@ public class PaletteBuilder {
 			// It might be loadable from the core actors plugin
 			// This allows people to create and populate the palette from
 			// core paserelle classes.
-			final Bundle actors = Platform
-					.getBundle("com.isencia.passerelle.actor");
+			final Bundle actors = Platform.getBundle("com.isencia.passerelle.actor");
 			try {
-				return actors.loadClass(configurationElement
-						.getAttribute("class"));
+				return actors.loadClass(configurationElement.getAttribute("class"));
 			} catch (Exception e1) {
-				logger.error("Cannot load class "
-						+ configurationElement.getAttribute("class"), e1);
+				logger.error("Cannot load class "+ configurationElement.getAttribute("class"), e1);
 				return null;
 			}
 		}
