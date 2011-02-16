@@ -6,6 +6,7 @@ import java.rmi.registry.Registry;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
+import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -31,8 +32,8 @@ public class RemoteManagerAgent {
 		}
 	}
 
-	private final RemoteManagerMBean remoteManager;
-	private final JMXServiceURL      serverUrl;
+	private       RemoteManager remoteManager;
+	private final JMXServiceURL serverUrl;
 	
 	/**
 	 * There must be a regostry started on port before using this class.
@@ -49,8 +50,9 @@ public class RemoteManagerAgent {
 	/**
 	 * Call this method to start the agent which will deploy the
 	 * service on JMX.
+	 * @throws Exception 
 	 */
-	public void start() {
+	public void start() throws Exception {
 
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		
@@ -71,6 +73,7 @@ public class RemoteManagerAgent {
 
 		} catch(Exception e) {
 			logger.error("Cannot connect manager agent to provide rmi access to ptolomy manager", e);
+			throw e;
 		}
 	}
 	
@@ -78,18 +81,31 @@ public class RemoteManagerAgent {
 		stop(true);
 	}
 
-	protected void stop(boolean requireException) {
+	protected void stop(boolean external) {
+		
+		if (external) {
+			if (remoteManager!=null) {
+				remoteManager.sendNotification(RemoteManager.STOP_CODE);
+			}
+			remoteManager = null;
+		}
+		
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+	    try {
+	    	ObjectInstance inst = mbs.getObjectInstance(REMOTE_MANAGER);
+		    if (inst!=null) {
+		    	mbs.unregisterMBean(REMOTE_MANAGER);
+		    }
+	    } catch (Exception w) {
+	    	if (external) logger.error("Cannot unregisterMBean "+REMOTE_MANAGER, w);
+	    }
 	    try {
 			final Registry reg = LocateRegistry.getRegistry(Integer.parseInt(System.getProperty("com.isencia.jmx.service.port")));
 			if (reg.lookup("workflow") != null) {
 				reg.unbind("workflow");
 			}
-		    if (mbs.getObjectInstance(REMOTE_MANAGER)!=null) {
-		    	mbs.unregisterMBean(REMOTE_MANAGER);
-		    }
 	    } catch (Exception w) {
-	    	if (requireException) logger.error("Cannot unregisterMBean "+REMOTE_MANAGER, w);
+	    	if (external) logger.error("Cannot unregisterMBean "+REMOTE_MANAGER, w);
 	    }
 	}
 

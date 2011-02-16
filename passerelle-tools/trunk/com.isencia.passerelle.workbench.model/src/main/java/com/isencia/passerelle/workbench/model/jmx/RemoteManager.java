@@ -20,9 +20,9 @@ import ptolemy.actor.Manager;
  */
 public class RemoteManager extends StandardMBean implements RemoteManagerMBean {
 
-	private static final String STOP_CODE        = "ptolemy.actor.Manager.stop";
-	private static final String PAUSE_CODE       = "ptolemy.actor.Manager.pause";
-	private static final String PAUSE_BREAK_CODE = "ptolemy.actor.Manager.pauseOnBreakpoint";
+	protected static final String STOP_CODE        = "ptolemy.actor.Manager.stop";
+	protected static final String PAUSE_CODE       = "ptolemy.actor.Manager.pause";
+	protected static final String PAUSE_BREAK_CODE = "ptolemy.actor.Manager.pauseOnBreakpoint";
 	
 	public RemoteManager(final Manager manager) throws NotCompliantMBeanException {
 		super(RemoteManagerMBean.class);
@@ -48,11 +48,11 @@ public class RemoteManager extends StandardMBean implements RemoteManagerMBean {
 		}
 	}
 	
-	private void sendNotification(String code) {
+	protected void sendNotification(String code) {
 		this.sendNotification(code, null);
 	}
 	
-	private void sendNotification(String code, Object userObject) {
+	protected void sendNotification(String code, Object userObject) {
 		if (generalBroadcaster!= null) {
 			final Notification notification = new Notification(code, this, -1);
 			notification.setUserData(userObject);
