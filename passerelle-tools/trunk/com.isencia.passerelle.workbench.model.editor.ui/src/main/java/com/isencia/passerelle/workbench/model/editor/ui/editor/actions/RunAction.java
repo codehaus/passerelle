@@ -2,7 +2,6 @@ package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 
 import java.net.URL;
-import java.util.Map;
 
 import javax.management.MBeanServerConnection;
 
@@ -12,13 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.model.IDebugTarget;
-import org.eclipse.debug.core.model.IExpression;
-import org.eclipse.debug.core.model.IValue;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;

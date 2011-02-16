@@ -1,6 +1,8 @@
 package com.isencia.passerelle.workbench.model.jmx;
 
 import java.lang.management.ManagementFactory;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerConnection;
@@ -53,12 +55,9 @@ public class RemoteManagerAgent {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 		
 		try {
-			
 			// Uniquely identify the MBeans and register them with the MBeanServer 
 		    try {
-			    if (mbs.getObjectInstance(REMOTE_MANAGER)!=null) {
-			    	mbs.unregisterMBean(REMOTE_MANAGER);
-			    }
+			    stop(false);
 		    } catch (Exception ignored) {
 		    	// Throws exception not returns null, so ignore.
 		    }
@@ -75,17 +74,23 @@ public class RemoteManagerAgent {
 		}
 	}
 	
-
 	public void stop() {
+		stop(true);
+	}
+
+	protected void stop(boolean requireException) {
 		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 	    try {
+			final Registry reg = LocateRegistry.getRegistry(Integer.parseInt(System.getProperty("com.isencia.jmx.service.port")));
+			if (reg.lookup("workflow") != null) {
+				reg.unbind("workflow");
+			}
 		    if (mbs.getObjectInstance(REMOTE_MANAGER)!=null) {
 		    	mbs.unregisterMBean(REMOTE_MANAGER);
 		    }
 	    } catch (Exception w) {
-	    	logger.error("Cannot unregisterMBean "+REMOTE_MANAGER, w);
+	    	if (requireException) logger.error("Cannot unregisterMBean "+REMOTE_MANAGER, w);
 	    }
-
 	}
 
 	/**
