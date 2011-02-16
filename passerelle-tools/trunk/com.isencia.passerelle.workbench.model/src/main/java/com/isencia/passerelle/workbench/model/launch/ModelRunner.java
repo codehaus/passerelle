@@ -111,7 +111,7 @@ public class ModelRunner implements IApplication {
 				// will have been set to the free port being used. Otherwise the workflow
 				// service will not be added to the registry.
 				logger.debug("The jmx port is set to : '"+System.getProperty("com.isencia.jmx.service.port")+"'");
-				if (separateVM && System.getProperty("com.isencia.jmx.service.port")!=null) {
+				if (System.getProperty("com.isencia.jmx.service.port")!=null) {
 					modelAgent = new RemoteManagerAgent(manager);
 					modelAgent.start();
 				}

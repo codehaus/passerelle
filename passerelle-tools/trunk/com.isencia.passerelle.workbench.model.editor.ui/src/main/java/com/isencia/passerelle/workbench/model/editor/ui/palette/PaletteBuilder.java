@@ -61,7 +61,7 @@ public class PaletteBuilder {
 				for (IConfigurationElement configurationElement : config) {
 					String nameAttribute = configurationElement
 							.getAttribute("name");
-					logger.debug("Found category "+nameAttribute+" from "+configurationElement);
+					logger.info("Found category "+nameAttribute+" from "+configurationElement);
 					
 					String iconAttribute = configurationElement
 							.getAttribute("icon");
@@ -90,7 +90,7 @@ public class PaletteBuilder {
 					if (!paletteContainers.containsKey(nameAttribute)) {
 						PaletteContainer paletteContainer = createPaletteContainer(nameAttribute, des, paletteOpen);
 						paletteContainers.put(idAttribute, paletteContainer);
-						logger.debug("Created category "+nameAttribute);
+						logger.info("Created category "+nameAttribute);
 						categories.add(paletteContainer);
 					}
 				}
@@ -108,7 +108,7 @@ public class PaletteBuilder {
 				for (IConfigurationElement configurationElement : config) {
 					String nameAttribute = configurationElement
 							.getAttribute("name");
-					logger.debug("Found actor "+nameAttribute+" from "+configurationElement.getAttribute("id"));
+					logger.info("Found actor "+nameAttribute+" from "+configurationElement.getAttribute("id"));
 
 					String groupAttribute = configurationElement
 							.getAttribute("group");
@@ -145,7 +145,7 @@ public class PaletteBuilder {
 						PaletteContainer paletteContainer = paletteContainers.get(groupAttribute);
 
 						if (paletteContainer != null) {
-							logger.debug("Adding actor "+nameAttribute+" to "+paletteContainer.getId());
+							logger.info("Adding actor "+nameAttribute+" to "+paletteContainer.getId());
 							paletteContainer.add(entry);
 						} else {
 							PaletteContainer defaultPaletteContainer = paletteContainers
@@ -155,7 +155,7 @@ public class PaletteBuilder {
 										"", null, false);
 								categories.add(defaultPaletteContainer);
 							}
-							logger.debug("Adding actor "+nameAttribute+" to "+defaultPaletteContainer.getId());
+							logger.info("Adding actor "+nameAttribute+" to "+defaultPaletteContainer.getId());
 							defaultPaletteContainer.add(entry);
 						}
 					}

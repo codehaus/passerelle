@@ -2,12 +2,11 @@ package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -45,21 +44,62 @@ public class WorkflowLaunchConfiguration extends LaunchConfiguration {
         }
 	}
 	
-	protected void setPropertes(ILaunch launch) {
+	public String getAttribute(String attributeName, String defaultValue) throws CoreException {
 		
-		final String vmArgs = launch.getAttribute("org.eclipse.jdt.launching.VM_ARGUMENTS");
-		logger.debug("Launch vmArgs is: "+vmArgs);
-		final StringBuilder buf = new StringBuilder();
-		if (vmArgs!=null) buf.append(vmArgs);
-		if (systemProperties!=null) for (String name : systemProperties.keySet()) {
-			buf.append("-D");
-			buf.append(name);
-			buf.append("=");
-			buf.append(systemProperties.get(name));
-			buf.append(" ");
+		if ("org.eclipse.jdt.launching.VM_ARGUMENTS".equals(attributeName)) {
+			
+			final String vmArgs = super.getAttribute("org.eclipse.jdt.launching.VM_ARGUMENTS", (String)null);
+			logger.debug("Launch vmArgs is: "+vmArgs);
+			final StringBuilder buf = new StringBuilder();
+			if (vmArgs!=null) buf.append(vmArgs);
+			if (systemProperties!=null) for (String name : systemProperties.keySet()) {
+				buf.append(" -D");
+				buf.append(name);
+				buf.append("=");
+				buf.append(systemProperties.get(name));
+				buf.append(" ");
+			}
+			logger.debug("Changed vmArgs are: "+buf.toString());
+			return buf.toString();
+		} else {
+			return super.getAttribute(attributeName, defaultValue);
 		}
-		logger.debug("Changed vmArgs are: "+buf.toString());
-		launch.setAttribute(vmArgs, buf.toString());
+	}
+	
+	public List getAttribute(String attributeName, List defaultValue) throws CoreException {
+		
+		if ("org.eclipse.jdt.launching.VM_ARGUMENTS".equals(attributeName)) {
+			
+			final List vmArgs = super.getAttribute("org.eclipse.jdt.launching.VM_ARGUMENTS", (List)null);
+			logger.debug("Launch vmArgs is: "+vmArgs);
+			final StringBuilder buf = new StringBuilder();
+			if (systemProperties!=null) for (String name : systemProperties.keySet()) {
+				buf.append(" -D");
+				buf.append(name);
+				buf.append("=");
+				buf.append(systemProperties.get(name));
+				vmArgs.add(buf.toString());
+				buf.delete(0, buf.length());
+			}
+			logger.debug("Changed vmArgs are: "+buf.toString());
+			return vmArgs;
+		} else {
+			return super.getAttribute(attributeName, defaultValue);
+		}
+	}
+
+	public Map getAttribute(String attributeName, Map defaultValue) throws CoreException {
+		
+		if ("org.eclipse.jdt.launching.VM_ARGUMENTS".equals(attributeName)) {
+			
+			final Map vmArgs = super.getAttribute("org.eclipse.jdt.launching.VM_ARGUMENTS", (Map)null);
+			logger.debug("Launch vmArgs is: "+vmArgs);
+			vmArgs.putAll(systemProperties);
+			logger.debug("Changed vmArgs are: "+vmArgs);
+			return vmArgs;
+		} else {
+			return super.getAttribute(attributeName, defaultValue);
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -80,8 +120,7 @@ public class WorkflowLaunchConfiguration extends LaunchConfiguration {
     	 * - Launch delegate (10) */
     	if (build) {
     		monitor.beginTask("", 23); //$NON-NLS-1$
-    	}
-    	else {
+    	} else {
     		monitor.beginTask("", 13); //$NON-NLS-1$
     	}
 		monitor.subTask(DebugCoreMessages.LaunchConfiguration_9);
@@ -166,29 +205,29 @@ public class WorkflowLaunchConfiguration extends LaunchConfiguration {
 			monitor.subTask(DebugCoreMessages.LaunchConfiguration_8);
 			
 			if (delegate2 != null) {
-				if (!(delegate2.preLaunchCheck(this, mode, new SubProgressMonitor(monitor, 1)))) {
-					return launch;
-				}
+//				if (!(delegate2.preLaunchCheck(this, mode, new SubProgressMonitor(monitor, 1)))) {
+//					return launch;
+//				}
 			}
 			else {
 				monitor.worked(1); /* No pre-launch-check */
 			}
-		// perform pre-launch build
-			if (build) {
-				IProgressMonitor buildMonitor = new SubProgressMonitor(monitor, 10, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
-				buildMonitor.beginTask(DebugCoreMessages.LaunchConfiguration_7, 10);			
-				buildMonitor.subTask(DebugCoreMessages.LaunchConfiguration_6);
-				if (delegate2 != null) {
-					build = delegate2.buildForLaunch(this, mode, new SubProgressMonitor(buildMonitor, 7));
-				}
-				if (build) {
-					buildMonitor.subTask(DebugCoreMessages.LaunchConfiguration_5);
-					ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new SubProgressMonitor(buildMonitor, 3));				
-				}
-				else {
-					buildMonitor.worked(3); /* No incremental build required */
-				}
-			}
+// NO NEED TO BUILD MOML
+//			if (build) {
+//				IProgressMonitor buildMonitor = new SubProgressMonitor(monitor, 10, SubProgressMonitor.PREPEND_MAIN_LABEL_TO_SUBTASK);
+//				buildMonitor.beginTask(DebugCoreMessages.LaunchConfiguration_7, 10);			
+//				buildMonitor.subTask(DebugCoreMessages.LaunchConfiguration_6);
+//				if (delegate2 != null) {
+//					build = delegate2.buildForLaunch(this, mode, new SubProgressMonitor(buildMonitor, 7));
+//				}
+//				if (build) {
+//					buildMonitor.subTask(DebugCoreMessages.LaunchConfiguration_5);
+//					ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, new SubProgressMonitor(buildMonitor, 3));				
+//				}
+//				else {
+//					buildMonitor.worked(3); /* No incremental build required */
+//				}
+//			}
 		// final validation
 			monitor.subTask(DebugCoreMessages.LaunchConfiguration_4);
 			if (delegate2 != null) {
@@ -200,7 +239,6 @@ public class WorkflowLaunchConfiguration extends LaunchConfiguration {
 				monitor.worked(1); /* No validation */
 			}
 			
-			setPropertes(launch);
 			if (register) {
 			    getLaunchManager().addLaunch(launch);
 			}
