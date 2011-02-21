@@ -27,12 +27,11 @@ import ptolemy.kernel.util.NamedObj;
 import ptolemy.kernel.util.StringAttribute;
 
 import com.isencia.passerelle.actor.Actor;
+import com.isencia.passerelle.actor.gui.PasserelleConfigurer;
 import com.isencia.passerelle.util.ptolemy.RegularExpressionParameter;
 import com.isencia.passerelle.util.ptolemy.ResourceParameter;
 import com.isencia.passerelle.util.ptolemy.StringChoiceParameter;
 import com.isencia.passerelle.util.ptolemy.StringMapParameter;
-import com.isencia.passerelle.workbench.model.editor.ui.Activator;
-import com.isencia.passerelle.workbench.model.editor.ui.PreferenceConstants;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CComboBoxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.CheckboxPropertyDescriptor;
 import com.isencia.passerelle.workbench.model.editor.ui.descriptor.ColorPropertyDescriptor;
@@ -46,7 +45,6 @@ import com.isencia.passerelle.workbench.model.editor.ui.descriptor.StringMapProp
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.ui.ComponentUtility;
 import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
-import com.isencia.passerelle.actor.gui.PasserelleConfigurer;
 
 /**
  * This class configures the properties in the PropertiesView when editing a
@@ -107,7 +105,7 @@ public class EntityPropertySource implements IPropertySource {
 		}
 
 		for (Parameter parameter : parameterList) {
-			addPropertyDescriptor(descriptors, parameter, parameter.getType());
+			addPropertyDescriptor(descriptors, parameter);
 		}
 		// shouldn't be editable
 		// descriptors.add(new
@@ -272,20 +270,33 @@ public class EntityPropertySource implements IPropertySource {
 		}
 	}
 
-	protected void addPropertyDescriptor(
-			Collection<PropertyDescriptor> descriptors, Attribute parameter,
-			Type type) {
+	protected void addPropertyDescriptor(Collection<PropertyDescriptor> descriptors, Parameter parameter) {
 
-		// TODO Replace this long test with a map.
+		descriptors.add(EntityPropertySource.getPropertyDescriptor(parameter));
+	}
+	
+	protected void addPropertyDescriptor(Collection<PropertyDescriptor> descriptors, Attribute parameter, Type type) {
+
+		descriptors.add(EntityPropertySource.getPropertyDescriptor(parameter, type));
+	}
+	
+	public static PropertyDescriptor getPropertyDescriptor(final Parameter parameter) {
+		final Type type = parameter.getType();
+	    return getPropertyDescriptor(parameter, type);
+	}
+	
+	protected static PropertyDescriptor getPropertyDescriptor(final Attribute parameter, final Type type) {
+		
+		
 		if (parameter instanceof ColorAttribute) {
-			descriptors.add(new ColorPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+			return new ColorPropertyDescriptor(parameter.getName(),
+					parameter.getDisplayName());
 
 		} else if (parameter instanceof ResourceParameter) {
 
 			ResourcePropertyDescriptor des = new ResourcePropertyDescriptor(
 					(ResourceParameter) parameter);
-			descriptors.add(des);
+			return des;
 
 			// If we use this parameter, we can sent the file extensions to the
 			// editor
@@ -304,54 +315,55 @@ public class EntityPropertySource implements IPropertySource {
 			} catch (IllegalActionException e) {
 				logger.error("Cannot get file path!", e);
 			}
-			descriptors.add(des);
+			return des;
 
 		} else if (parameter instanceof RegularExpressionParameter) {
-			descriptors.add(new RegularExpressionDescriptor(
-					(RegularExpressionParameter) parameter));
+			return new RegularExpressionDescriptor(
+					(RegularExpressionParameter) parameter);
 
 		} else if (parameter instanceof FileParameter) {
-			descriptors.add(new FilePickerPropertyDescriptor(parameter
-					.getName(), parameter.getDisplayName()));
+			return new FilePickerPropertyDescriptor(parameter
+					.getName(), parameter.getDisplayName());
 
 		} else if (parameter instanceof StringMapParameter) {
 			final StringMapPropertyDescriptor des = new StringMapPropertyDescriptor(
 					(StringMapParameter) parameter);
-			descriptors.add(des);
+			return des;
 
 		} else if (parameter instanceof StringChoiceParameter) {
 			final StringChoicePropertyDescriptor des = new StringChoicePropertyDescriptor(
 					(StringChoiceParameter) parameter);
-			descriptors.add(des);
+			return des;
 
 		} else if (hasOptions(parameter)) {
 			// TODO This does not work unless the choices parse to strings.
 			final String[] choices = ((Parameter) parameter).getChoices();
 			final CComboBoxPropertyDescriptor des = new CComboBoxPropertyDescriptor(
 					parameter.getName(), parameter.getDisplayName(), choices);
-			descriptors.add(des);
+			return des;
 
 		} else if (BaseType.INT.equals(type)) {
 
-			descriptors.add(new IntegerPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+			return new IntegerPropertyDescriptor(parameter.getName(),
+					parameter.getDisplayName());
 
 		} else if (BaseType.FLOAT.equals(type)) {
 
-			descriptors.add(new FloatPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+			return new FloatPropertyDescriptor(parameter.getName(),
+					parameter.getDisplayName());
 		} else if (BaseType.BOOLEAN.equals(type)) {
 
-			descriptors.add(new CheckboxPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+			return new CheckboxPropertyDescriptor(parameter.getName(),
+					parameter.getDisplayName());
 		} else {
 
-			descriptors.add(new TextPropertyDescriptor(parameter.getName(),
-					parameter.getDisplayName()));
+			return new TextPropertyDescriptor(parameter.getName(),
+					parameter.getDisplayName());
 		}
+
 	}
 
-	private boolean hasOptions(Attribute parameter) {
+	private static boolean hasOptions(Attribute parameter) {
 		return parameter instanceof Parameter
 				&& ((Parameter) parameter).getChoices() != null
 				&& ((Parameter) parameter).getChoices().length > 0;
