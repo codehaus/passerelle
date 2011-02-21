@@ -14,6 +14,10 @@ public class ResourceUtils {
 	 */
 	public static IResource getResource(Settable parameter) {
 		String     path  = parameter.getValueAsString();
+		return getResource(path);
+	}
+	
+	public static IResource getResource(String path) {
 		if (path.startsWith("\"")) {
 			path = path.substring(1);
 		}
@@ -22,8 +26,7 @@ public class ResourceUtils {
 		}
 		if (path==null||"".equals(path)||"\"\"".equals(path)) return null;
 		final IWorkspace space = ResourcesPlugin.getWorkspace();
-		final IResource  ret   = space.getRoot().findMember(path);
-		return ret;
+		return space.getRoot().findMember(path);
 	}
 
 }

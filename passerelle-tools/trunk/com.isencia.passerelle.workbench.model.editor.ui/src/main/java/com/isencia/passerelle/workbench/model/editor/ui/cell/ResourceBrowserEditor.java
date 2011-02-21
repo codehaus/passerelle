@@ -5,9 +5,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.ui.dialogs.WorkspaceResourceDialog;
-import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,29 +18,31 @@ import ptolemy.kernel.util.IllegalActionException;
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.util.ptolemy.ResourceParameter;
+import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 import com.isencia.passerelle.workbench.util.ResourceUtils;
 
-public class ResourceBrowserEditor extends DialogCellEditor {
+public class ResourceBrowserEditor extends DialogBrowserEditor {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResourceBrowserEditor.class);
 	protected String            stringValue = "";
 	protected ResourceParameter param;
+	private Text text;
 
 	public ResourceBrowserEditor(Composite aComposite, ResourceParameter param) {
 		super(aComposite);
 		this.param = param;
 	}
 
-	/*
+    /*
 	 * (non-Javadoc)
 	 * 
 	 * @see
 	 * org.eclipse.jface.viewers.DialogCellEditor#openDialogBox(org.eclipse.
 	 * swt.widgets.Control)
 	 */
-	protected Object openDialogBox(Control cellEditorWindow) {
+	protected Object openDialogBox(Control cellEditorWindow, Object textValue) {
 		
-		final IResource currentValue = ResourceUtils.getResource(param);
+		final IResource currentValue = getSelectedResource((String)textValue);
         final Actor     actor        = (Actor)param.getContainer();
         final Parameter folder       = (Parameter)actor.getAttribute("Folder");
         final Parameter relative     = (Parameter)actor.getAttribute("Relative Path");
@@ -77,27 +79,18 @@ public class ResourceBrowserEditor extends DialogCellEditor {
 	        if (files!=null && files.length>0) value = files[0];
 		}
 
-		final String fullPath = value.getRawLocation().toOSString();
-		if (value.isLinked() || (value instanceof IFile && value.getParent().isLinked())) {
-			if (relative!=null) {
-				try {
-					relative.setToken(new BooleanToken(false));
-				} catch (IllegalActionException e) {
-					logger.error("Cannot set Relative Path parameter to false",e);
-				}
-			}
-			return fullPath;
-		} else {
-			try {
-				if (relative!=null) relative.setToken(new BooleanToken(true));
-			} catch (IllegalActionException e) {
-				logger.error("Cannot set Relative Path parameter to false",e);
-			}
-			final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-			return fullPath.substring(workspace.length(), fullPath.length());
-		}
+		return textValue;
 
 		
+	}
+
+	private IResource getSelectedResource(String textValue) {
+		if (textValue!=null) {
+			final Actor  actor        = (Actor)param.getContainer();
+			final String expandedPath = ModelUtils.substitute(textValue, actor);
+			return ResourceUtils.getResource(expandedPath);
+		}
+		return ResourceUtils.getResource(param);
 	}
 
 }

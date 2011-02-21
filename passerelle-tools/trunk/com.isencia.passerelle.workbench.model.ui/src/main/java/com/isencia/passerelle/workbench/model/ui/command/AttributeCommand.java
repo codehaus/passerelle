@@ -1,0 +1,57 @@
+package com.isencia.passerelle.workbench.model.ui.command;
+
+import org.eclipse.gef.commands.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ptolemy.data.BooleanToken;
+import ptolemy.data.expr.Variable;
+import ptolemy.kernel.util.IllegalActionException;
+
+public class AttributeCommand extends Command {
+
+	private static Logger logger = LoggerFactory.getLogger(AttributeCommand.class);
+
+	private final Variable attribute;
+	private final Object   newValue;
+	private final Object   previousValue;
+
+	public AttributeCommand(Object element, Object newValue) throws IllegalActionException {
+		
+		super("Set value "+((Variable)element).getDisplayName()+" to "+newValue);
+		this.attribute     = (Variable)element;
+		this.newValue      = newValue;
+		this.previousValue = (!attribute.isStringMode() && attribute.getToken()!=null && attribute.getToken() instanceof BooleanToken)
+		                   ? new Boolean (((BooleanToken)attribute.getToken()).booleanValue())
+		                   : attribute.getExpression();
+
+	}
+
+	public void execute() {
+        setValue(newValue);
+	}
+	public void undo() {
+		setValue(previousValue);
+	}
+
+	private void setValue(final Object value) {
+		
+		try {
+			if (value!=null) {
+				if (value instanceof Boolean) {
+					attribute.setToken(new BooleanToken(((Boolean)value).booleanValue()));
+				} else if (value instanceof String) {
+					attribute.setExpression((String)value);
+				} else {
+					throw new Exception("Unrecognised value sent to Variable "+attribute.getName());
+				}
+			} else {
+				attribute.setExpression(null);
+			}
+		} catch (Exception ne) {
+			logger.error("Cannot set variable value "+value, ne);
+		}
+	
+	}
+
+}

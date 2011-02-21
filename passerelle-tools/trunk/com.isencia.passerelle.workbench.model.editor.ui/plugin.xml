@@ -90,5 +90,14 @@
 		</content-type>
    
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView"
+            icon="icons/attributes.gif"
+            id="com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView"
+            name="Actor Attributes">
+      </view>
+   </extension>
 
 </plugin>
