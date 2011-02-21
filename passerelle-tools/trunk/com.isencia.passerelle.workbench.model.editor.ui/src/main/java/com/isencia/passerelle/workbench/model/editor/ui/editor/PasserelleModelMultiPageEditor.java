@@ -862,4 +862,8 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 			setActivePage(0);
 	}
 
+	public void refreshActions() {
+		getEditorSite().getActionBars().getToolBarManager().update(true);
+	}
+
 }

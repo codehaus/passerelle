@@ -18,6 +18,7 @@ import ptolemy.actor.gui.ColorAttribute;
 import ptolemy.data.expr.FileParameter;
 import ptolemy.data.expr.Parameter;
 import ptolemy.data.expr.StringParameter;
+import ptolemy.data.expr.Variable;
 import ptolemy.data.type.BaseType;
 import ptolemy.data.type.Type;
 import ptolemy.kernel.util.AbstractSettableAttribute;
@@ -280,7 +281,7 @@ public class EntityPropertySource implements IPropertySource {
 		descriptors.add(EntityPropertySource.getPropertyDescriptor(parameter, type));
 	}
 	
-	public static PropertyDescriptor getPropertyDescriptor(final Parameter parameter) {
+	public static PropertyDescriptor getPropertyDescriptor(final Variable parameter) {
 		final Type type = parameter.getType();
 	    return getPropertyDescriptor(parameter, type);
 	}
