@@ -5,6 +5,8 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
+
 import ptolemy.data.BooleanToken;
 import ptolemy.data.expr.Variable;
 import ptolemy.kernel.util.IllegalActionException;
@@ -40,19 +42,25 @@ public class AttributeCommand extends Command {
 	private void setValue(final Object value) {
 		
 		try {
-			if (value!=null) {
-				if (value instanceof Boolean) {
-					attribute.setToken(new BooleanToken(((Boolean)value).booleanValue()));
-				} else if (value instanceof String) {
-					attribute.setExpression((String)value);
-				} else {
-					throw new Exception("Unrecognised value sent to Variable "+attribute.getName());
+			attribute.requestChange(new ModelChangeRequest(this.getClass(), attribute, "attribute"){
+				@Override
+				protected void _execute() throws Exception {
+					if (value!=null) {
+						if (value instanceof Boolean) {
+							attribute.setToken(new BooleanToken(((Boolean)value).booleanValue()));
+						} else if (value instanceof String) {
+							attribute.setExpression((String)value);
+						} else {
+							throw new Exception("Unrecognised value sent to Variable "+attribute.getName());
+						}
+					} else {
+						if (attribute.isStringMode()) {
+							attribute.setExpression(null);
+						}
+					}
 				}
-			} else {
-				if (attribute.isStringMode()) {
-					attribute.setExpression(null);
-				}
-			}
+			});
+			
 		} catch (Exception ne) {
 			logger.error("Cannot set variable value "+value, ne);
 		} finally {

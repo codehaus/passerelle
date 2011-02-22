@@ -403,8 +403,8 @@ public class ModelUtils {
 	public static String substitute(final String sub, final Actor actor) {
 		
 		final Map<String,String> variables = new HashMap<String,String>(3);
-		variables.put("project.name", getProject(actor).getName());
-		variables.put("actor.name",   actor.getName());
+		variables.put("project_name", getProject(actor).getName());
+		variables.put("actor_name",   actor.getName());
 		
 		MultiVariableExpander expander = new MultiVariableExpander( );
 		expander.addSource("$", variables);
