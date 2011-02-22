@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import ptolemy.data.BooleanToken;
 import ptolemy.data.expr.Variable;
 
-import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
-import com.isencia.passerelle.workbench.model.ui.command.AttributeCommand;
 
 /**
  * Editing support for parameter column.
@@ -74,14 +72,9 @@ public class VariableEditingSupport extends EditingSupport {
 				// Also uses a Command so that is undoable
 				actorAttributesView.setActorName((String)value);
 				
-			} else if (actorAttributesView.getPart() instanceof PasserelleModelMultiPageEditor) {
-				final PasserelleModelMultiPageEditor ed = (PasserelleModelMultiPageEditor)actorAttributesView.getPart();
-				final AttributeCommand              cmd = new AttributeCommand(element, value);
-				ed.getEditor().getEditDomain().getCommandStack().execute(cmd);
-				ed.refreshActions();
+			} else {
+				actorAttributesView.setAttributeValue(element, value);
 			}
-			getViewer().cancelEditing();
-			getViewer().refresh(element);
 			
 		} catch (Exception ne) {
 			logger.error("Cannot set variable value "+value, ne);

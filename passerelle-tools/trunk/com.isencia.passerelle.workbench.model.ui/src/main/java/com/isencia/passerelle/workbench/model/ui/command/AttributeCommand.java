@@ -1,6 +1,7 @@
 package com.isencia.passerelle.workbench.model.ui.command;
 
 import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.viewers.ColumnViewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,10 +16,12 @@ public class AttributeCommand extends Command {
 	private final Variable attribute;
 	private final Object   newValue;
 	private final Object   previousValue;
+	private final ColumnViewer   viewer;
 
-	public AttributeCommand(Object element, Object newValue) throws IllegalActionException {
+	public AttributeCommand(final ColumnViewer viewer, Object element, Object newValue) throws IllegalActionException {
 		
 		super("Set value "+((Variable)element).getDisplayName()+" to "+newValue);
+		this.viewer        = viewer;
 		this.attribute     = (Variable)element;
 		this.newValue      = newValue;
 		this.previousValue = (!attribute.isStringMode() && attribute.getToken()!=null && attribute.getToken() instanceof BooleanToken)
@@ -46,10 +49,17 @@ public class AttributeCommand extends Command {
 					throw new Exception("Unrecognised value sent to Variable "+attribute.getName());
 				}
 			} else {
-				attribute.setExpression(null);
+				if (attribute.isStringMode()) {
+					attribute.setExpression(null);
+				}
 			}
 		} catch (Exception ne) {
 			logger.error("Cannot set variable value "+value, ne);
+		} finally {
+			if (!viewer.getControl().isDisposed()) {
+				viewer.cancelEditing();
+				viewer.refresh(attribute);
+			}
 		}
 	
 	}

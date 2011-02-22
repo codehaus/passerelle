@@ -99,5 +99,22 @@
             name="Actor Attributes">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.viewActions">
+      <viewContribution
+            id="com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesViewContribution"
+            targetID="com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView">
+         <action
+               class="com.isencia.passerelle.workbench.model.editor.ui.editor.actions.DeleteAttributeHandler"
+               icon="icons/delete_attribute.gif"
+               id="com.isencia.passerelle.workbench.model.editor.ui.deleteActorAttribute"
+               label="Delete Attribute"
+               state="true"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Delete the selected attribute">
+         </action>
+      </viewContribution>
+   </extension>
 
 </plugin>
