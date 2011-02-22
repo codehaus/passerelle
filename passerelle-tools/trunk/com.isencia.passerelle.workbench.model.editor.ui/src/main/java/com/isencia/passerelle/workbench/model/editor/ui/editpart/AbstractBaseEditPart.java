@@ -170,7 +170,7 @@ abstract public class AbstractBaseEditPart extends
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
 
-		getLogger().debug("Change Executed");
+		getLogger().trace("Change Executed");
 		Object source = changerequest.getSource();
 		if (changerequest instanceof ModelChangeRequest) {
 			Class<?> type = ((ModelChangeRequest) changerequest).getType();
@@ -226,7 +226,7 @@ abstract public class AbstractBaseEditPart extends
 
 	@Override
 	public void changeFailed(ChangeRequest changerequest, Exception exception) {
-		getLogger().debug("Change Failed : " + exception.getMessage());
+		getLogger().trace("Change Failed : " + exception.getMessage());
 	}
 
 	public Logger getLogger() {

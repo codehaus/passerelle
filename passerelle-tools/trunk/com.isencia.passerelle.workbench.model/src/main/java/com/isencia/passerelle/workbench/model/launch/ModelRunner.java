@@ -65,85 +65,93 @@ public class ModelRunner implements IApplication {
 	 */
 	public void runModel(final String modelPath, final boolean separateVM) {
 		
-		start = System.currentTimeMillis();
-		
-		//TODO Check that path works when model is run... Edna actors currently use 
-		// workspace to get resources.
-		// When run from command line may need to set variable for workspace.
-		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-		System.setProperty("eclipse.workspace.home", workspacePath);
-		System.setProperty("be.isencia.home",        workspacePath);		
-		logger.info("Workspace folder set to: "+workspacePath);
-
-		Reader             reader     = null;
-		RemoteManagerAgent modelAgent = null;
 		try {
-			currentInstance = this;
+			start = System.currentTimeMillis();
 			
-			if( modelPath==null) {
-				throw new IllegalArgumentException("No model specified",null);
-			} else {
-				logger.info("Running model : " + modelPath);
-				reader = new FileReader(modelPath);
+			//TODO Check that path works when model is run... Edna actors currently use 
+			// workspace to get resources.
+			// When run from command line may need to set variable for workspace.
+			final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+			System.setProperty("eclipse.workspace.home", workspacePath);
+			System.setProperty("be.isencia.home",        workspacePath);		
+			logger.info("Workspace folder set to: "+workspacePath);
+	
+			Reader             reader     = null;
+			RemoteManagerAgent modelAgent = null;
+			try {
+				currentInstance = this;
 				
-				// In debug mode the same model can be run in the
-				// same VM several times. We purge before running for this reason.
-				MoMLParser.purgeAllModelRecords();
-				MoMLParser.purgeModelRecord(modelPath);
-				
-				MoMLParser moMLParser = new MoMLParser();
-				CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
-				
-				// The workspace is named after the RCP project. This enables actors
-				// running to determine which RCP project they are associated with and
-				// if they need to create folders or files, where to do that. For instance
-				// edna nodes have no end of auxiliary files which the user may need access to.
-				ModelUtils.setCompositeProjectName(compositeActor, modelPath);
-				
-				this.manager = new Manager(compositeActor.workspace(), "model");
-				compositeActor.setManager(manager);
-				
-				// The manager JMX service is used to control the workflow from 
-				// the RCP workspace. This starts the registry on a port and has two
-				// JMX objects in the registry, one for calling method on the workbench 
-				// from actors and one for giving access to controlling the workflow.
-				// If this has been set up the property "com.isencia.jmx.service.port"
-				// will have been set to the free port being used. Otherwise the workflow
-				// service will not be added to the registry.
-				logger.debug("The jmx port is set to : '"+System.getProperty("com.isencia.jmx.service.port")+"'");
-				if (System.getProperty("com.isencia.jmx.service.port")!=null) {
-					modelAgent = new RemoteManagerAgent(manager);
-					modelAgent.start();
+				if( modelPath==null) {
+					throw new IllegalArgumentException("No model specified",null);
+				} else {
+					logger.info("Running model : " + modelPath);
+					reader = new FileReader(modelPath);
+					
+					// In debug mode the same model can be run in the
+					// same VM several times. We purge before running for this reason.
+					MoMLParser.purgeAllModelRecords();
+					MoMLParser.purgeModelRecord(modelPath);
+					
+					MoMLParser moMLParser = new MoMLParser();
+					CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
+					
+					// The workspace is named after the RCP project. This enables actors
+					// running to determine which RCP project they are associated with and
+					// if they need to create folders or files, where to do that. For instance
+					// edna nodes have no end of auxiliary files which the user may need access to.
+					ModelUtils.setCompositeProjectName(compositeActor, modelPath);
+					
+					this.manager = new Manager(compositeActor.workspace(), "model");
+					compositeActor.setManager(manager);
+					
+					// The manager JMX service is used to control the workflow from 
+					// the RCP workspace. This starts the registry on a port and has two
+					// JMX objects in the registry, one for calling method on the workbench 
+					// from actors and one for giving access to controlling the workflow.
+					// If this has been set up the property "com.isencia.jmx.service.port"
+					// will have been set to the free port being used. Otherwise the workflow
+					// service will not be added to the registry.
+					logger.debug("The jmx port is set to : '"+System.getProperty("com.isencia.jmx.service.port")+"'");
+					if (System.getProperty("com.isencia.jmx.service.port")!=null) {
+						modelAgent = new RemoteManagerAgent(manager);
+						modelAgent.start();
+					}
+					
+					manager.execute(); // Blocks until done
+					
+				}
+			} catch (IllegalArgumentException illegalArgumentException) { 
+				logger.info(illegalArgumentException.getMessage());
+			} catch (Throwable e) {
+				e.printStackTrace();
+				logger.error("Cannot read "+modelPath, e);
+	
+			} finally {
+				if (reader != null) {
+					try {
+						reader.close();
+						logger.info("Closed reader");
+					} catch (IOException e) {}
+				}
+			
+				if (modelAgent!=null) {
+					modelAgent.stop();
+					logger.info("Closed model agent");
 				}
 				
-				manager.execute(); // Blocks until done
+				manager         = null;
+				currentInstance = null;
+	
+				stop();
+				System.gc();
 				
 			}
-		} catch (IllegalArgumentException illegalArgumentException) { 
-			logger.info(illegalArgumentException.getMessage());
-		} catch (Throwable e) {
-			e.printStackTrace();
-			logger.error("Cannot read "+modelPath, e);
-
 		} finally {
 			logger.info("End model : "+modelPath);
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {}
-			}
-			
-			if (modelAgent!=null) modelAgent.stop();
-			
-			manager         = null;
-			currentInstance = null;
-
-			stop();
-			System.gc();
-			
 			if (separateVM) {
 				// We have to do this in case daemons are started.
 				// We must exit this vm once the model is finished.
+				logger.info("Passerelle shut down.");
 				System.exit(1);
 			}
 		}
