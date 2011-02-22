@@ -91,6 +91,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFac
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
+import com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
 import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
@@ -316,6 +317,11 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 			for (Image image : part.getImages())
 				image.dispose();
 		}
+		model.removeAllEntities();
+		model.removeAllPorts();
+		model.removeAllRelations();
+		model = null;
+		
 		super.dispose();
 	}
 
