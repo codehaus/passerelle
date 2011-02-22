@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ptolemy.data.expr.Parameter;
 
@@ -27,6 +29,7 @@ import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.gui.PasserelleConfigurer;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.ActorEditPart;
+import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.NamedObjComparator;
 
 
@@ -39,16 +42,14 @@ import com.isencia.passerelle.workbench.model.editor.ui.properties.NamedObjCompa
  */
 public class ActorAttributesView extends ViewPart implements ISelectionListener, CommandStackEventListener {
 
+	private static Logger logger = LoggerFactory.getLogger(ActorAttributesView.class);
+	
 	public static final String ID = "com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView"; //$NON-NLS-1$
 
 	private TableViewer    viewer;
 	private Actor          actor;
 	private boolean        addedListener=false;
 	private IWorkbenchPart part;
-	
-	public ActorAttributesView() {
-	
-	}
 
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
@@ -88,7 +89,10 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
         			@Override
         			public Object[] getElements(Object inputElement) {
         				if (parameterList==null || parameterList.isEmpty()) return new Parameter[]{};
-        				return parameterList.toArray(new Parameter[parameterList.size()]);
+        				final List<Object> ret = new ArrayList<Object>(parameterList.size()+1);
+        				ret.add(actor.getName());
+        				ret.addAll(parameterList);
+        				return	ret.toArray(new Object[ret.size()]);
         			}
         		});
         		
@@ -126,13 +130,13 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 		
 		final TableViewerColumn name   = new TableViewerColumn(viewer, SWT.LEFT, 0);
 		name.getColumn().setText("Property");
-		name.getColumn().setWidth(300);
+		name.getColumn().setWidth(200);
 		name.setLabelProvider(new PropertyLabelProvider());
 		
 		final TableViewerColumn value   = new TableViewerColumn(viewer, SWT.LEFT, 1);
 		value.getColumn().setText("Value");
 		value.getColumn().setWidth(700);
-		value.setLabelProvider(new VariableLabelProvider());
+		value.setLabelProvider(new VariableLabelProvider(this));
 		value.setEditingSupport(new VariableEditingSupport(this, viewer));
 	}
 
@@ -181,6 +185,18 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 	@Override
 	public void stackChanged(CommandStackEvent event) {
 		viewer.refresh();
+	}
+
+	public String getActorName() {
+		return actor.getName();
+	}
+
+	public void setActorName(final String name) {
+		try {
+			ActorGeneralSection.setName(actor, name);
+		} catch (Exception ne) {
+			logger.error("Cannot set name as "+name, ne);
+		}
 	}
 
 }
