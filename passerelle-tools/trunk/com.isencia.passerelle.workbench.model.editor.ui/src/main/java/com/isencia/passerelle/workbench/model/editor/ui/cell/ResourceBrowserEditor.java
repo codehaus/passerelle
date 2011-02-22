@@ -58,7 +58,7 @@ public class ResourceBrowserEditor extends DialogBrowserEditor {
 		} catch (IllegalActionException e) {
 			logger.error("Cannot read folder parameter", e);
 		}
-		IResource value = currentValue;
+		IResource value = null;
 		if (isFolder) {
 			IContainer[] folders = WorkspaceResourceDialog.openFolderSelection(PlatformUI.getWorkbench().getDisplay().getActiveShell(), 
                     "Choose folder in workspace", 
@@ -79,7 +79,27 @@ public class ResourceBrowserEditor extends DialogBrowserEditor {
 	        if (files!=null && files.length>0) value = files[0];
 		}
 
-		return textValue;
+		if (value==null) return textValue;
+		
+		final String fullPath = value.getRawLocation().toOSString();
+		if (value.isLinked() || (value instanceof IFile && value.getParent().isLinked())) {
+			if (relative!=null) {
+				try {
+					relative.setToken(new BooleanToken(false));
+				} catch (IllegalActionException e) {
+					logger.error("Cannot set Relative Path parameter to false",e);
+				}
+			}
+			return fullPath;
+		} else {
+			try {
+				if (relative!=null) relative.setToken(new BooleanToken(true));
+			} catch (IllegalActionException e) {
+				logger.error("Cannot set Relative Path parameter to false",e);
+			}
+			final String workspace= ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+			return fullPath.substring(workspace.length(), fullPath.length());
+		}
 
 		
 	}
