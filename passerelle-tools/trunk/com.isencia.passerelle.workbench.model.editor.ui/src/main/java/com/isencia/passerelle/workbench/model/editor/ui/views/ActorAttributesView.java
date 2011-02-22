@@ -28,13 +28,14 @@ import org.slf4j.LoggerFactory;
 import ptolemy.data.expr.Parameter;
 import ptolemy.kernel.util.Attribute;
 import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.NamedObj;
 
-import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.gui.PasserelleConfigurer;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.DeleteAttributeHandler;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.ActorEditPart;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.DirectorEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.NamedObjComparator;
 import com.isencia.passerelle.workbench.model.ui.command.AttributeCommand;
@@ -54,7 +55,7 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 	public static final String ID = "com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView"; //$NON-NLS-1$
 
 	private TableViewer    viewer;
-	private Actor          actor;
+	private NamedObj       actor;
 	private boolean        addedListener=false;
 	private IWorkbenchPart part;
 
@@ -64,9 +65,11 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 		if (selection instanceof StructuredSelection) {
 			
 			final Object sel = ((StructuredSelection)selection).getFirstElement();
-            if (sel instanceof ActorEditPart) {
+            if (sel instanceof ActorEditPart || sel instanceof DirectorEditPart) {
             	
-            	this.actor = (Actor)((ActorEditPart)sel).getActor();
+            	this.actor = sel instanceof ActorEditPart
+            	           ? (NamedObj)((ActorEditPart)sel).getActor()
+            	           : (NamedObj)((DirectorEditPart)sel).getDirectorModel();
             	this.part  = part;
             	
 				if (!addedListener && part instanceof PasserelleModelMultiPageEditor) {
@@ -83,32 +86,49 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
         			}
         		}
         		
-        		Collections.sort(parameterList, new NamedObjComparator());
-        		
-        		viewer.setContentProvider(new IStructuredContentProvider() {
-        			@Override
-        			public void dispose() {
-        				
-        			}
-        			@Override
-        			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
-
-        			@Override
-        			public Object[] getElements(Object inputElement) {
-        				if (parameterList==null || parameterList.isEmpty()) return new Parameter[]{};
-        				final List<Object> ret = new ArrayList<Object>(parameterList.size()+1);
-        				ret.add(actor.getName());
-        				ret.addAll(parameterList);
-        				return	ret.toArray(new Object[ret.size()]);
-        			}
-        		});
-        		
-        		viewer.setInput(new Object());
-        		viewer.refresh();
-        		viewer.getTable().redraw();
+        		createTableModel(parameterList);
+        		return;
         	}
 		}
+		clear();
 	}
+
+	private void createTableModel(final List<Parameter> parameterList) {
+		
+		if (parameterList!=null) Collections.sort(parameterList, new NamedObjComparator());
+		
+		viewer.setContentProvider(new IStructuredContentProvider() {
+			@Override
+			public void dispose() {
+				
+			}
+			@Override
+			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {}
+
+			@Override
+			public Object[] getElements(Object inputElement) {
+				if (parameterList==null || parameterList.isEmpty()) return new Parameter[]{};
+				final List<Object> ret = new ArrayList<Object>(parameterList.size()+1);
+				ret.add(actor.getName());
+				ret.addAll(parameterList);
+				return	ret.toArray(new Object[ret.size()]);
+			}
+		});
+		
+		viewer.setInput(new Object());
+		viewer.refresh();
+	}
+
+	public void clear() {
+    	this.actor = null;
+    	if (part!=null) {
+    	    ((PasserelleModelMultiPageEditor)part).getEditor().getEditDomain().getCommandStack().removeCommandStackEventListener(this);
+    	}
+        this.part  = null;
+    	this.addedListener=false;
+		createTableModel(null);
+	}
+
 	
 	/**
 	 * Create contents of the view part.
@@ -236,6 +256,5 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 		ed.refreshActions();
 		
 	}
-
 
 }

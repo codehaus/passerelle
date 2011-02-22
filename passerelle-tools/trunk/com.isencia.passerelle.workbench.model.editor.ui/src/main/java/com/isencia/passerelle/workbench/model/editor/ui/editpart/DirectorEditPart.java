@@ -64,7 +64,7 @@ public class DirectorEditPart extends AbstractBaseEditPart {
 	 * 
 	 * @return Model of this as an Director.
 	 */
-	protected Director getDirectorModel() {
+	public Director getDirectorModel() {
 		return (Director) getModel();
 	}
 
