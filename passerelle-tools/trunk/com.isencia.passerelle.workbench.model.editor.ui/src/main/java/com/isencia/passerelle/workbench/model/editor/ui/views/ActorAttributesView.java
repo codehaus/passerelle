@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.eclipse.gef.commands.CommandStackEvent;
 import org.eclipse.gef.commands.CommandStackEventListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -16,6 +16,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -24,13 +26,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.data.expr.Parameter;
+import ptolemy.kernel.util.Attribute;
+import ptolemy.kernel.util.IllegalActionException;
 
 import com.isencia.passerelle.actor.Actor;
 import com.isencia.passerelle.actor.gui.PasserelleConfigurer;
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.DeleteAttributeHandler;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.ActorEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.NamedObjComparator;
+import com.isencia.passerelle.workbench.model.ui.command.AttributeCommand;
 
 
 /**
@@ -120,10 +127,26 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 		viewer.setColumnProperties(new String[]{"Property", "Value"});
 		
 		createActions();
-		initializeToolBar();
-		initializeMenu();
+		createPopupMenu();
 		
 		getSite().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
+		
+		viewer.getTable().addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) { }
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.character==SWT.DEL) {
+					try {
+						deleteSelectedParameter();
+					} catch (IllegalActionException e1) {
+						logger.error("Cannot delete ", e1);
+					}
+				}
+			}
+		});
 	}
 
 	private void createColumns(TableViewer viewer) {
@@ -148,19 +171,16 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 	}
 
 	/**
-	 * Initialize the toolbar.
-	 */
-	private void initializeToolBar() {
-		IToolBarManager toolbarManager = getViewSite().getActionBars()
-				.getToolBarManager();
-	}
-
-	/**
 	 * Initialize the menu.
 	 */
-	private void initializeMenu() {
-		IMenuManager menuManager = getViewSite().getActionBars()
-				.getMenuManager();
+	private void createPopupMenu() {
+		MenuManager menuMan = new MenuManager();
+		menuMan.add(new Action("Delete Attribute", Activator.getImageDescriptor("icons/delete_attribute.gif")) {
+			public void run() {
+				(new DeleteAttributeHandler()).run(null);
+			}
+		});
+	    viewer.getControl().setMenu (menuMan.createContextMenu(viewer.getControl()));
 	}
 
 	@Override
@@ -176,10 +196,6 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 			((PasserelleModelMultiPageEditor)part).getEditor().getEditDomain().getCommandStack().removeCommandStackEventListener(this);
 		}
 		super.dispose();
-	}
-	
-	public IWorkbenchPart getPart() {
-		return part;
 	}
 
 	@Override
@@ -198,5 +214,28 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 			logger.error("Cannot set name as "+name, ne);
 		}
 	}
+
+	public void deleteSelectedParameter() throws IllegalActionException {
+		
+		final ISelection sel = viewer.getSelection();
+		if (sel!=null && sel instanceof StructuredSelection) {
+			final StructuredSelection s = (StructuredSelection)sel;
+			final Object              o = s.getFirstElement();
+			if (o instanceof String) return; // Cannot delete name
+			if (o instanceof Attribute) {
+				setAttributeValue(o,null);
+			}
+		}
+	}
+
+	public void setAttributeValue(Object element, Object value) throws IllegalActionException {
+		
+		final PasserelleModelMultiPageEditor ed = (PasserelleModelMultiPageEditor)this.part;
+		final AttributeCommand              cmd = new AttributeCommand(viewer, element, value);
+		ed.getEditor().getEditDomain().getCommandStack().execute(cmd);
+		ed.refreshActions();
+		
+	}
+
 
 }
