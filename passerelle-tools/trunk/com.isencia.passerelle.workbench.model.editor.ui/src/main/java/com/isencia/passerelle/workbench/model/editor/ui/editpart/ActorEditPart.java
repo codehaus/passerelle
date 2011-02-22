@@ -343,7 +343,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 */
 	public ConnectionAnchor getSourceConnectionAnchor(
 			ConnectionEditPart connEditPart) {
-		getLogger().debug(
+		getLogger().trace(
 				"Get SourceConnectionAnchor based on ConnectionEditPart");
 		Port port = null;
 		if (connEditPart instanceof VertexRelationEditPart) {
@@ -381,7 +381,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 */
 	public ConnectionAnchor getTargetConnectionAnchor(
 			ConnectionEditPart connEditPart) {
-		getLogger().debug(
+		getLogger().trace(
 				"Get TargetConnectionAnchor based on ConnectionEditPart");
 		Port port = null;
 		if (connEditPart instanceof VertexRelationEditPart) {
@@ -407,7 +407,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 * @return Port.
 	 */
 	public Port getSourcePort(ConnectionAnchor anchor) {
-		getLogger().debug("Get Source port  based on anchor");
+		getLogger().trace("Get Source port  based on anchor");
 
 		ActorFigure anchorFigure = getComponentFigure();
 		List outputPortList = getActor().outputPortList();
@@ -429,7 +429,7 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 * @return Port.
 	 */
 	public Port getTargetPort(ConnectionAnchor anchor) {
-		getLogger().debug("Get Target port  based on anchor");
+		getLogger().trace("Get Target port  based on anchor");
 
 		ActorFigure anchorFigure = getComponentFigure();
 		List inputPortList = getActor().inputPortList();

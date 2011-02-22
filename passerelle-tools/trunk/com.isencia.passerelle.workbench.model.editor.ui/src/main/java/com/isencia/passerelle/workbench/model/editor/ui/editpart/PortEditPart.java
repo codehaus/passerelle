@@ -122,7 +122,7 @@ public class PortEditPart extends ActorEditPart {
 	}
 
 	public Port getSourcePort(ConnectionAnchor anchor) {
-		getLogger().debug("Get Source port  based on anchor");
+		getLogger().trace("Get Source port  based on anchor");
 		IOPort port = ((TypedIOPort) getModel());
 		if (port.isInput()) {
 			return port;
@@ -132,7 +132,7 @@ public class PortEditPart extends ActorEditPart {
 	}
 
 	public Port getTargetPort(ConnectionAnchor anchor) {
-		getLogger().debug("Get Target port  based on anchor");
+		getLogger().trace("Get Target port  based on anchor");
 
 		IOPort port = ((TypedIOPort) getModel());
 		if (!port.isInput()) {

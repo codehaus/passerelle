@@ -8,7 +8,6 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartListener;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
@@ -140,12 +139,12 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 
 	@Override
 	public void changeExecuted(ChangeRequest change) {
-		getLogger().debug("ChangeRequest executed in RelationEditPart");
+		getLogger().trace("ChangeRequest executed in RelationEditPart");
 	}
 
 	@Override
 	public void changeFailed(ChangeRequest change, Exception exception) {
-		getLogger().error("Error executing ChangeRequest",exception);
+		getLogger().trace("Error executing ChangeRequest",exception);
 	}
 
 	@Override
