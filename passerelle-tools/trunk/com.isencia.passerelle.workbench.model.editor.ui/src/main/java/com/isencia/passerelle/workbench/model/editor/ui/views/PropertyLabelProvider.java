@@ -10,7 +10,10 @@ public class PropertyLabelProvider extends ColumnLabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
 	public String getText(Object element) {
-		return element == null ? "" : ((Attribute)element).getDisplayName();
+		if (element == null) return "";
+		if (element instanceof String) return "Name";
+		final Attribute att = (Attribute)element;
+		return att.getDisplayName();
 	}
 
 }

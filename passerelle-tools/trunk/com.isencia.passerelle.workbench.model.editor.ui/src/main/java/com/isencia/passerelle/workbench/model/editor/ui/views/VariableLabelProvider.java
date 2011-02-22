@@ -2,20 +2,30 @@ package com.isencia.passerelle.workbench.model.editor.ui.views;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 
 import ptolemy.data.BooleanToken;
 import ptolemy.data.expr.Variable;
 
+import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+
 public class VariableLabelProvider extends ColumnLabelProvider {
 	
+	private final ActorAttributesView actorAttributesView;
+
+	public VariableLabelProvider(ActorAttributesView actorAttributesView) {
+		this.actorAttributesView = actorAttributesView;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getText(java.lang.Object)
 	 */
 	public String getText(Object element) {
+		
+		if (element instanceof String) {
+			return actorAttributesView.getActorName();
+		}
+		
 		final Variable param = (Variable)element;
 		
 		try {
@@ -36,6 +46,8 @@ public class VariableLabelProvider extends ColumnLabelProvider {
 	 * @see org.eclipse.jface.viewers.ILabelProvider#getImage(java.lang.Object)
 	 */
 	public Image getImage(Object element) {
+		
+		if (element instanceof String) return null;
 		
 		final Variable param = (Variable)element;
 		try {

@@ -10,6 +10,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.tabbed.AbstractPropertySection;
@@ -25,9 +26,7 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 public class ActorGeneralSection extends AbstractPropertySection {
 	
 	private NamedObj model = null;
-	
 	private Text nameText;
-	
 	private Text typeText;
 	
 	/**
@@ -39,31 +38,38 @@ public class ActorGeneralSection extends AbstractPropertySection {
 			if( model != null ) {
 				final String text = nameText.getText();
 				if( text != null ) {
-					// Perform Change in a ChangeRequest so that all Listeners are notified
-					if (ModelUtils.isNameLegal(text)) {
-						model.requestChange(new ModelChangeRequest(ActorGeneralSection.class, model, "changeName") {
-							protected void _execute() throws Exception {
-								model.setDisplayName(text);
-								model.setName(text);
-							}
-						});
-					} else {
-						MessageDialog.openError(getPart().getSite().getShell(),
-								               "Invalid Name",
-								               "The name '"+text+"' is not allowed.\n\n"+
-								               "Names should not contain '.'");
-						model.requestChange(new ModelChangeRequest(ActorGeneralSection.class, model, "changeName") {
-							protected void _execute() throws Exception {
-								model.setDisplayName(ModelUtils.getLegalName(text));
-								model.setName(ModelUtils.getLegalName(text));
-							}
-						});
-					}
-								               
+					ActorGeneralSection.setName(model, text);		               
 				}
 			}
 		}
 	};
+	
+	/**
+	 * Adds a name change event to the command stack.
+	 * 
+	 * This method will show an error message to the user if the name is not legal.
+	 * 
+	 * @param model
+	 * @param text
+	 */
+	public static void setName(final NamedObj model, final String text) {
+		
+		// Perform Change in a ChangeRequest so that all Listeners are notified
+		if (ModelUtils.isNameLegal(text)) {
+			model.requestChange(new ModelChangeRequest(ActorGeneralSection.class, model, "changeName") {
+				protected void _execute() throws Exception {
+					model.setDisplayName(text);
+					model.setName(text);
+				}
+			});
+		} else {
+			MessageDialog.openError(Display.getCurrent().getActiveShell(),
+					               "Invalid Name",
+					               "The name '"+text+"' is not allowed.\n\n"+
+					               "Names should not contain '.'");
+		}
+
+	}
 	
 	public void createControls(Composite parent, TabbedPropertySheetPage page) {
 		super.createControls(parent, page);

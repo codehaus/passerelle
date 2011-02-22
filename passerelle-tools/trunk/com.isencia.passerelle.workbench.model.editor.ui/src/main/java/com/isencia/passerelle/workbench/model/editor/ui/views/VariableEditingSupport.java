@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
+import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,17 +25,23 @@ import com.isencia.passerelle.workbench.model.ui.command.AttributeCommand;
 public class VariableEditingSupport extends EditingSupport {
 
 	private static Logger logger = LoggerFactory.getLogger(VariableEditingSupport.class);
-	private ActorAttributesView part;
+	
+	private ActorAttributesView actorAttributesView;
 	
 	public VariableEditingSupport(ActorAttributesView part, ColumnViewer viewer) {
 		super(viewer);
-		this.part = part;
+		this.actorAttributesView = part;
 	}
 
 	@Override
 	protected CellEditor getCellEditor(Object element) {
 		
-        final PropertyDescriptor desc = EntityPropertySource.getPropertyDescriptor((Variable)element);
+		final PropertyDescriptor desc;
+		if (element instanceof String) {
+			desc = new TextPropertyDescriptor(VariableEditingSupport.class.getName()+".nameText", "Name");
+		} else {
+            desc = EntityPropertySource.getPropertyDescriptor((Variable)element);
+		}
         return desc.createPropertyEditor((Composite)getViewer().getControl());
 	}
 
@@ -45,6 +52,9 @@ public class VariableEditingSupport extends EditingSupport {
 
 	@Override
 	protected Object getValue(Object element) {
+		
+		if (element instanceof String) return actorAttributesView.getActorName();
+		
 		final Variable param = (Variable)element;
 		try {
 			if (!param.isStringMode() && param.getToken()!=null && param.getToken() instanceof BooleanToken) {
@@ -60,9 +70,12 @@ public class VariableEditingSupport extends EditingSupport {
 	protected void setValue(Object element, Object value) {
 		
 		try {
-			// Should create or use interface for setting dirty.
-			if (part.getPart() instanceof PasserelleModelMultiPageEditor) {
-				final PasserelleModelMultiPageEditor ed = (PasserelleModelMultiPageEditor)part.getPart();
+			if (element instanceof String) {
+				// Also uses a Command so that is undoable
+				actorAttributesView.setActorName((String)value);
+				
+			} else if (actorAttributesView.getPart() instanceof PasserelleModelMultiPageEditor) {
+				final PasserelleModelMultiPageEditor ed = (PasserelleModelMultiPageEditor)actorAttributesView.getPart();
 				final AttributeCommand              cmd = new AttributeCommand(element, value);
 				ed.getEditor().getEditDomain().getCommandStack().execute(cmd);
 				ed.refreshActions();
