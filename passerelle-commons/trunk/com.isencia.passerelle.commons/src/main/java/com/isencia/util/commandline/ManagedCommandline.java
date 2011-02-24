@@ -69,8 +69,10 @@ public class ManagedCommandline extends EnvCommandline {
     
     private StreamGobbler stdOutGobbler;
     private StreamGobbler stdErrGobbler;
+    private static final Logger logger = LoggerFactory.getLogger(ManagedCommandline.class);
+    private boolean streamLogsToLogging = false; 
 
-    /**
+	/**
      * Constructor which takes a command line string and attempts
      * to parse it into it's various components.
      *
@@ -241,8 +243,12 @@ public class ManagedCommandline extends EnvCommandline {
         	BufferedReader lineByLineReader = new BufferedReader(inputStreamReader);
             String line = null;
             while ((line=lineByLineReader.readLine())!=null) {
-                streamDataAsStringBuilder.append(line+LINE_SEPARATOR);
-                streamDataAsList.add(line);
+                if (streamLogsToLogging) {
+                	logger.debug(getName()+"> "+line);
+                } else {
+                    streamDataAsStringBuilder.append(line+LINE_SEPARATOR);
+                    streamDataAsList.add(line);
+                }
             }
         }
 
@@ -267,8 +273,12 @@ public class ManagedCommandline extends EnvCommandline {
                             + String.valueOf(chars, 0, length) + "'");
                 }
 
-                streamDataAsStringBuilder.append(chars, 0, length);
-                streamDataAsList.add(new String(chars));
+                if (streamLogsToLogging) {
+                	logger.debug(getName()+"> "+new String(chars));
+                } else {
+	                streamDataAsStringBuilder.append(chars, 0, length);
+	                streamDataAsList.add(new String(chars));
+                }
             }
         }
 
@@ -285,5 +295,13 @@ public class ManagedCommandline extends EnvCommandline {
         private StringBuilder streamDataAsStringBuilder;
         private List<String> streamDataAsList;
     }
+    
+    public boolean isStreamLogsToLogging() {
+		return streamLogsToLogging;
+	}
+
+	public void setStreamLogsToLogging(boolean streamLogsToLogging) {
+		this.streamLogsToLogging = streamLogsToLogging;
+	}
 
 }
