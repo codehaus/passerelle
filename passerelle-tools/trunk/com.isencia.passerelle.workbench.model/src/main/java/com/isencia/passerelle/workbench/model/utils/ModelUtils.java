@@ -384,7 +384,7 @@ public class ModelUtils {
 	 * @param actor
 	 * @return
 	 */
-	public static IProject getProject(final Actor actor) {
+	public static IProject getProject(final NamedObj actor) {
 		
 		// Get top level actor, which knows the project we have.
 		CompositeActor comp = (CompositeActor)actor.getContainer();
@@ -400,7 +400,7 @@ public class ModelUtils {
 	 * @param filePath
 	 * @param dataExportTransformer
 	 */
-	public static String substitute(final String sub, final Actor actor) {
+	public static String substitute(final String sub, final NamedObj actor) {
 		
 		final Map<String,String> variables = new HashMap<String,String>(3);
 		variables.put("project_name", getProject(actor).getName());
