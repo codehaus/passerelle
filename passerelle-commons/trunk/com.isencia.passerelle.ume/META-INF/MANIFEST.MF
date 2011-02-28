@@ -6,8 +6,7 @@ Bundle-Version: 6.0.0.qualifier
 Bundle-Vendor: iSencia
 Import-Package: com.isencia.util,
  org.slf4j
-Require-Bundle: activation,
- mail
+Require-Bundle: mail
 Export-Package: com.isencia.message;version="4.0.0",
  com.isencia.message.db;version="4.0.0",
  com.isencia.message.extractor;version="4.0.0",
