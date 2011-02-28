@@ -564,7 +564,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		final FlyoutPreferences prefs = super.getPalettePreferences();
 		prefs.setPaletteState(FlyoutPaletteComposite.STATE_PINNED_OPEN);
 		prefs.setDockLocation(PositionConstants.WEST);
-		prefs.setPaletteWidth(250); // EDNA Workbench has long actor names
+		prefs.setPaletteWidth(250); // Some Workbench have long actor names
 		
 		return prefs;
 	}
