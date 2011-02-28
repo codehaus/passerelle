@@ -3,6 +3,8 @@ package com.isencia.passerelle.workbench.model.launch;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.equinox.app.IApplication;
@@ -11,9 +13,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
+import ptolemy.actor.ExecutionListener;
 import ptolemy.actor.Manager;
-import ptolemy.moml.MoMLParser;
+import ptolemy.kernel.util.IllegalActionException;
+import ptolemy.kernel.util.ModelErrorHandler;
+import ptolemy.kernel.util.NamedObj;
 
+import com.isencia.passerelle.core.PasserelleException;
+import com.isencia.passerelle.domain.cap.Director;
+import com.isencia.passerelle.ext.ErrorCollector;
+import com.isencia.passerelle.model.util.MoMLParser;
 import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
@@ -31,9 +40,12 @@ public class ModelRunner implements IApplication {
 		return logger;
 	}
 
-	private long start;
-	private Manager manager;
+	private   long start;
+	private   Manager manager;
 	
+	/**
+	 * 
+	 */
 	@Override
 	public Object start(IApplicationContext applicationContextMightBeNull) throws Exception {
 		
@@ -63,8 +75,9 @@ public class ModelRunner implements IApplication {
 	 * Sometimes can be called 
 	 * @param modelPath
 	 */
-	public void runModel(final String modelPath, final boolean separateVM) {
+	public void runModel(final String modelPath, final boolean separateVM) throws Exception {
 		
+		final List<Exception> exceptions = new ArrayList<Exception>(7);
 		try {
 			start = System.currentTimeMillis();
 			
@@ -92,7 +105,8 @@ public class ModelRunner implements IApplication {
 					MoMLParser.purgeAllModelRecords();
 					MoMLParser.purgeModelRecord(modelPath);
 					
-					MoMLParser moMLParser = new MoMLParser();
+					// NOTE must use argument below 
+					final MoMLParser moMLParser = new MoMLParser();
 					CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
 					
 					// The workspace is named after the RCP project. This enables actors
@@ -104,6 +118,15 @@ public class ModelRunner implements IApplication {
 					this.manager = new Manager(compositeActor.workspace(), "model");
 					compositeActor.setManager(manager);
 					
+					// Errors
+					final Director director = (Director)compositeActor.getDirector();
+					director.addErrorCollector(new ErrorCollector() {
+						@Override
+						public void acceptError(PasserelleException e) {
+							exceptions.add(e);
+						}
+					});
+					
 					// The manager JMX service is used to control the workflow from 
 					// the RCP workspace. This starts the registry on a port and has two
 					// JMX objects in the registry, one for calling method on the workbench 
@@ -111,8 +134,8 @@ public class ModelRunner implements IApplication {
 					// If this has been set up the property "com.isencia.jmx.service.port"
 					// will have been set to the free port being used. Otherwise the workflow
 					// service will not be added to the registry.
-					logger.debug("The jmx port is set to : '"+System.getProperty("com.isencia.jmx.service.port")+"'");
 					if (System.getProperty("com.isencia.jmx.service.port")!=null) {
+						logger.debug("The jmx port is set to : '"+System.getProperty("com.isencia.jmx.service.port")+"'");
 						modelAgent = new RemoteManagerAgent(manager);
 						modelAgent.start();
 					}
@@ -120,11 +143,6 @@ public class ModelRunner implements IApplication {
 					manager.execute(); // Blocks until done
 					
 				}
-			} catch (IllegalArgumentException illegalArgumentException) { 
-				logger.info(illegalArgumentException.getMessage());
-			} catch (Throwable e) {
-				e.printStackTrace();
-				logger.error("Cannot read "+modelPath, e);
 	
 			} finally {
 				if (reader != null) {
@@ -138,7 +156,6 @@ public class ModelRunner implements IApplication {
 					modelAgent.stop();
 					logger.info("Closed model agent");
 				}
-				
 				manager         = null;
 				currentInstance = null;
 	
@@ -154,10 +171,15 @@ public class ModelRunner implements IApplication {
 				logger.info("Passerelle shut down.");
 				System.exit(1);
 			}
-		}
+
+
+			if (!exceptions.isEmpty()) {
+				throw exceptions.get(0);
+			}
+		} 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Throwable {
 		String model = null;
 		// The model is specified with argument -model moml_file
 		if( args==null)

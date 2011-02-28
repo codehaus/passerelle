@@ -75,7 +75,11 @@ public class RunAction extends ExecutionAction implements IEditorActionDelegate 
 					@Override
 					protected IStatus run(IProgressMonitor monitor) {
 						final ModelRunner runner = new ModelRunner();
-						runner.runModel(sel.getLocation().toOSString(), false);
+						try {
+							runner.runModel(sel.getLocation().toOSString(), false);
+						} catch (Throwable e) {
+							logger.error("Error during workflow execution", e);
+						}
 						return Status.OK_STATUS;
 					}
 				};
