@@ -124,6 +124,7 @@ public class ModelRunner implements IApplication {
 						@Override
 						public void acceptError(PasserelleException e) {
 							exceptions.add(e);
+							manager.stop();
 						}
 					});
 					
