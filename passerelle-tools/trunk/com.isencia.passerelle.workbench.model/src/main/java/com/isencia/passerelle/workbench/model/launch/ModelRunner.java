@@ -13,11 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
-import ptolemy.actor.ExecutionListener;
 import ptolemy.actor.Manager;
-import ptolemy.kernel.util.IllegalActionException;
-import ptolemy.kernel.util.ModelErrorHandler;
-import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.core.PasserelleException;
 import com.isencia.passerelle.domain.cap.Director;
