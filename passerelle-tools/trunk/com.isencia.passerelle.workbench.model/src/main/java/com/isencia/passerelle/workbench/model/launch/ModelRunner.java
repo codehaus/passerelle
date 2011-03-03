@@ -161,7 +161,13 @@ public class ModelRunner implements IApplication {
 				
 			}
 		} finally {
+			
+			// Required or test decks which run many momls in
+			// one VM will fail horribly.
+			MoMLParser.purgeAllModelRecords();
+			MoMLParser.purgeModelRecord(modelPath);
 			logger.info("End model : "+modelPath);
+			
 			if (separateVM) {
 				// We have to do this in case daemons are started.
 				// We must exit this vm once the model is finished.
