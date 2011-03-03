@@ -1,12 +1,12 @@
 package com.isencia.passerelle.workbench.model.launch;
 
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.slf4j.Logger;
@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.actor.Manager;
+import ptolemy.moml.MoMLParser;
 
 import com.isencia.passerelle.core.PasserelleException;
 import com.isencia.passerelle.domain.cap.Director;
 import com.isencia.passerelle.ext.ErrorCollector;
-import com.isencia.passerelle.model.util.MoMLParser;
 import com.isencia.passerelle.workbench.model.jmx.RemoteManagerAgent;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
@@ -52,10 +52,6 @@ public class ModelRunner implements IApplication {
 
 	@Override
 	public void stop() {
-		
-		final long end  = System.currentTimeMillis();
-		// Did not like the DateFormat version, there may be something better than this.
-		final long time = end-start;
 		if (manager!=null) {
 			try {
 				manager.stop();
@@ -64,7 +60,6 @@ public class ModelRunner implements IApplication {
 			}
 			manager = null;
 		}
-        logger.info("Model completed in "+(time/(60*1000))+"m "+((time/1000)%60)+"s "+(time%1000)+"ms");
 	}
 
 	/**
@@ -73,10 +68,12 @@ public class ModelRunner implements IApplication {
 	 */
 	public void runModel(final String modelPath, final boolean separateVM) throws Exception {
 		
-		final List<Exception> exceptions = new ArrayList<Exception>(7);
+		if (!Platform.isRunning()) throw new Exception("ModelRunner is designed to be used with an eclipse application!");
+		
+		final List<Exception> exceptions = new ArrayList<Exception>(1);
+		final long start = System.currentTimeMillis();
 		try {
-			start = System.currentTimeMillis();
-			
+		
 			//TODO Check that path works when model is run... Edna actors currently use 
 			// workspace to get resources.
 			// When run from command line may need to set variable for workspace.
@@ -84,9 +81,10 @@ public class ModelRunner implements IApplication {
 			System.setProperty("eclipse.workspace.home", workspacePath);
 			System.setProperty("be.isencia.home",        workspacePath);		
 			logger.info("Workspace folder set to: "+workspacePath);
-	
+			
 			Reader             reader     = null;
 			RemoteManagerAgent modelAgent = null;
+			CompositeActor compositeActor = null;
 			try {
 				currentInstance = this;
 				
@@ -103,7 +101,8 @@ public class ModelRunner implements IApplication {
 					
 					// NOTE must use argument below 
 					final MoMLParser moMLParser = new MoMLParser();
-					CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, reader);
+					compositeActor = (CompositeActor) moMLParser.parse(null, reader);
+					compositeActor.setPersistent(false);
 					
 					// The workspace is named after the RCP project. This enables actors
 					// running to determine which RCP project they are associated with and
@@ -112,6 +111,8 @@ public class ModelRunner implements IApplication {
 					ModelUtils.setCompositeProjectName(compositeActor, modelPath);
 					
 					this.manager = new Manager(compositeActor.workspace(), "model");
+					manager.setPersistent(false); // Important for test decks to pass.
+		
 					compositeActor.setManager(manager);
 					
 					// Errors
@@ -123,6 +124,7 @@ public class ModelRunner implements IApplication {
 							manager.stop();
 						}
 					});
+					director.setPersistent(false);
 					
 					// The manager JMX service is used to control the workflow from 
 					// the RCP workspace. This starts the registry on a port and has two
@@ -136,27 +138,29 @@ public class ModelRunner implements IApplication {
 						modelAgent = new RemoteManagerAgent(manager);
 						modelAgent.start();
 					}
-					
+
 					manager.execute(); // Blocks until done
 					
+					// Well almost
+					while (manager.isExitingAfterWrapup()) {
+						logger.info("Waiting for manager to wrap up.");
+						Thread.sleep(100);
+					}
 				}
 	
 			} finally {
-				if (reader != null) {
-					try {
-						reader.close();
-						logger.info("Closed reader");
-					} catch (IOException e) {}
-				}
-			
 				if (modelAgent!=null) {
 					modelAgent.stop();
 					logger.info("Closed model agent");
 				}
+				if (reader != null) {
+					reader.close();
+					logger.info("Closed reader");
+				}
+			
 				manager         = null;
 				currentInstance = null;
 	
-				stop();
 				System.gc();
 				
 			}
@@ -167,7 +171,11 @@ public class ModelRunner implements IApplication {
 			MoMLParser.purgeAllModelRecords();
 			MoMLParser.purgeModelRecord(modelPath);
 			logger.info("End model : "+modelPath);
-			
+			final long end  = System.currentTimeMillis();
+			// Did not like the DateFormat version, there may be something better than this.
+			final long time = end-start;
+	        logger.info("Model completed in "+(time/(60*1000))+"m "+((time/1000)%60)+"s "+(time%1000)+"ms");
+						
 			if (separateVM) {
 				// We have to do this in case daemons are started.
 				// We must exit this vm once the model is finished.
