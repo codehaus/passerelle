@@ -195,6 +195,10 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 	private StyledText text;
 	private TextEditor textEditor;
 
+	private Object p;
+
+	private Exception parseError;
+
 	/**
 	 * Creates a multi-page editor example.
 	 */
@@ -477,6 +481,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 
 	protected void setInput(IEditorInput input) {
 
+		this.parseError = null;
 		superSetInput(input);
 
 		File file = EclipseUtils.getFile(input);
@@ -490,6 +495,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 			setDiagram(compositeActor);
 			
 		} catch (Exception e) {
+			this.parseError = e;
 			getLogger().error(
 					"Error during reading/parsing of model file : "
 							+ file.getName(), e);
@@ -504,6 +510,10 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 
 		}
 
+	}
+	
+	public Exception getParseError() {
+		return parseError;
 	}
 
 	class ResourceTracker implements IResourceChangeListener,
