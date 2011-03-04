@@ -1,12 +1,18 @@
 package com.isencia.passerelle.workbench.model.editor.ui.views;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
 import ptolemy.data.BooleanToken;
 import ptolemy.data.expr.Variable;
 
+import com.isencia.passerelle.util.ptolemy.IAvailableChoices;
+import com.isencia.passerelle.util.ptolemy.StringChoiceParameter;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
+import com.isencia.passerelle.workbench.util.ListUtils;
 
 public class VariableLabelProvider extends ColumnLabelProvider {
 	
@@ -36,7 +42,26 @@ public class VariableLabelProvider extends ColumnLabelProvider {
 			// There is another exception which will show if this happens.
 		}
 		
-		return element == null ? "" : param.getExpression();
+		
+		String label = element == null ? "" : param.getExpression();
+		
+		if (param instanceof StringChoiceParameter) {
+			final IAvailableChoices choice = ((StringChoiceParameter)param).getAvailableChoices();
+			final Map<String,String> vis   = choice.getVisibleChoices();
+			if (vis!=null) {
+				final StringBuilder buf  = new StringBuilder();
+                final List<String>  vals = ListUtils.getList(label);
+                for (int i = 0; i < vals.size(); i++) {
+                	buf.append(vis.get(vals.get(i)));
+                	if (i<vals.size()-1) {
+                		buf.append(", ");
+                	}
+				}
+				label = buf.toString();
+			}
+		}
+		
+		return label;
 	}
 
 

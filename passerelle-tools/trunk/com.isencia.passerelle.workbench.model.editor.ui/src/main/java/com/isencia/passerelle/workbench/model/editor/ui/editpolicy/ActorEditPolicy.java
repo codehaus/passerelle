@@ -63,7 +63,7 @@ public class ActorEditPolicy extends GraphicalNodeEditPolicy {
 	protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
 		AbstractNodeEditPart editPart = getActorEditPart();
 		if (getLogger().isDebugEnabled())
-			getLogger().debug(
+			getLogger().trace(
 					"getConnectionCreateCommand for editPart : " + editPart);
 		NamedObj port = null;
 		if (editPart instanceof VertexEditPart) {
