@@ -96,8 +96,8 @@ public class ModelRunner implements IApplication {
 					
 					// In debug mode the same model can be run in the
 					// same VM several times. We purge before running for this reason.
-					MoMLParser.purgeAllModelRecords();
 					MoMLParser.purgeModelRecord(modelPath);
+				    MoMLParser.purgeAllModelRecords();
 					
 					// NOTE must use argument below 
 					final MoMLParser moMLParser = new MoMLParser();
@@ -168,8 +168,8 @@ public class ModelRunner implements IApplication {
 			
 			// Required or test decks which run many momls in
 			// one VM will fail horribly.
-			MoMLParser.purgeAllModelRecords();
 			MoMLParser.purgeModelRecord(modelPath);
+			MoMLParser.purgeAllModelRecords();
 			logger.info("End model : "+modelPath);
 			final long end  = System.currentTimeMillis();
 			// Did not like the DateFormat version, there may be something better than this.
