@@ -209,9 +209,17 @@ public class OutlineEditPart extends
 			setWidgetText(model.getName());
 	}
 
+	/**
+	 * NOTE This can be called from non-UI thread!
+	 */
 	@Override
 	public void valueChanged(Settable settable) {
-		refreshVisuals();
+		getRoot().getViewer().getControl().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				refreshVisuals();
+			}
+		});
 	}
 
 	@Override
