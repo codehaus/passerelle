@@ -39,6 +39,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpart.DirectorEditPar
 import com.isencia.passerelle.workbench.model.editor.ui.properties.ActorGeneralSection;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.NamedObjComparator;
 import com.isencia.passerelle.workbench.model.ui.command.AttributeCommand;
+import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
 
 
 /**
@@ -62,36 +63,42 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 	@Override
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		
-		if (selection instanceof StructuredSelection) {
-			
-			final Object sel = ((StructuredSelection)selection).getFirstElement();
-            if (sel instanceof ActorEditPart || sel instanceof DirectorEditPart) {
-            	
-            	this.actor = sel instanceof ActorEditPart
-            	           ? (NamedObj)((ActorEditPart)sel).getActor()
-            	           : (NamedObj)((DirectorEditPart)sel).getDirectorModel();
-            	this.part  = part;
-            	
-				if (!addedListener && part instanceof PasserelleModelMultiPageEditor) {
-					((PasserelleModelMultiPageEditor)part).getEditor().getEditDomain().getCommandStack().addCommandStackEventListener(this);
-					addedListener = true;
-				}
-
-            	final List<Parameter> parameterList = new ArrayList<Parameter>(7);
-        		Iterator<Parameter> parameterIterator = actor.attributeList(Parameter.class).iterator();
-        		while (parameterIterator.hasNext()) {
-        			Parameter parameter = (Parameter) parameterIterator.next();
-        			if (PasserelleConfigurer.isVisible(actor, parameter)) {
-        				parameterList.add(parameter);
-        			}
-        		}
-        		
-        		createTableModel(parameterList);
-        		return;
-        	}
-		}
+		this.part  = part;
+        if (updateSelection(selection))  return;
 		clear();
 	}
+
+	protected boolean updateSelection(final ISelection selection) {
+		
+		if (!(selection instanceof StructuredSelection)) return false;
+		
+		final Object sel = ((StructuredSelection)selection).getFirstElement(); 	
+		
+        if (sel instanceof ActorEditPart || sel instanceof DirectorEditPart) {
+			this.actor = sel instanceof ActorEditPart
+			           ? (NamedObj)((ActorEditPart)sel).getActor()
+					   : (NamedObj)((DirectorEditPart)sel).getDirectorModel();
+	
+			if (!addedListener && part instanceof PasserelleModelMultiPageEditor) {
+				((PasserelleModelMultiPageEditor)part).getEditor().getEditDomain().getCommandStack().addCommandStackEventListener(this);
+				addedListener = true;
+			}
+	
+			final List<Parameter> parameterList = new ArrayList<Parameter>(7);
+			Iterator<Parameter> parameterIterator = actor.attributeList(Parameter.class).iterator();
+			while (parameterIterator.hasNext()) {
+				Parameter parameter = (Parameter) parameterIterator.next();
+				if (PasserelleConfigurer.isVisible(actor, parameter)) {
+					parameterList.add(parameter);
+				}
+			}
+	
+	        createTableModel(parameterList);	
+	        return true;
+        } 
+        
+        return false;
+    }
 
 	private void createTableModel(final List<Parameter> parameterList) {
 		
@@ -167,6 +174,13 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 				}
 			}
 		});
+		
+		try {
+			this.part = EclipseUtils.getActivePage().getActiveEditor();
+			updateSelection(EclipseUtils.getActivePage().getSelection());
+		} catch (Throwable ignored) {
+			// There might not be a selection or page.
+		}
 	}
 
 	private void createColumns(TableViewer viewer) {
