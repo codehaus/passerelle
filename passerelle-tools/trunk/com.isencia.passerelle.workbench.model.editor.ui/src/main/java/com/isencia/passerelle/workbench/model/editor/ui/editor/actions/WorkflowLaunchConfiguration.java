@@ -25,6 +25,8 @@ import org.eclipse.debug.internal.core.LaunchConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ptolemy.vergil.fsm.CaseGraphFrame.RemoveCaseAction;
+
 public class WorkflowLaunchConfiguration extends LaunchConfiguration {
 
 	private static Logger logger = LoggerFactory.getLogger(WorkflowLaunchConfiguration.class);
@@ -90,6 +92,14 @@ public class WorkflowLaunchConfiguration extends LaunchConfiguration {
 
 	public Map getAttribute(String attributeName, Map defaultValue) throws CoreException {
 		
+		// REMOVE LD_PRELOAD if it is already in environment
+		final Map superMap = super.getAttribute(attributeName, defaultValue);
+		if (superMap!=null&&superMap.containsKey("LD_PRELOAD")&&System.getenv().containsKey("LD_PRELOAD")) {
+			logger.debug("LD_PRELOAD already set, use system version which is "+System.getenv("LD_PRELOAD"));
+			superMap.put("LD_PRELOAD", System.getenv("LD_PRELOAD"));
+		}
+
+			
 		if ("org.eclipse.jdt.launching.VM_ARGUMENTS".equals(attributeName)) {
 			
 			final Map vmArgs = super.getAttribute("org.eclipse.jdt.launching.VM_ARGUMENTS", (Map)null);
@@ -98,8 +108,9 @@ public class WorkflowLaunchConfiguration extends LaunchConfiguration {
 			logger.debug("Changed vmArgs are: "+vmArgs);
 			return vmArgs;
 		} else {
-			return super.getAttribute(attributeName, defaultValue);
+			return superMap;
 		}
+		
 	}
 	
 	/* (non-Javadoc)
