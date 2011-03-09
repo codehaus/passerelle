@@ -484,13 +484,14 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 		this.parseError = null;
 		superSetInput(input);
 
-		File file = EclipseUtils.getFile(input);
+		String filePath = EclipseUtils.getFilePath(input);
+		filePath = filePath.replace("%20", " ");
 		InputStream is = null;
 		try {
-			is = new FileInputStream(file);
+			is = new FileInputStream(filePath);
 			MoMLParser moMLParser = new MoMLParser();
 			CompositeActor compositeActor = (CompositeActor) moMLParser.parse(null, is);
-			ModelUtils.setCompositeProjectName(compositeActor, file.getAbsolutePath());
+			ModelUtils.setCompositeProjectName(compositeActor, filePath);
 			
 			setDiagram(compositeActor);
 			
@@ -498,7 +499,7 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 			this.parseError = e;
 			getLogger().error(
 					"Error during reading/parsing of model file : "
-							+ file.getName(), e);
+							+ input.getName(), e);
 		} finally {
 			if (is != null) {
 				try {
