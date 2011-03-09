@@ -107,9 +107,10 @@ public class WorkflowLaunchConfiguration extends LaunchConfiguration {
 			vmArgs.putAll(systemProperties);
 			logger.debug("Changed vmArgs are: "+vmArgs);
 			return vmArgs;
-		} else {
-			return superMap;
 		}
+			
+		
+		return superMap;
 		
 	}
 	
