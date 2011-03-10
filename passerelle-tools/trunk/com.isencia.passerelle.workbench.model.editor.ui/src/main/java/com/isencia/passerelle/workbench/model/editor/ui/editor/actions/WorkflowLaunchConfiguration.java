@@ -25,8 +25,6 @@ import org.eclipse.debug.internal.core.LaunchConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ptolemy.vergil.fsm.CaseGraphFrame.RemoveCaseAction;
-
 public class WorkflowLaunchConfiguration extends LaunchConfiguration {
 
 	private static Logger logger = LoggerFactory.getLogger(WorkflowLaunchConfiguration.class);
