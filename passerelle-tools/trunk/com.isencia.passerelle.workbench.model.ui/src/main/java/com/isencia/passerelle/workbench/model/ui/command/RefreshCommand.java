@@ -43,7 +43,7 @@ public class RefreshCommand extends org.eclipse.gef.commands.Command {
 			@Override
 			protected void _execute() throws Exception {
 				if( getLogger().isDebugEnabled() )
-					getLogger().debug("Referesh model");
+					getLogger().debug("Refresh model");
 			}
 		});
 	}
