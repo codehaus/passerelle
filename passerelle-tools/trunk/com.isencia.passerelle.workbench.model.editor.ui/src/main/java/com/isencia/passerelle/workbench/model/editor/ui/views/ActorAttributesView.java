@@ -128,7 +128,7 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 
 	public void clear() {
     	this.actor = null;
-    	if (part!=null) {
+    	if (part!=null && part instanceof PasserelleModelMultiPageEditor) {
     	    ((PasserelleModelMultiPageEditor)part).getEditor().getEditDomain().getCommandStack().removeCommandStackEventListener(this);
     	}
         this.part  = null;
