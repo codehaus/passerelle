@@ -85,6 +85,7 @@ import ptolemy.actor.TypedCompositeActor;
 import com.isencia.passerelle.model.util.MoMLParser;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.OutlinePartFactory;
+import com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
@@ -231,6 +232,13 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 		} catch (PartInitException e) {
 			logger.error("Cannot open passerelle editor "
 					+ getEditorInput().getName(), e);
+		}
+		
+		try {
+			EclipseUtils.getActivePage().showView(ActorAttributesView.ID);
+
+		} catch (Throwable ignored) {
+			// Nowt
 		}
 	}
 
