@@ -546,6 +546,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		man.add(new Separator(getClass().getName()+".separator2"));
 		man.add(registry.getAction(ActionFactory.COPY.getId()));
 		man.add(registry.getAction(ActionFactory.PASTE.getId()));
+		man.add(registry.getAction(ActionFactory.DELETE.getId()));
 		
 		// Send the menu, we overide the menu here that is configured by RCP
 		final Menu rightClickMenu = man.createContextMenu(fc);

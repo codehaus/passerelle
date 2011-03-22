@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ptolemy.data.BooleanToken;
 import ptolemy.data.expr.Variable;
 
+import com.isencia.passerelle.workbench.model.editor.ui.properties.CellEditorAttribute;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 
 /**
@@ -35,7 +36,9 @@ public class VariableEditingSupport extends EditingSupport {
 	protected CellEditor getCellEditor(Object element) {
 		
 		final PropertyDescriptor desc;
-		if (element instanceof String) {
+		if (element instanceof CellEditorAttribute) {
+			return ((CellEditorAttribute)element).createCellEditor(getViewer().getControl());
+	    } else if (element instanceof String) {
 			desc = new TextPropertyDescriptor(VariableEditingSupport.class.getName()+".nameText", "Name");
 		} else {
             desc = EntityPropertySource.getPropertyDescriptor((Variable)element);
