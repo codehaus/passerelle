@@ -286,6 +286,15 @@ public class EntityPropertySource implements IPropertySource {
 	    return getPropertyDescriptor(parameter, type);
 	}
 	
+	/**
+	 * NOTE: the attribute may now implement 'CellEditorParameter' in which case this method
+	 * is not asked for the cell editor. This allows exotic editors to be created without
+	 * changing the core passerelle code.
+	 * 
+	 * @param parameter
+	 * @param type
+	 * @return
+	 */
 	protected static PropertyDescriptor getPropertyDescriptor(final Attribute parameter, final Type type) {
 		
 		
