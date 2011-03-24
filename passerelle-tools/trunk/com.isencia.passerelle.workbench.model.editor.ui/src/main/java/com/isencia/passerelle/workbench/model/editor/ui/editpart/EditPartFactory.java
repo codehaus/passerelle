@@ -39,8 +39,8 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		return parent;
 	}
 
-	private static Logger logger = LoggerFactory
-			.getLogger(EditPartFactory.class);
+	private static Logger logger = LoggerFactory.getLogger(EditPartFactory.class);
+	
 	protected PasserelleModelMultiPageEditor parent;
 	private CompositeActor actor;
 
@@ -127,8 +127,7 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 		if (child != null) {
 			child.setModel(model);
 		} else {
-			getLogger().error(
-					"Unable to create EditPart, requested model not supported");
+			getLogger().error("Unable to create EditPart, requested model not supported");
 		}
 		if (child instanceof AbstractBaseEditPart) {
 			parts.add((AbstractBaseEditPart) child);

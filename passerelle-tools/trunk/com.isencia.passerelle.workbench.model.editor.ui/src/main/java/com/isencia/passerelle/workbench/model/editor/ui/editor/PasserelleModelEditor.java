@@ -3,6 +3,9 @@ package com.isencia.passerelle.workbench.model.editor.ui.editor;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map;
+
+import javax.swing.border.EmptyBorder;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -14,9 +17,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.gef.ContextMenuProvider;
 import org.eclipse.gef.DefaultEditDomain;
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.KeyHandler;
 import org.eclipse.gef.KeyStroke;
@@ -24,6 +29,7 @@ import org.eclipse.gef.MouseWheelHandler;
 import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
+import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.palette.PaletteRoot;
@@ -78,6 +84,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ptolemy.actor.CompositeActor;
+import ptolemy.kernel.ComponentEntity;
 
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.FileTransferDropTargetListener;
 import com.isencia.passerelle.workbench.model.editor.ui.dnd.PasserelleTemplateTransferDropTargetListener;
@@ -91,10 +98,10 @@ import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFac
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.EditPartFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
-import com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
 import com.isencia.passerelle.workbench.model.ui.utils.EclipseUtils;
+import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		                           implements IPasserelleEditor, 
@@ -720,6 +727,23 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 
 	public void refresh() {
 		getGraphicalViewer().setContents(getDiagram());
+	}
+
+	public void setActorSelected(final String actorName, final boolean isSelected) {
+		
+		final ComponentEntity sel = ModelUtils.findEntityByName(getContainer(), actorName);
+		GraphicalViewer gv = getGraphicalViewer();
+		final Map<?, ?> reg = gv.getEditPartRegistry();
+		final AbstractGraphicalEditPart part = (AbstractGraphicalEditPart)reg.get(sel);
+		if (part!=null) {
+			if (isSelected) {
+			    part.setSelected(EditPart.SELECTED_PRIMARY);
+			    part.getFigure().setBorder(new LineBorder(Display.getCurrent().getSystemColor(SWT.COLOR_RED), 1));
+			} else {
+				part.setSelected(EditPart.SELECTED_NONE);
+			    part.getFigure().setBorder(null);
+			}
+		}
 	}
 
 
