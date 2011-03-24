@@ -885,4 +885,13 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 		getEditorSite().getActionBars().getToolBarManager().update(true);
 	}
 
+	/**
+	 * Selects an actor in the editor by highlighting it.
+	 * @param actorName
+	 * @param isSelected
+	 */
+	public void setActorSelected(String actorName, boolean isSelected) {
+		editor.setActorSelected(actorName, isSelected);
+	}
+
 }

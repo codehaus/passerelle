@@ -375,6 +375,7 @@ public class ModelUtils {
 		final String relPath = modelPath.substring(workspacePath.length());
 		final IFile  projFile= (IFile)ResourcesPlugin.getWorkspace().getRoot().findMember(relPath);
 		compositeActor.workspace().setName(projFile.getProject().getName());
+		compositeActor.setSource(modelPath);
 	}
 
 	/**
