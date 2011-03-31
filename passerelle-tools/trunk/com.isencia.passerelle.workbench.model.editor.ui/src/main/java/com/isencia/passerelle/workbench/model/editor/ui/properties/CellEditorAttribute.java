@@ -11,4 +11,10 @@ public interface CellEditorAttribute {
 	 * @return the cell editor
 	 */
 	public CellEditor createCellEditor(final Control control);
+	
+	/**
+	 * May implement to return null. If implemented the text returned will be used in the Attribute Table.
+	 * @return
+	 */
+	public String getRendererText();
 }
