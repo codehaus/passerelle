@@ -740,7 +740,6 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 			    part.setSelected(EditPart.SELECTED_PRIMARY);
 			    part.getFigure().setBorder(new LineBorder(Display.getCurrent().getSystemColor(SWT.COLOR_RED), 1));
 			} else {
-				part.setSelected(EditPart.SELECTED_NONE);
 			    part.getFigure().setBorder(null);
 			}
 		}

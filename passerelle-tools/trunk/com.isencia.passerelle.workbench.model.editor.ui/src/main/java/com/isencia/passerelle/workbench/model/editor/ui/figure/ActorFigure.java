@@ -123,7 +123,7 @@ public abstract class ActorFigure extends AbstractNodeFigure {
 
 	public Color getBackgroundColor() {
 		if (body != null) {
-			return body.getBackgroundColor();
+			if (body.getBackgroundColor()!=null) body.getBackgroundColor();
 		}
 		return super.getBackgroundColor();
 	}
