@@ -22,7 +22,7 @@ public class AttributeCommand extends Command {
 
 	public AttributeCommand(final ColumnViewer viewer, Object element, Object newValue) throws IllegalActionException {
 		
-		super("Set value "+((Variable)element).getDisplayName()+" to "+newValue);
+		super("Set value "+((Variable)element).getDisplayName()+" to "+getVisibleValue(newValue));
 		this.viewer        = viewer;
 		this.attribute     = (Variable)element;
 		this.newValue      = newValue;
@@ -30,6 +30,13 @@ public class AttributeCommand extends Command {
 		                   ? new Boolean (((BooleanToken)attribute.getToken()).booleanValue())
 		                   : attribute.getExpression();
 
+	}
+
+	private static Object getVisibleValue(Object newValue) {
+		if (newValue instanceof String && newValue.toString().length()>32) {
+			return newValue.toString().substring(0, 32)+"...";
+		}
+		return newValue;
 	}
 
 	public void execute() {
