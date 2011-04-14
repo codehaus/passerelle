@@ -226,7 +226,7 @@ public class ActorAttributesView extends ViewPart implements ISelectionListener,
 	
 	public void dispose() {
 		getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(this);
-		if (part!=null) {
+		if (part!=null && part instanceof PasserelleModelMultiPageEditor) {
 			((PasserelleModelMultiPageEditor)part).getEditor().getEditDomain().getCommandStack().removeCommandStackEventListener(this);
 		}
 		super.dispose();
