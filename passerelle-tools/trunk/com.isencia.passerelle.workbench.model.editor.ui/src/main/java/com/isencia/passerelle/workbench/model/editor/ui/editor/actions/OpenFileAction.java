@@ -69,7 +69,10 @@ public class OpenFileAction extends SelectionAction {
 		final ResourceObject ob       = getResourceObject();
 		if (ob!=null) {
 			try {
-				
+				if (resActor instanceof IPartListenerActor) {
+					((IPartListenerActor)resActor).partPreopen(ob);
+				}
+
 				final Object         res      = ob.getResource();
 				EclipseUtils.getActivePage().saveAllEditors(false);
 				
