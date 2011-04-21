@@ -66,9 +66,13 @@ public class EclipseUtils {
 		if (fileInput instanceof IURIEditorInput) {
 			String path = ((IURIEditorInput)fileInput).getURI().toString();
 			if (path.startsWith("file:")) path = path.substring(5);
+			if (path.startsWith("/") && isWindowsOS()) path = path.substring(1);
 			return path;
 		} 
 		return null;
+	}
+	static private boolean isWindowsOS() {
+		return (System.getProperty("os.name").indexOf("Windows") == 0);
 	}
 
 	/**
