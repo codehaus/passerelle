@@ -232,7 +232,7 @@ public class PasserelleModelEditor extends    GraphicalEditorWithFlyoutPalette
 		super.configureGraphicalViewer();
 		ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
 
-		ScalableFreeformRootEditPart root = new ScalableFreeformRootEditPart();
+		PasserellRootEditPart root = new PasserellRootEditPart();
 
 		List<String> zoomLevels = new ArrayList<String>(3);
 		zoomLevels.add(ZoomManager.FIT_ALL);

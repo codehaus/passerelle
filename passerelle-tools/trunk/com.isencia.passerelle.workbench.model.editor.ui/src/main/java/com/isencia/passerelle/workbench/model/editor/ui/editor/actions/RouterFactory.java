@@ -2,7 +2,7 @@ package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 import org.eclipse.draw2d.AbstractRouter;
 import org.eclipse.draw2d.BendpointConnectionRouter;
-import org.eclipse.draw2d.ManhattanConnectionRouter;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolylineConnection;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.draw2d.ui.internal.routers.ObliqueRouter;
@@ -18,17 +18,27 @@ import org.eclipse.ui.PlatformUI;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.router.SCAManhattanConnectionRouter;
 
 public class RouterFactory {
 
-	private static ROUTER_TYPE     type = ROUTER_TYPE.MANHATTAN;
+	public static final String ROUTER_PREF = "com.isencia.passerelle.workbench.model.editor.ui.RouterType";
+	
+	private static ROUTER_TYPE     type = ROUTER_TYPE.getDefaultType();
 	private static CONNECTION_TYPE conn = CONNECTION_TYPE.STRAIGHT;
 	
 	public enum ROUTER_TYPE {
+		
+		SCAMANHATTAN(null) {
+			public AbstractRouter getRouter(IFigure figure) {
+				return new SCAManhattanConnectionRouter(figure);
+			}
+		},
+		
 		DIRECT(new BendpointConnectionRouter()), 
-		MANHATTAN(new RectilinearRouter()), 
-		TREE(new TreeRouter()), 
-		OBLIQUE(new ObliqueRouter());
+		
+		RECTILINEAR(new RectilinearRouter());
+		
 		
 		private AbstractRouter router;
 
@@ -36,8 +46,24 @@ public class RouterFactory {
 			this.router = router;
 		}
 		
-		public AbstractRouter getRouter() {
+		public AbstractRouter getRouter(IFigure figure) {
 			return router;
+		}
+		
+		public static ROUTER_TYPE getDefaultType() {
+			
+			int option = Activator.getDefault().getPreferenceStore().getInt(ROUTER_PREF);
+			
+			switch(option) {
+			case 1:
+				return SCAMANHATTAN;
+			case 2:
+				return DIRECT;
+			case 3:
+				return RECTILINEAR;
+			default:
+				return SCAMANHATTAN;
+			}
 		}
 	}
 	
@@ -49,8 +75,8 @@ public class RouterFactory {
 	}
 
 	
-	public static AbstractRouter getRouter() {
-		return type.getRouter();
+	public static AbstractRouter getRouter(IFigure topPane) {
+		return type.getRouter(topPane);
 	}
 	public static ROUTER_TYPE getRouterType() {
 		return type;
@@ -162,12 +188,24 @@ public class RouterFactory {
 		}
 
 	}
+	
+	
 	public static void createRouterActions(IActionBars actionBars) {
 		
 		actionBars.getToolBarManager().add(new Separator(RouterAction.class.getName()+"Group"));
 		
 		CheckableActionGroup group = new CheckableActionGroup();
-		IAction action = new RouterAction(ROUTER_TYPE.DIRECT);
+		
+		IAction action = new RouterAction(ROUTER_TYPE.SCAMANHATTAN, 1);
+		if (actionBars.getToolBarManager().find(action.getId())==null) {
+			action.setText("Manhattan routing with collision avoidance");
+			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_manhattan.gif"));
+			action.setEnabled(true);
+			actionBars.getToolBarManager().add(action);
+			group.add(action);
+	    }
+		
+		action = new RouterAction(ROUTER_TYPE.DIRECT, 2);
 		if (actionBars.getToolBarManager().find(action.getId())==null) {
 			action.setText("Direct routing");
 			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_direct.gif"));
@@ -176,23 +214,13 @@ public class RouterFactory {
 			group.add(action);
 		}
 		
-		action = new RouterAction(ROUTER_TYPE.MANHATTAN);
+		action = new RouterAction(ROUTER_TYPE.RECTILINEAR, 3);
 		if (actionBars.getToolBarManager().find(action.getId())==null) {
-			action.setText("Manhattan routing");
-			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_manhattan.gif"));
+			action.setText("Rectilinear router");
+			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_manhattan2.gif"));
 			action.setEnabled(true);
 			actionBars.getToolBarManager().add(action);
 			group.add(action);
-	    }
-
-		// Tree is marked as internal so we will leave it for now.
-//		action = new RouterAction(ROUTER_TYPE.TREE);
-//		if (actionBars.getToolBarManager().find(action.getId())==null) {
-//			action.setText("Tree routing");
-//			action.setImageDescriptor(Activator.getImageDescriptor("icons/router_tree.gif"));
-//			action.setEnabled(true);
-//			actionBars.getToolBarManager().add(action);
-//			group.add(action);
-//		}
+		}
 	}
 }

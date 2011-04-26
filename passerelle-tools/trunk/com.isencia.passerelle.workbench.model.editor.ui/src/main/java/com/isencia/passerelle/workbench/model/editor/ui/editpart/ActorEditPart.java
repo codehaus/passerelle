@@ -56,24 +56,18 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class ActorEditPart extends AbstractNodeEditPart {
 
-	private final static Logger logger = LoggerFactory
-			.getLogger(ActorEditPart.class);
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_PROPERTIES = Activator
-			.getImageDescriptor("icons/input.gif");
+	private final static Logger logger = LoggerFactory.getLogger(ActorEditPart.class);
+	
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_PROPERTIES = Activator.getImageDescriptor("icons/input.gif");
 
 	public final static Color COLOR_ERROR_PORT = new Color(null, 192, 20, 20);
 	public final static Color COLOR_CONTROL_PORT = new Color(null, 50, 50, 255);
 
-	public final static ImageDescriptor IMAGE_COMMENT = Activator
-			.getImageDescriptor("icons/comment.png");
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_ACTOR = Activator
-			.getImageDescriptor("icons/actor.gif");
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_PARAMETER = Activator
-			.getImageDescriptor("icons/parameter.gif");
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_INPUTPORT = Activator
-			.getImageDescriptor("icons/input.gif");
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_OUTPUTPORT = Activator
-			.getImageDescriptor("icons/output.gif");
+	public final static ImageDescriptor IMAGE_COMMENT               = Activator.getImageDescriptor("icons/comment.png");
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_ACTOR      = Activator.getImageDescriptor("icons/actor.gif");
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_PARAMETER  = Activator.getImageDescriptor("icons/parameter.gif");
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_INPUTPORT  = Activator.getImageDescriptor("icons/input.gif");
+	public final static ImageDescriptor IMAGE_DESCRIPTOR_OUTPUTPORT = Activator.getImageDescriptor("icons/output.gif");
 
 	public Logger getLogger() {
 		return logger;

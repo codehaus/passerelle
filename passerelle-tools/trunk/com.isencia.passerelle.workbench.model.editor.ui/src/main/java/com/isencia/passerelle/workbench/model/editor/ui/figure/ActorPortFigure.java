@@ -24,7 +24,7 @@ public class ActorPortFigure extends PortFigure {
 	protected void outlineShape(Graphics graphics) {
 		
 		graphics.setBackgroundColor(getFillColor());
-		graphics.setForegroundColor(ColorConstants.black);
+		graphics.setForegroundColor(ColorConstants.gray);
 
 		PointList pts = new PointList();
 		pts.addPoint(bounds.getTopLeft());
