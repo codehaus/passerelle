@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.Image;
 
 public abstract class ActorFigure extends AbstractNodeFigure {
 
-	public final static Color ACTOR_BACKGROUND_COLOR = ColorConstants.gray;
+	public final static Color ACTOR_BACKGROUND_COLOR = ColorConstants.lightGray;
 
 	private IFigure body = null;
 	private Ports inputPorts = null;
@@ -146,8 +146,7 @@ public abstract class ActorFigure extends AbstractNodeFigure {
 			inputPortMap.put(portName, inputPortFigure);
 		}
 		// TODO update Anchor with correct attributes
-		FixedConnectionAnchor anchor = new FixedConnectionAnchor(
-				inputPortFigure);
+		FixedConnectionAnchor anchor = new FixedConnectionAnchor(inputPortFigure);
 		
 		anchor.offsetV = ANCHOR_HEIGTH / 2;
 		getTargetConnectionAnchors().add(anchor);

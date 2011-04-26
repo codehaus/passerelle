@@ -2,6 +2,7 @@ package com.isencia.passerelle.workbench.model.editor.ui.figure;
 
 import org.eclipse.draw2d.BorderLayout;
 import org.eclipse.draw2d.Clickable;
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.Ellipse;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
@@ -48,6 +49,11 @@ public class EllipseActorFigure extends ActorFigure {
 			if (clickable != null) {
 				add(clickable, BorderLayout.BOTTOM);
 			}
+		}
+		protected void outlineShape(Graphics graphics) {
+			
+			graphics.setForegroundColor(ColorConstants.gray);
+			super.outlineShape(graphics);
 		}
 
 		protected void fillShape(Graphics graphics) {

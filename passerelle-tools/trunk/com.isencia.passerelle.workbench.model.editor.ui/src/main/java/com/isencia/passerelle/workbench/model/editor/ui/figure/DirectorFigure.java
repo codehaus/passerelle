@@ -7,6 +7,7 @@ import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RectangleFigure;
+import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -32,7 +33,7 @@ public class DirectorFigure extends AbstractBaseFigure {
     	setBackgroundColor(DIRECTOR_BACKGROUND_COLOR);
     }
 
-    private class Body extends RectangleFigure {
+    private class Body extends RoundedRectangle {
     	ImageFigure imageFigure;
 
         public Body() {
@@ -75,10 +76,16 @@ public class DirectorFigure extends AbstractBaseFigure {
         	graphics.pushState();
         	graphics.setForegroundColor(ColorConstants.white);
         	graphics.setBackgroundColor(getBackgroundColor());
-            graphics.fillGradient(getBounds(),false);
+			final Rectangle bounds = getBounds();
+			graphics.fillGradient(bounds.x+1, bounds.y+1, bounds.width-2, bounds.height-2, false);
         	graphics.popState();
         }
-        
+		protected void outlineShape(Graphics graphics) {
+			
+			graphics.setForegroundColor(ColorConstants.gray);
+			super.outlineShape(graphics);
+		}
+      
     }
 
 	@Override

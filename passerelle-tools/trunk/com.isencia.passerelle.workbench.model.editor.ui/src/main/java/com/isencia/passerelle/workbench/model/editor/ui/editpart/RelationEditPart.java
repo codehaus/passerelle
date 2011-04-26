@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
+import org.eclipse.draw2d.ColorConstants;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Polyline;
 import org.eclipse.draw2d.PolylineConnection;
@@ -19,9 +20,11 @@ import ptolemy.kernel.util.ChangeListener;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.Changeable;
 
+import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserellRootEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationEndpointEditPolicy;
+import com.isencia.passerelle.workbench.model.editor.ui.router.SCAManhattanConnectionRouter;
 
 /**
  * Implements a Relation Editpart to represent a Wire like connection.
@@ -74,8 +77,7 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 	 * Adds extra EditPolicies as required.
 	 */
 	protected void createEditPolicies() {
-		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE,
-				new RelationEndpointEditPolicy());
+		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE, new RelationEndpointEditPolicy());
 		// //Note that the Connection is already added to the diagram and knows
 		// its Router.
 		installEditPolicy(EditPolicy.CONNECTION_ROLE, new RelationDeletePolicy());
@@ -88,9 +90,10 @@ public class RelationEditPart extends AbstractConnectionEditPart implements Chan
 	 */
 	protected IFigure createFigure() {
 		
-		final PolylineConnection connection = RouterFactory.getConnection();	    
-	    connection.setConnectionRouter(RouterFactory.getRouter());
-	    
+		final PolylineConnection connection = RouterFactory.getConnection();
+		connection.setForegroundColor(ColorConstants.gray);
+		final PasserellRootEditPart root = (PasserellRootEditPart)getRoot();
+		connection.setConnectionRouter(RouterFactory.getRouter(root.getScaledLayers()));
 		return connection;
 	}
 
