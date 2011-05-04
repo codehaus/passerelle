@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="icons/"/>
+	<classpathentry exported="true" kind="lib" path="lib/js-1.6R5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-net-1.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jython-2.2.1.jar" sourcepath="/Jython Release_2_2_1/jython/src"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta-regexp-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bsf-2.4.0.jar" sourcepath="E:/iSencia/Install/BSF/bsf-2.4.0/src"/>
+	<classpathentry exported="true" kind="lib" path="lib/xalan-2.4.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/quartz-1.5.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="target/classes"/>
+</classpath>
