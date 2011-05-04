@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.Image;
 
 public class CompositeActorFigure extends RectangularActorFigure {
 
-    public CompositeActorFigure(String name, Image image, Clickable[] clickable) {
-    	super(name, image, clickable);
+    public CompositeActorFigure(String name,Class type, Image image, Clickable[] clickable) {
+    	super(name,type, image, clickable);
     }
 }

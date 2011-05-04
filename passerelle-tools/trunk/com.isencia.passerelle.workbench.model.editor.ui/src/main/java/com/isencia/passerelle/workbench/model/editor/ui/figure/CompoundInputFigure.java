@@ -19,8 +19,8 @@ import com.isencia.passerelle.workbench.model.editor.ui.IBody;
 public class CompoundInputFigure extends CompoundIOFigure {
 	public static final String INPUT_PORT_NAME = "input";
 
-	public CompoundInputFigure(String name) {
-		super(name);
+	public CompoundInputFigure(String name,Class type) {
+		super(name,type);
 		addOutput(INPUT_PORT_NAME, INPUT_PORT_NAME);
 		setBackgroundColor(ColorConstants.black);
 	}

@@ -70,8 +70,8 @@ public class VertexFigure extends AbstractNodeFigure {
 		return outputAnchors.get(index);
 	}
 
-	public VertexFigure(String name, Image image) {
-		super(name, false);
+	public VertexFigure(String name,Class type, Image image) {
+		super(name, false,type);
 		ToolbarLayout layout = new ToolbarLayout();
 		layout.setVertical(false);
 		setLayoutManager(layout);

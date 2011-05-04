@@ -38,9 +38,9 @@ public abstract class ActorFigure extends AbstractNodeFigure {
 
 	private HashMap<String, PortFigure> outputPortMap = new HashMap<String, PortFigure>();
 
-	public ActorFigure(String name, Image image, Clickable[] clickables) {
-		super(name);
-
+	public ActorFigure(String name, Class type, Image image,
+			Clickable[] clickables) {
+		super(name, type);
 		add(new CompositeFigure(image, clickables));
 	}
 
@@ -119,13 +119,6 @@ public abstract class ActorFigure extends AbstractNodeFigure {
 		if (body != null) {
 			body.setBackgroundColor(c);
 		}
-	}
-
-	public Color getBackgroundColor() {
-		if (body != null) {
-			if (body.getBackgroundColor()!=null) body.getBackgroundColor();
-		}
-		return super.getBackgroundColor();
 	}
 
 	/**

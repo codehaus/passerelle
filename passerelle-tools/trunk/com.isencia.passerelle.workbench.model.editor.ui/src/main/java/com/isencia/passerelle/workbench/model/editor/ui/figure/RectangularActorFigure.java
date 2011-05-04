@@ -10,18 +10,20 @@ import org.eclipse.draw2d.PositionConstants;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
 import com.isencia.passerelle.workbench.model.editor.ui.IBody;
 
 public class RectangularActorFigure extends ActorFigure {
 
-	public RectangularActorFigure(String name, Image image, Clickable[] clickables) {
-		super(name, image, clickables);
+	public RectangularActorFigure(String name, Class type, Image image,
+			Clickable[] clickables) {
+		super(name, type, image, clickables);
 	}
 
 	protected IFigure generateBody(Image image, Clickable[] clickables) {
-		Body body = new Body();
+		Body body = new Body(getColor());
 		body.initImage(image);
 		for (Clickable clickable : clickables)
 			body.initClickable(clickable);
@@ -32,11 +34,10 @@ public class RectangularActorFigure extends ActorFigure {
 		/**
 		 * @param s
 		 */
-		public Body() {
+		public Body(Color color) {
 			BorderLayout layout = new BorderLayout();
 			setLayoutManager(layout);
-
-			setBackgroundColor(ACTOR_BACKGROUND_COLOR);
+			setBackgroundColor(getColor());
 			setOpaque(true);
 		}
 
