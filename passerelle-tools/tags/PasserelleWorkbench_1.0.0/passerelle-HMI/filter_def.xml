@@ -1,0 +1,308 @@
+<be.isencia.passerelle.hmi.definition.HMIDefinition>
+  <modelLayoutPreferences>
+    <entry>
+      <string>HelloWorld</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>1</nrColumns>
+        <actorNames>
+          <string>Console</string>
+          <string>Constant</string>
+        </actorNames>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+    <entry>
+      <string>test-loop</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>1</nrColumns>
+        <actorNames>
+          <string>Constant</string>
+          <string>Loop</string>
+          <string>Delay</string>
+          <string>Console</string>
+        </actorNames>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+    <entry>
+      <string>SAMBA_Basic</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>1</nrColumns>
+        <actorNames/>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+    <entry>
+      <string>scientaStep</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>1</nrColumns>
+        <actorNames>
+          <string>ScientaRegion</string>
+          <string>Constant</string>
+        </actorNames>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+    <entry>
+      <string>SAMBA_Positioner</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>1</nrColumns>
+        <actorNames/>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+    <entry>
+      <string>test1_samba</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>2</nrColumns>
+        <actorNames>
+          <string>Loop Scans</string>
+          <string>Constant</string>
+          <string>SetTemperature</string>
+          <string>Loop Temperatures</string>
+          <string>StringsGenerator</string>
+          <string>Positioner</string>
+          <string>ScanFromFilePort</string>
+          <string>Display</string>
+        </actorNames>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+    <entry>
+      <string>test-tracer</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>1</nrColumns>
+        <actorNames>
+          <string>Constant</string>
+          <string>Loop</string>
+          <string>Delay</string>
+          <string>ValuesGenerator</string>
+          <string>Console</string>
+        </actorNames>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+    <entry>
+      <string>sequence_samba1</string>
+      <be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+        <nrColumns>1</nrColumns>
+        <actorNames/>
+      </be.isencia.passerelle.hmi.definition.HMIDefinition-LayoutPreferences>
+    </entry>
+  </modelLayoutPreferences>
+  <models>
+    <entry>
+      <string>scientaStep</string>
+      <be.isencia.passerelle.hmi.definition.Model>
+        <fieldMapping>
+          <fieldMappings>
+            <entry>
+              <string>ScientaRegion.Device Name</string>
+              <string>Device Name</string>
+            </entry>
+            <entry>
+              <string>Constant.value</string>
+              <string>value</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Energy</string>
+              <string>Energy</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Detector</string>
+              <string>Detector</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Pass Energy</string>
+              <string>Pass Energy</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Step</string>
+              <string>Step</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Pass Mode</string>
+              <string>Pass Mode</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Energy Scale</string>
+              <string>Energy Scale</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Mode</string>
+              <string>Mode</string>
+            </entry>
+            <entry>
+              <string>ScientaRegion.Lens Mode</string>
+              <string>Lens Mode</string>
+            </entry>
+          </fieldMappings>
+        </fieldMapping>
+      </be.isencia.passerelle.hmi.definition.Model>
+    </entry>
+    <entry>
+      <string>test1_samba</string>
+      <be.isencia.passerelle.hmi.definition.Model>
+        <fieldMapping>
+          <fieldMappings>
+            <entry>
+              <string>Positioner.Wait read part equals write part</string>
+              <string>Wait read part equals write part</string>
+            </entry>
+            <entry>
+              <string>Display.columnsDisplayed</string>
+              <string>columnsDisplayed</string>
+            </entry>
+            <entry>
+              <string>Loop Temperatures.Step Width</string>
+              <string>Step Width</string>
+            </entry>
+            <entry>
+              <string>SetTemperature.Timeout</string>
+              <string>Timeout</string>
+            </entry>
+            <entry>
+              <string>SetTemperature.Attribute Name</string>
+              <string>Attribute Name</string>
+            </entry>
+            <entry>
+              <string>SetTemperature.Tolerance</string>
+              <string>Tolerance</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Step Number</string>
+              <string>Step Number</string>
+            </entry>
+            <entry>
+              <string>SetTemperature.Wait read part equals write part</string>
+              <string>Wait read part equals write part</string>
+            </entry>
+            <entry>
+              <string>Display._windowProperties</string>
+              <string>_windowProperties</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Start Value</string>
+              <string>My label</string>
+            </entry>
+            <entry>
+              <string>Loop Temperatures.Step Number</string>
+              <string>Step Number</string>
+            </entry>
+            <entry>
+              <string>Constant.value</string>
+              <string>value</string>
+            </entry>
+            <entry>
+              <string>Positioner.Timeout</string>
+              <string>Timeout</string>
+            </entry>
+            <entry>
+              <string>Positioner.Attribute Name</string>
+              <string>Attribute Name</string>
+            </entry>
+            <entry>
+              <string>Display.rowsDisplayed</string>
+              <string>rowsDisplayed</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Step Width</string>
+              <string>Step Width</string>
+            </entry>
+            <entry>
+              <string>Loop Temperatures.Start Value</string>
+              <string>Start Value</string>
+            </entry>
+            <entry>
+              <string>StringsGenerator.Strings List (separated by commas)</string>
+              <string>my label</string>
+            </entry>
+            <entry>
+              <string>Positioner.Tolerance</string>
+              <string>Tolerance</string>
+            </entry>
+          </fieldMappings>
+        </fieldMapping>
+      </be.isencia.passerelle.hmi.definition.Model>
+    </entry>
+    <entry>
+      <string>test-tracer</string>
+      <be.isencia.passerelle.hmi.definition.Model>
+        <fieldMapping>
+          <fieldMappings>
+            <entry>
+              <string>Constant.value</string>
+              <string>value</string>
+            </entry>
+            <entry>
+              <string>Delay.time(s)</string>
+              <string>time(s)</string>
+            </entry>
+            <entry>
+              <string>ValuesGenerator.Values List (separated by commas)</string>
+              <string>Values</string>
+            </entry>
+            <entry>
+              <string>Console.Chop output at #chars</string>
+              <string>Chop output at #chars</string>
+            </entry>
+            <entry>
+              <string>Console.PassThrough</string>
+              <string>PassThrough</string>
+            </entry>
+            <entry>
+              <string>Loop.Max Count</string>
+              <string>Max Count</string>
+            </entry>
+          </fieldMappings>
+        </fieldMapping>
+      </be.isencia.passerelle.hmi.definition.Model>
+    </entry>
+    <entry>
+      <string>sequence_samba1</string>
+      <be.isencia.passerelle.hmi.definition.Model>
+        <fieldMapping>
+          <fieldMappings>
+            <entry>
+              <string>Loop Scans.Start Value</string>
+              <string>Start Value</string>
+            </entry>
+            <entry>
+              <string>Display._windowProperties</string>
+              <string>_windowProperties</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Increment value (not selected-&gt; decrement)</string>
+              <string>Increment value (not selected-&gt; decrement)</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Use Values List (not selected-&gt; use Start Value n Step)</string>
+              <string>Use Values List (not selected-&gt; use Start Value n Step)</string>
+            </entry>
+            <entry>
+              <string>Display.columnsDisplayed</string>
+              <string>columnsDisplayed</string>
+            </entry>
+            <entry>
+              <string>Constant.value</string>
+              <string>value</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Step Number</string>
+              <string>Step Number</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Step Width</string>
+              <string>Step Width</string>
+            </entry>
+            <entry>
+              <string>Display.rowsDisplayed</string>
+              <string>rowsDisplayed</string>
+            </entry>
+            <entry>
+              <string>StringsGenerator.Strings List (separated by commas)</string>
+              <string>Strings List (separated by commas)</string>
+            </entry>
+            <entry>
+              <string>Loop Scans.Values List (separated by commas)</string>
+              <string>Values List (separated by commas)</string>
+            </entry>
+          </fieldMappings>
+        </fieldMapping>
+      </be.isencia.passerelle.hmi.definition.Model>
+    </entry>
+  </models>
+</be.isencia.passerelle.hmi.definition.HMIDefinition>

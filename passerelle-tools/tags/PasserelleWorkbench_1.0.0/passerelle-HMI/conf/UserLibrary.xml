@@ -1,0 +1,8 @@
+<entity name="UserLibrary" class="ptolemy.moml.EntityLibrary">
+    <configure>
+        <group>
+            <property name="_sourcePath" class="ptolemy.data.expr.FileParameter" value="$CLASSPATH/UserLibrary.xml">
+            </property>
+        </group>
+    </configure>
+</entity>
