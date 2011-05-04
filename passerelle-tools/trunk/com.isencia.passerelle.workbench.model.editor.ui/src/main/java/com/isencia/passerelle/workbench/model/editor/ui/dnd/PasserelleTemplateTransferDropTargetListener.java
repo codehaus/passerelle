@@ -7,19 +7,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the drop listener for template transfers from the palette. We only need to implement the
- * <code>getFactory</code> method.
+ * This is the drop listener for template transfers from the palette. We only
+ * need to implement the <code>getFactory</code> method.
  * 
  * @author Dirk Jacobs
  */
-public class PasserelleTemplateTransferDropTargetListener extends TemplateTransferDropTargetListener {
-	
-	private Logger logger = LoggerFactory.getLogger(PasserelleTemplateTransferDropTargetListener.class);
-	
-	
+public class PasserelleTemplateTransferDropTargetListener extends
+		TemplateTransferDropTargetListener {
+
+	private Logger logger = LoggerFactory
+			.getLogger(PasserelleTemplateTransferDropTargetListener.class);
+
 	public Logger getLogger() {
 		return logger;
 	}
+
 	/**
 	 * Creates a new PasserelleTemplateTransferDropTargetListener instance.
 	 * 
@@ -28,17 +30,30 @@ public class PasserelleTemplateTransferDropTargetListener extends TemplateTransf
 	public PasserelleTemplateTransferDropTargetListener(EditPartViewer viewer) {
 		super(viewer);
 	}
-
+	private CreationFactory config;
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#getFactory(java.lang.Object)
+	 * @see
+	 * org.eclipse.gef.dnd.TemplateTransferDropTargetListener#getFactory(java
+	 * .lang.Object)
 	 */
 	protected CreationFactory getFactory(Object config) {
 		// Return a different Factory Based on the config
-		if( getLogger().isDebugEnabled())
+		if (getLogger().isDebugEnabled())
 			getLogger().debug("Get factory for DnD");
-		return (CreationFactory) config;
+		if (config instanceof CreationFactory){
+			this.config = (CreationFactory)config;
+		}
+		return this.config;
 	}
 
+	protected void handleDrop() {
+		try {
+			super.handleDrop();
+		} catch (Exception e) {
+
+		}
+
+	}
 }
