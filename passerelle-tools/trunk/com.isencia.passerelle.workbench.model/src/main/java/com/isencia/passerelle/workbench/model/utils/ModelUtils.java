@@ -142,7 +142,7 @@ public class ModelUtils {
 								connections.add(relation);
 						}
 					}
-				} 
+				}
 			}
 
 		}
@@ -159,8 +159,8 @@ public class ModelUtils {
 
 	@SuppressWarnings("unchecked")
 	public static double[] getLocation(NamedObj model) {
-		if (model instanceof Locatable){
-			Locatable locationAttribute = (Locatable)model;
+		if (model instanceof Locatable) {
+			Locatable locationAttribute = (Locatable) model;
 			return locationAttribute.getLocation();
 		}
 		List<Attribute> attributes = model.attributeList(Locatable.class);
@@ -173,16 +173,16 @@ public class ModelUtils {
 
 	@SuppressWarnings("unchecked")
 	public static void setLocation(NamedObj model, double[] location) {
-		if (model instanceof Locatable){
+		if (model instanceof Locatable) {
 			try {
-				((Locatable)model).setLocation(location);
+				((Locatable) model).setLocation(location);
 				NamedObj cont = model.getContainer();
-				cont.attributeChanged((Attribute)model);
+				cont.attributeChanged((Attribute) model);
 			} catch (IllegalActionException e) {
 				// TODO Auto-generated catch block
 				logger.error("Unable to change location of component", e);
 			}
-			
+
 		}
 		List<Attribute> attributes = model.attributeList(Locatable.class);
 		if (attributes == null)
@@ -224,7 +224,7 @@ public class ModelUtils {
 	}
 
 	public static String findUniqueActorName(CompositeEntity parentModel,
-			                                 String name) {
+			String name) {
 		String newName = name;
 		if (parentModel == null)
 			return newName;
@@ -244,23 +244,27 @@ public class ModelUtils {
 
 	/**
 	 * Attempts to clean up names in the event that they are not compatible
+	 * 
 	 * @param newName
 	 * @return
 	 */
 	public static String getLegalName(final String name) {
 		String newName = name;
-		//newName = newName.replace(' ', '_');
-		if (name.indexOf('.')>-1) {
-		    newName = newName.substring(0,newName.lastIndexOf('.'));
+		// newName = newName.replace(' ', '_');
+		if (name.indexOf('.') > -1) {
+			newName = newName.substring(0, newName.lastIndexOf('.'));
 		}
 		newName = newName.replace('.', '_');
 		return newName;
 	}
 
 	public static boolean isNameLegal(String text) {
-		if (text==null)           return false;
-		if ("".equals(text))      return false;
-		if (text.indexOf('.')>-1) return false;
+		if (text == null)
+			return false;
+		if ("".equals(text))
+			return false;
+		if (text.indexOf('.') > -1)
+			return false;
 		return true;
 	}
 
@@ -310,10 +314,8 @@ public class ModelUtils {
 	}
 
 	public static String findUniqueName(CompositeEntity parentModel,
-			                            Class           clazz, 
-			                            String          startName,
-			                            String          actorName) {
-		
+			Class clazz, String startName, String actorName) {
+
 		if (clazz.getSimpleName().equals("Vertex")) {
 			return generateUniqueVertexName(clazz.getSimpleName(), parentModel,
 					0, clazz);
@@ -323,95 +325,116 @@ public class ModelUtils {
 		} else if (clazz.getSimpleName().equals("TypedIOPort")) {
 			return generateUniquePortName(startName, parentModel, 0);
 		} else {
-			return findUniqueActorName(parentModel, actorName!=null?actorName:clazz.getSimpleName());
+			return findUniqueActorName(parentModel,
+					actorName != null ? actorName : clazz.getSimpleName());
 		}
 	}
 
 	/**
 	 * Currently does not do much as toplevel.getEntity(...) does this search.
+	 * 
 	 * @param toplevel
 	 * @param actorName
 	 * @return
 	 */
-	public static ComponentEntity findEntityByName(CompositeActor toplevel, String actorName) {
-		
-		ComponentEntity entity  = toplevel.getEntity(actorName);
-        if (entity != null) return entity;
-        
+	public static ComponentEntity findEntityByName(CompositeActor toplevel,
+			String actorName) {
+
+		ComponentEntity entity = toplevel.getEntity(actorName);
+		if (entity != null)
+			return entity;
+
 		return null;
 	}
 
 	private static void printChildren(InstantiableNamedObj entity) {
-		
-		if (entity==null) return;
+
+		if (entity == null)
+			return;
 		final List childs = entity.getChildren();
-		if (childs==null) return;
-        for (Object o : childs) {
+		if (childs == null)
+			return;
+		for (Object o : childs) {
 			if (o instanceof NamedObj) {
-				System.out.println(((NamedObj)o).getName());
+				System.out.println(((NamedObj) o).getName());
 			}
 			if (o instanceof InstantiableNamedObj) {
-				printChildren((InstantiableNamedObj)o);
+				printChildren((InstantiableNamedObj) o);
 			}
 		}
 	}
 
 	/**
-	 * This names the parent actor workspace name after the eclipse project being
-	 * used and this is used by actors to determine which eclipse project they are
-	 * executing in.
+	 * This names the parent actor workspace name after the eclipse project
+	 * being used and this is used by actors to determine which eclipse project
+	 * they are executing in.
 	 * 
 	 * @param compositeActor
 	 * @param modelPath
 	 * @throws IllegalActionException
 	 * @throws NameDuplicationException
 	 */
-	public static void setCompositeProjectName(final CompositeActor compositeActor,
-			                                   final String         modelPath) throws IllegalActionException, NameDuplicationException {
-		
-		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+	public static void setCompositeProjectName(
+			final CompositeActor compositeActor, final String modelPath)
+			throws IllegalActionException, NameDuplicationException {
+
+		final String workspacePath = ResourcesPlugin.getWorkspace().getRoot()
+				.getLocation().toOSString();
 
 		// We must tell the composite actor the containing project name
-		final String relPath = modelPath.substring(workspacePath.length());
-		final IFile  projFile= (IFile)ResourcesPlugin.getWorkspace().getRoot().findMember(relPath);
-		compositeActor.workspace().setName(projFile.getProject().getName());
+		String relPath = modelPath.substring(workspacePath.length());
+		IFile projFile = (IFile) ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(relPath);
+		if (projFile == null) {
+			relPath = modelPath.substring(workspacePath.length() + 2);
+			projFile = (IFile) ResourcesPlugin.getWorkspace().getRoot()
+					.findMember(relPath);
+
+		}
+		if (projFile != null) {
+			compositeActor.workspace().setName(projFile.getProject().getName());
+		} else {
+			compositeActor.workspace().setName("default");
+		}
 		compositeActor.setSource(modelPath);
 	}
 
 	/**
-	 * Attempts to find the project from the top CompositeActor
-	 * by using the workspace name.
+	 * Attempts to find the project from the top CompositeActor by using the
+	 * workspace name.
 	 * 
 	 * @param actor
 	 * @return
 	 */
 	public static IProject getProject(final NamedObj actor) {
-		
+
 		// Get top level actor, which knows the project we have.
-		CompositeActor comp = (CompositeActor)actor.getContainer();
-		while(comp.getContainer()!=null) {
-			comp = (CompositeActor)comp.getContainer();
+		CompositeActor comp = (CompositeActor) actor.getContainer();
+		while (comp.getContainer() != null) {
+			comp = (CompositeActor) comp.getContainer();
 		}
-		
-		return (IProject)ResourcesPlugin.getWorkspace().getRoot().findMember(comp.workspace().getName());
+
+		return (IProject) ResourcesPlugin.getWorkspace().getRoot().findMember(
+				comp.workspace().getName());
 	}
 
 	/**
 	 * substutes variables in the string as determined from the actor.
+	 * 
 	 * @param filePath
 	 * @param dataExportTransformer
 	 */
 	public static String substitute(final String sub, final NamedObj actor) {
-		
-		final Map<String,String> variables = new HashMap<String,String>(3);
+
+		final Map<String, String> variables = new HashMap<String, String>(3);
 		variables.put("project_name", getProject(actor).getName());
-		variables.put("actor_name",   actor.getName());
-		
-		MultiVariableExpander expander = new MultiVariableExpander( );
+		variables.put("actor_name", actor.getName());
+
+		MultiVariableExpander expander = new MultiVariableExpander();
 		expander.addSource("$", variables);
 		// Create a substitutor with the expander
 		VariableSubstitutor substitutor = new VariableSubstitutor(expander);
-		
-		return substitutor.substitute(sub);       		
+
+		return substitutor.substitute(sub);
 	}
 }
