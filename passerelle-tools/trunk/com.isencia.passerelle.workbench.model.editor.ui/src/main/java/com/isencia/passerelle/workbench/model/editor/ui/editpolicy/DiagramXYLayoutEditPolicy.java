@@ -17,6 +17,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
+import org.eclipse.gef.dnd.TemplateTransfer;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ import org.slf4j.Logger;
 import ptolemy.kernel.util.NamedObj;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteItemDefinition;
+import com.isencia.passerelle.workbench.model.editor.ui.views.DragTargetListener;
 import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
 
@@ -215,12 +218,29 @@ public class DiagramXYLayoutEditPolicy extends
 
 	protected Command getCreateCommand(CreateRequest request) {
 		CreateComponentCommand create = null;
+		Object template = TemplateTransfer.getInstance( ).getTemplate();
+		PaletteItemDefinition def = null;
+//		if (template instanceof PaletteItemDefinition){
+//			def = (PaletteItemDefinition)template;
+//		}
 		try {
 			create = getCreateComponentCommand();
-			
+
 			create.setParent(editor.getSelectedContainer());
-			String name = (String) request.getNewObject();
-			Class<? extends NamedObj> clazz = (Class<? extends NamedObj>)request.getNewObjectType();
+			String name = null;
+			
+//			if (def != null) {
+//				name = def.getName();
+//			} else {
+				name = (String) request.getNewObject();
+//			}
+			Class<? extends NamedObj> clazz = null;
+//			if (def != null) {
+//				clazz = def.getClazz();
+//			} else {
+				clazz = (Class<? extends NamedObj>) request.getNewObjectType();
+//			}
+
 			create.setClazz(clazz);
 			create.setName(name);
 			Rectangle constraint = (Rectangle) getConstraintFor(request);
@@ -228,6 +248,7 @@ public class DiagramXYLayoutEditPolicy extends
 					constraint.getLocation().preciseX(),
 					constraint.getLocation().preciseY() });
 			create.setLabel("new");
+//			TemplateTransfer.getInstance( ).setTemplate( null );
 		} catch (Exception e) {
 			getLogger().error("Error creating CreateComponentCommand", e);
 		}

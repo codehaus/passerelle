@@ -1,5 +1,7 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editpolicy;
 
+import java.nio.channels.Channel;
+
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
@@ -14,7 +16,6 @@ import ptolemy.kernel.ComponentPort;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.CompositeActorEditPart;
-import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 
 /**
@@ -109,19 +110,8 @@ public class CompositeActorEditPolicy extends GraphicalNodeEditPolicy {
 	 * getReconnectTargetCommand(org.eclipse.gef.requests.ReconnectRequest)
 	 */
 	protected Command getReconnectTargetCommand(ReconnectRequest request) {
-		// ConnectionCommand command = new ConnectionCommand();
-		// Channel channel = ((ChannelEditPart)
-		// request.getConnectionEditPart()).getChannel();
-		// command.setChannel(channel);
-		// command.setOldTarget(channel.getTarget());
-		// ConnectionAnchor anchor =
-		// getActorEditPart().getTargetConnectionAnchor(request);
-		// InputPort port = (InputPort)
-		// getActorEditPart().getTargetPort(anchor);
-		// command.setTarget(port);
-		//
-		// return command;
-		return null;
+	
+		 return null;
 	}
 
 	/*

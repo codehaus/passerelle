@@ -6,7 +6,7 @@ import org.eclipse.gef.requests.GroupRequest;
 import ptolemy.actor.TypedIORelation;
 import ptolemy.kernel.CompositeEntity;
 
-import com.isencia.passerelle.workbench.model.ui.VertexRelation;
+import com.isencia.passerelle.workbench.model.ui.VertexLink;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteVertexConnectionCommand;
@@ -22,7 +22,7 @@ public class VertexRelationDeletePolicy extends
 		DeleteVertexConnectionCommand deleteCmd = getDeleteVertexConnectionCommand();
 		deleteCmd.setParent((CompositeEntity) getHost().getRoot().getContents()
 				.getModel());
-		VertexRelation vr = (VertexRelation) getHost().getModel();
+		VertexLink vr = (VertexLink) getHost().getModel();
 		deleteCmd.setConnection((TypedIORelation) vr.getRelation());
 		if (vr.getPort() != null)
 			deleteCmd.setPort(vr.getPort());
