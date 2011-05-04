@@ -1,198 +1,201 @@
 package com.isencia.passerelle.workbench.model.editor.ui.palette;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.palette.MarqueeToolEntry;
 import org.eclipse.gef.palette.PaletteContainer;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.gef.palette.PaletteGroup;
 import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.gef.palette.PaletteStack;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.part.EditorPart;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 
 public class PaletteBuilder {
+	private static PreferenceStore store;
+	private static List<String> favoriteGroupNames = new ArrayList<String>();
+	private static List<PaletteEntry> favoriteGroups = new ArrayList<PaletteEntry>();
 
-	private static Logger logger = LoggerFactory.getLogger(PaletteBuilder.class);
-
-	public final static String PALETTE_CONTAINER_GENERAL = "General";
-	private static Map<String, ImageDescriptor> actorIconMap = new HashMap<String, ImageDescriptor>();
-
-	public static ImageDescriptor getIcon(String className) {
-		return actorIconMap.get(className);
+	public static String[] getFavoriteGroupNames() {
+		String[] names = new String[favoriteGroups.size()];
+		for (PaletteEntry en : favoriteGroups) {
+			names[favoriteGroups.indexOf(en)] = en.getLabel();
+		}
+		return names;
 	}
 
+	public static PaletteEntry getFavoriteGroup(String name) {
+		for (PaletteEntry en : favoriteGroups) {
+			if (en.getLabel().equals(name)) {
+				return en;
+			}
+		}
+		return null;
+	}
+
+	public static void addFavoriteGroup(PaletteEntry e) {
+		favoriteGroups.add(e);
+
+	}
+
+	public static boolean favoriteExists(Class type) {
+		for (Object o : favoritesContainer.getChildren()) {
+			if (o instanceof CombinedTemplateCreationEntry) {
+				CombinedTemplateCreationEntry entry = (CombinedTemplateCreationEntry) o;
+				ClassTypeFactory entryType = (ClassTypeFactory) entry
+						.getTemplate();
+				if (entryType.getObjectType().equals(type)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static void synchFavorites() {
+		for (String pref : store.preferenceNames()) {
+			store.putValue(pref, "dummy");
+		}
+		for (Object o : favoritesContainer.getChildren()) {
+			if (o instanceof CombinedTemplateCreationEntry) {
+				CombinedTemplateCreationEntry entry = (CombinedTemplateCreationEntry) o;
+				ClassTypeFactory entryType = (ClassTypeFactory) entry
+						.getTemplate();
+				store.putValue(((Class) entryType.getObjectType()).getName(),
+						"Favorites");
+				try {
+					store.save();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
+	public static boolean addFavorite(Class type) {
+		if (!favoriteExists(type)) {
+			CombinedTemplateCreationEntry createPaletteEntryFromPaletteDefinition = createPaletteEntryFromPaletteDefinition(PaletteItemFactory
+					.get().getPaletteItem(type));
+			favoritesContainer.add(createPaletteEntryFromPaletteDefinition);
+			store.putValue(type.getName(), "Favorites");
+			try {
+				store.save();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return true;
+		}
+		return false;
+
+	}
+
+	public static PreferenceStore getStore() {
+		if (store == null) {
+			store = new PreferenceStore();
+			final String workspacePath = ResourcesPlugin.getWorkspace()
+					.getRoot().getLocation().toOSString();
+			store.setFilename(workspacePath + "/.metadata/favorites.xml");
+		}
+		return store;
+	}
+
+	private static final String ACTORGROUP_UTILITIES = "com.isencia.passerelle.actor.actorgroup.utilities";
+	private static Logger logger = LoggerFactory
+			.getLogger(PaletteBuilder.class);
+	private static PaletteRoot paletteRoot;
+
 	static public PaletteRoot createPalette(EditorPart parent) {
-		PaletteRoot paletteRoot = new PaletteRoot();
-		paletteRoot.addAll(createCategories(paletteRoot, parent));
+		if (paletteRoot == null) {
+			paletteRoot = new PaletteRoot();
+			Collection<PaletteGroup> groups = PaletteItemFactory.get()
+					.getAllPaletteGroups();
+			paletteRoot.addAll(createCategories(paletteRoot, parent,
+					PaletteItemFactory.get().getPaletteGroup(
+							ACTORGROUP_UTILITIES)));
+		}
+
 		return paletteRoot;
 	}
 
-	static private List createCategories(PaletteRoot root, EditorPart parent) {
+	static private List createCategories(PaletteRoot root, EditorPart parent,
+			PaletteGroup group) {
 
 		List categories = new ArrayList();
 
 		categories.add(createControlGroup(root));
-
-		// Find all ActorGroups and create a corresponding container
-		LinkedHashMap<String, PaletteContainer> paletteContainers = new LinkedHashMap<String, PaletteContainer>();
 		try {
-			IConfigurationElement[] config = Platform.getExtensionRegistry()
-					.getConfigurationElementsFor(
-							"com.isencia.passerelle.engine.actorGroups");
-			if (config != null) {
-				for (IConfigurationElement configurationElement : config) {
-					String nameAttribute = configurationElement
-							.getAttribute("name");
-					logger.trace("Found category "+nameAttribute+" from "+configurationElement);
-					
-					String iconAttribute = configurationElement
-							.getAttribute("icon");
-					String idAttribute = configurationElement
-							.getAttribute("id");
-					String openAttribute = configurationElement
-							.getAttribute("open");
+			PaletteContainer paletteContainer = createPaletteContainer(group
+					.getName(), group.getIcon(), true);
+			logger.trace("Created category " + paletteContainer.getLabel());
+			for (PaletteItemDefinition def : group.getPaletteItems()) {
+				CombinedTemplateCreationEntry entry = createPaletteEntryFromPaletteDefinition(def);
+				paletteContainer.add(entry);
 
-					ImageDescriptor des = null;
-					if (iconAttribute != null) {
-
-						final String bundleId = configurationElement
-								.getDeclaringExtension().getContributor()
-								.getName();
-						des = Activator.getImageDescriptor(bundleId,
-								iconAttribute);
-						if (des == null)
-							des = Activator.getImageDescriptor(iconAttribute);
-
-					}
-
-					final boolean paletteOpen = openAttribute != null ? openAttribute
-							.equalsIgnoreCase("true")
-							: false;
-
-					if (!paletteContainers.containsKey(nameAttribute)) {
-						PaletteContainer paletteContainer = createPaletteContainer(nameAttribute, des, paletteOpen);
-						paletteContainers.put(idAttribute, paletteContainer);
-						logger.trace("Created category "+nameAttribute);
-						categories.add(paletteContainer);
-					}
-				}
 			}
+
+			categories.add(paletteContainer);
 		} catch (Exception e) {
 			logger.error("Error creating Palette Categories", e);
 		}
+		favoritesContainer = createPaletteContainer("Favorites", Activator
+				.getImageDescriptor("icons/favourites.gif"), true);
 
-		// Find all Actors and add them to the corresponding container
 		try {
-			IConfigurationElement[] config = Platform.getExtensionRegistry()
-					.getConfigurationElementsFor(
-							"com.isencia.passerelle.engine.actors");
-			if (config != null) {
-				for (IConfigurationElement configurationElement : config) {
-					String nameAttribute = configurationElement
-							.getAttribute("name");
-					logger.trace("Found actor "+nameAttribute+" from "+configurationElement.getAttribute("id"));
-
-					String groupAttribute = configurationElement
-							.getAttribute("group");
-					String iconAttribute = configurationElement
-							.getAttribute("icon");
-					String icon = "icons/ide.gif";
-					if (iconAttribute != null && !iconAttribute.isEmpty()) {
-						icon = iconAttribute;
-					}
-
-					final String bundleId = configurationElement
-							.getDeclaringExtension().getContributor().getName();
-					final Class<?> clazz = loadClass(configurationElement,
-							bundleId);
-					if (clazz != null) {
-
-						ImageDescriptor imageDescriptor = Activator
-								.getImageDescriptor(bundleId, icon);
-						if (imageDescriptor == null) {
-							imageDescriptor = Activator
-									.getImageDescriptor(icon);
-						}
-						if (clazz.getName().equals("ptolemy.actor.TypedIOPort")) {
-							actorIconMap.put(nameAttribute, imageDescriptor);
-						}
-						actorIconMap.put(clazz.getName(), imageDescriptor);
-						CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
-								nameAttribute, nameAttribute,
-								new ClassTypeFactory(clazz, nameAttribute),
-								imageDescriptor, //$NON-NLS-1$
-								imageDescriptor//$NON-NLS-1$
-						);
-
-						PaletteContainer paletteContainer = paletteContainers.get(groupAttribute);
-
-						if (paletteContainer != null) {
-							logger.trace("Adding actor "+nameAttribute+" to "+paletteContainer.getId());
-							paletteContainer.add(entry);
-						} else {
-							PaletteContainer defaultPaletteContainer = paletteContainers
-									.get("");
-							if (defaultPaletteContainer == null) {
-								defaultPaletteContainer = createPaletteContainer(
-										"", null, false);
-								categories.add(defaultPaletteContainer);
-							}
-							logger.trace("Adding actor "+nameAttribute+" to "+defaultPaletteContainer.getId());
-							defaultPaletteContainer.add(entry);
-						}
-					}
+			store = getStore();
+			store.load();
+		} catch (IOException e) {
+		}
+		for (String name : store.preferenceNames()) {
+			// String type = store.getString(name);
+			try {
+				if (!store.getString(name).equals("dummy")) {
+					PaletteItemDefinition def = PaletteItemFactory.get()
+							.getPaletteItem(Class.forName(name));
+					favoritesContainer
+							.add(createPaletteEntryFromPaletteDefinition(def));
 				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			logger.error("Error creating Palette Categories", e);
 		}
 
+		categories.add(favoritesContainer);
 		return categories;
 	}
 
-	private static Class<?> loadClass(final IConfigurationElement configurationElement,
-			                          final String                bundleId) {
-
-		final Bundle bundle = Platform.getBundle(bundleId);
-		try {
-			return bundle.loadClass(configurationElement.getAttribute("class"));
-		} catch (Exception e) {
-
-			// It might be loadable from the core actors plugin
-			// This allows people to create and populate the palette from
-			// core paserelle classes.
-			final Bundle actors = Platform.getBundle("com.isencia.passerelle.actor");
-			try {
-				return actors.loadClass(configurationElement.getAttribute("class"));
-			} catch (Exception e1) {
-				logger.error("Cannot load class "+ configurationElement.getAttribute("class"), e1);
-				return null;
-			}
-		}
-
+	public static CombinedTemplateCreationEntry createPaletteEntryFromPaletteDefinition(
+			PaletteItemDefinition def) {
+		CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
+				def.getName(), def.getName(), new ClassTypeFactory(def
+						.getClazz(), def.getName()), def.getIcon(), //$NON-NLS-1$
+				def.getIcon()//$NON-NLS-1$
+		);
+		return entry;
 	}
+
+	static public PaletteContainer favoritesContainer;
 
 	static private PaletteContainer createControlGroup(PaletteRoot root) {
 
-		PaletteGroup controlGroup = new PaletteGroup("ControlGroup");
+		org.eclipse.gef.palette.PaletteGroup controlGroup = new org.eclipse.gef.palette.PaletteGroup(
+				"ControlGroup");
 
 		List entries = new ArrayList();
 
@@ -244,40 +247,5 @@ public class PaletteBuilder {
 
 		return drawer;
 	}
-
-	/*
-	 * public static FlowPaletteRoot buildFlowPaletteRoot(Configuration
-	 * configuration) { FlowPaletteRoot flowPaletteRoot = new FlowPaletteRoot();
-	 * flowPaletteRoot.addTools();
-	 * 
-	 * List directorConfigs = configuration.getDirectorConfigurations(); for
-	 * (Iterator iter = directorConfigs.iterator(); iter.hasNext();) {
-	 * DirectorConfiguration directorConfiguration = (DirectorConfiguration)
-	 * iter.next(); flowPaletteRoot.addDirector(directorConfiguration); }
-	 * 
-	 * List actorConfigs = configuration.getActorConfigurations();
-	 * 
-	 * for (Iterator iter = actorConfigs.iterator(); iter.hasNext();) {
-	 * ActorConfiguration actorConfiguration = (ActorConfiguration) iter.next();
-	 * flowPaletteRoot.addActor(actorConfiguration); } List compositeActorConfig
-	 * = configuration.getCompositeActorConfigurations(); for (Iterator iter =
-	 * compositeActorConfig.iterator(); iter.hasNext();) {
-	 * CompositeActorConfiguration compositeActorConfiguration =
-	 * (CompositeActorConfiguration) iter.next();
-	 * flowPaletteRoot.addCompositeActor(compositeActorConfiguration); }
-	 * 
-	 * return flowPaletteRoot; }
-	 * 
-	 * public static FlowPaletteRoot
-	 * buildCompositeActorFlowPaletteRoot(Configuration configuration) {
-	 * FlowPaletteRoot flowPaletteRoot = new FlowPaletteRoot();
-	 * flowPaletteRoot.addTools(); List actorConfigs =
-	 * configuration.getActorConfigurations();
-	 * 
-	 * for (Iterator iter = actorConfigs.iterator(); iter.hasNext();) {
-	 * ActorConfiguration actorConfiguration = (ActorConfiguration) iter.next();
-	 * flowPaletteRoot.addActor(actorConfiguration); }
-	 * flowPaletteRoot.addPorts(); return flowPaletteRoot; }
-	 */
 
 }
