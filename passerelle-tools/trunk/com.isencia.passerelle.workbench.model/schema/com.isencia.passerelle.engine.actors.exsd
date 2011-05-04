@@ -67,6 +67,13 @@ Such contributed actor extensions can typically be used in 2 contexts :
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="color" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
          <attribute name="class" type="string" use="required">
             <annotation>
                <documentation>
