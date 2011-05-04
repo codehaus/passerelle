@@ -31,33 +31,42 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="activation"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="com.isencia.passerelle.actor"/>
+      <plugin id="com.isencia.passerelle.actor.conf" fragment="true"/>
       <plugin id="com.isencia.passerelle.commons"/>
       <plugin id="com.isencia.passerelle.engine"/>
       <plugin id="com.isencia.passerelle.ume"/>
       <plugin id="com.isencia.passerelle.workbench"/>
+      <plugin id="com.isencia.passerelle.workbench.logging.development" fragment="true"/>
+      <plugin id="com.isencia.passerelle.workbench.logging.production" fragment="true"/>
       <plugin id="com.isencia.passerelle.workbench.model"/>
       <plugin id="com.isencia.passerelle.workbench.model.editor.ui"/>
       <plugin id="com.isencia.passerelle.workbench.model.ui"/>
+      <plugin id="com.isencia.passerelle.workbench.util"/>
       <plugin id="com.microstar"/>
-      <plugin id="com.springsource.org.apache.commons.collections" fragment=""/>
-      <plugin id="com.springsource.org.jdom" fragment=""/>
+      <plugin id="com.springsource.org.apache.commons.beanutils"/>
+      <plugin id="com.springsource.org.apache.commons.collections"/>
+      <plugin id="com.springsource.org.apache.commons.digester"/>
       <plugin id="diva"/>
+      <plugin id="javax.servlet"/>
+      <plugin id="javax.servlet.jsp"/>
       <plugin id="javax.xml"/>
       <plugin id="mail"/>
       <plugin id="org.apache.ant"/>
-      <plugin id="org.apache.commons.beanutils"/>
       <plugin id="org.apache.commons.codec"/>
-      <plugin id="org.apache.commons.collections"/>
+      <plugin id="org.apache.commons.el"/>
       <plugin id="org.apache.commons.httpclient"/>
       <plugin id="org.apache.commons.logging"/>
       <plugin id="org.apache.commons.math"/>
+      <plugin id="org.apache.jasper"/>
       <plugin id="org.apache.log4j"/>
       <plugin id="org.apache.lucene"/>
       <plugin id="org.apache.xerces"/>
@@ -76,15 +85,9 @@
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filesystem"/>
       <plugin id="org.eclipse.core.filesystem.linux.x86" fragment="true"/>
-      <plugin id="org.eclipse.core.filesystem.linux.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.core.filesystem.macosx" fragment="true"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.net"/>
-      <plugin id="org.eclipse.core.net.linux.x86" fragment="true"/>
-      <plugin id="org.eclipse.core.net.win32.x86" fragment="true"/>
-      <plugin id="org.eclipse.core.net.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
       <plugin id="org.eclipse.core.resources.win32.x86" fragment="true"/>
@@ -98,8 +101,6 @@
       <plugin id="org.eclipse.ecf.filetransfer"/>
       <plugin id="org.eclipse.ecf.identity"/>
       <plugin id="org.eclipse.ecf.provider.filetransfer"/>
-      <plugin id="org.eclipse.ecf.provider.filetransfer.ssl" fragment="true"/>
-      <plugin id="org.eclipse.ecf.ssl" fragment="true"/>
       <plugin id="org.eclipse.emf"/>
       <plugin id="org.eclipse.emf.ant"/>
       <plugin id="org.eclipse.emf.codegen"/>
@@ -138,6 +139,11 @@
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.frameworkadmin"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
+      <plugin id="org.eclipse.equinox.http.jetty"/>
+      <plugin id="org.eclipse.equinox.http.registry"/>
+      <plugin id="org.eclipse.equinox.http.servlet"/>
+      <plugin id="org.eclipse.equinox.jsp.jasper"/>
+      <plugin id="org.eclipse.equinox.jsp.jasper.registry"/>
       <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
       <plugin id="org.eclipse.equinox.p2.core"/>
       <plugin id="org.eclipse.equinox.p2.director"/>
@@ -152,15 +158,17 @@
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
-      <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.ui"/>
-      <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator"/>
       <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
       <plugin id="org.eclipse.gef"/>
+      <plugin id="org.eclipse.gmf.runtime.common.core"/>
+      <plugin id="org.eclipse.gmf.runtime.common.ui"/>
+      <plugin id="org.eclipse.gmf.runtime.draw2d.ui"/>
       <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.jdt.compiler.apt" fragment="true"/>
-      <plugin id="org.eclipse.jdt.compiler.tool" fragment="true"/>
+      <plugin id="org.eclipse.help.base"/>
+      <plugin id="org.eclipse.help.ui"/>
+      <plugin id="org.eclipse.help.webapp"/>
       <plugin id="org.eclipse.jdt.core"/>
       <plugin id="org.eclipse.jdt.core.manipulation"/>
       <plugin id="org.eclipse.jdt.debug"/>
@@ -169,33 +177,27 @@
       <plugin id="org.eclipse.jdt.junit.runtime"/>
       <plugin id="org.eclipse.jdt.launching"/>
       <plugin id="org.eclipse.jdt.ui"/>
+      <plugin id="org.eclipse.jem.util"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
+      <plugin id="org.eclipse.jface.source"/>
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.ltk.core.refactoring"/>
       <plugin id="org.eclipse.ltk.ui.refactoring"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
+      <plugin id="org.eclipse.osgi.util"/>
       <plugin id="org.eclipse.pde.build"/>
       <plugin id="org.eclipse.pde.core"/>
       <plugin id="org.eclipse.pde.ui"/>
       <plugin id="org.eclipse.search"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.carbon.macosx" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx" fragment="true"/>
-      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86" fragment="true"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64" fragment="true"/>
       <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.swt.wpf.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.team.core"/>
       <plugin id="org.eclipse.team.ui"/>
       <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.ui"/>
-      <plugin id="org.eclipse.ui.carbon" fragment="true"/>
       <plugin id="org.eclipse.ui.cheatsheets"/>
-      <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
       <plugin id="org.eclipse.ui.console"/>
       <plugin id="org.eclipse.ui.editors"/>
       <plugin id="org.eclipse.ui.externaltools"/>
@@ -212,10 +214,17 @@
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
       <plugin id="org.eclipse.update.core"/>
-      <plugin id="org.eclipse.update.core.linux" fragment="true"/>
-      <plugin id="org.eclipse.update.core.win32" fragment="true"/>
+      <plugin id="org.eclipse.wst.common.environment"/>
+      <plugin id="org.eclipse.wst.common.frameworks"/>
+      <plugin id="org.eclipse.wst.common.project.facet.core"/>
+      <plugin id="org.eclipse.wst.common.uriresolver"/>
+      <plugin id="org.eclipse.wst.sse.core"/>
+      <plugin id="org.eclipse.wst.sse.ui"/>
+      <plugin id="org.eclipse.wst.validation"/>
       <plugin id="org.jdom"/>
       <plugin id="org.junit"/>
+      <plugin id="org.mortbay.jetty.server"/>
+      <plugin id="org.mortbay.jetty.util"/>
       <plugin id="org.sat4j.core"/>
       <plugin id="org.sat4j.pb"/>
       <plugin id="org.slf4j"/>
