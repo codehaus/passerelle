@@ -1,7 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editor;
 
 import org.eclipse.draw2d.PositionConstants;
-import org.eclipse.emf.edit.ui.action.DeleteAction;
 import org.eclipse.gef.editparts.ZoomManager;
 import org.eclipse.gef.internal.GEFMessages;
 import org.eclipse.gef.ui.actions.ActionBarContributor;
@@ -24,7 +23,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.RetargetAction;
-import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 
 public class PasserelleActionBarContributor extends ActionBarContributor {
 
@@ -65,7 +63,6 @@ public class PasserelleActionBarContributor extends ActionBarContributor {
 		addRetargetAction((RetargetAction) ActionFactory.COPY.create(iww));
 		addRetargetAction((RetargetAction) ActionFactory.CUT.create(iww));
 		addRetargetAction((RetargetAction) ActionFactory.PASTE.create(iww));
-		// addAction(ActionFactory.DELETE.create(iww));
 	}
 
 	/**
@@ -80,11 +77,6 @@ public class PasserelleActionBarContributor extends ActionBarContributor {
 	 * @see org.eclipse.ui.part.EditorActionBarContributor#contributeToToolBar(IToolBarManager)
 	 */
 	public void contributeToToolBar(IToolBarManager toolbarManager) {
-		toolbarManager.add(getAction(ActionFactory.UNDO.getId()));
-		toolbarManager.add(getAction(ActionFactory.REDO.getId()));
-
-		toolbarManager.add(new Separator());
-
 		toolbarManager.add(new Separator());
 		toolbarManager.add(getAction(GEFActionConstants.ALIGN_LEFT));
 		toolbarManager.add(getAction(GEFActionConstants.ALIGN_CENTER));

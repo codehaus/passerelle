@@ -86,6 +86,8 @@ import com.isencia.passerelle.model.util.MoMLParser;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.OutlinePartFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView;
+import com.isencia.passerelle.workbench.model.editor.ui.views.ActorPalettePage;
+import com.isencia.passerelle.workbench.model.editor.ui.views.ActorTreeViewerPage;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleEditor;
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
 import com.isencia.passerelle.workbench.model.ui.command.RefreshCommand;
@@ -135,6 +137,12 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 			outlinePage = new OutlinePage(new TreeViewer());
 			return outlinePage;
 		}
+		if ( type == ActorPalettePage.class )
+		{
+			ActorTreeViewerPage page = new ActorTreeViewerPage();
+			return page;
+		}
+
 		return super.getAdapter(type);
 	}
 
@@ -150,9 +158,10 @@ public class PasserelleModelMultiPageEditor extends MultiPageEditorPart implemen
 
 	@Override
 	public void removePage(int pageIndex) {
-
+		
 		super.removePage(pageIndex);
-		pages.remove(pageIndex);
+		pages.remove(pageIndex - 1);
+		setActivePage(0);
 	}
 
 	private List<CompositeActor> pages = new ArrayList<CompositeActor>();
