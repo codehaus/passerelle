@@ -11,8 +11,8 @@ import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
 import ptolemy.actor.IORelation;
 
-import com.isencia.passerelle.workbench.model.ui.RelationModel;
-import com.isencia.passerelle.workbench.model.ui.VertexRelation;
+import com.isencia.passerelle.workbench.model.ui.Link;
+import com.isencia.passerelle.workbench.model.ui.VertexLink;
 
 public class CopyNodeCommand extends Command {
 	private ArrayList<Object> list = new ArrayList<Object>();
@@ -20,7 +20,7 @@ public class CopyNodeCommand extends Command {
 	public boolean addElement(Object NamedObj) {
 		if (!list.contains(NamedObj)) {
 			if (NamedObj instanceof IORelation) {
-				list.add(new RelationModel(((IORelation)NamedObj)
+				list.add(new Link(((IORelation)NamedObj)
 						.linkedSourcePorts(),((IORelation)NamedObj).linkedDestinationPorts()));
 				
 			} else {

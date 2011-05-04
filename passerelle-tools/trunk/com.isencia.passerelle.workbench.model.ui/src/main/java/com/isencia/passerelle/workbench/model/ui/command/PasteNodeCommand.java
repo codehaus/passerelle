@@ -17,8 +17,8 @@ import ptolemy.kernel.util.NamedObj;
 import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.ui.IPasserelleMultiPageEditor;
-import com.isencia.passerelle.workbench.model.ui.RelationModel;
-import com.isencia.passerelle.workbench.model.ui.VertexRelation;
+import com.isencia.passerelle.workbench.model.ui.Link;
+import com.isencia.passerelle.workbench.model.ui.VertexLink;
 import com.isencia.passerelle.workbench.model.utils.ModelUtils;
 
 public class PasteNodeCommand extends Command {
@@ -38,8 +38,8 @@ public class PasteNodeCommand extends Command {
 		if (clipBoardList == null || clipBoardList.isEmpty())
 			return false;
 		for (Object o : clipBoardList) {
-			if (!(o instanceof NamedObj) && !(o instanceof RelationModel)
-					&& !(o instanceof VertexRelation)) {
+			if (!(o instanceof NamedObj) && !(o instanceof Link)
+					&& !(o instanceof VertexLink)) {
 				return false;
 			}
 		}
@@ -98,19 +98,19 @@ public class PasteNodeCommand extends Command {
 		while (it.hasNext()) {
 			try {
 				Object o = it.next();
-				if (o instanceof RelationModel || o instanceof VertexRelation) {
+				if (o instanceof Link || o instanceof VertexLink) {
 
 					NamedObj destination = null;
 					NamedObj source = null;
 
-					if (o instanceof VertexRelation) {
-						VertexRelation vr = (VertexRelation) o;
+					if (o instanceof VertexLink) {
+						VertexLink vr = (VertexLink) o;
 						Vertex vertex = ModelUtils.getVertex(vr.getRelation());
 						source = ((CreateComponentCommand) list.get(vertex))
 								.getChild();
 						destination = searchPort(vr.getPort());
 					} else {
-						RelationModel rel = (RelationModel) o;
+						Link rel = (Link) o;
 						destination = searchCopy(rel.getDestination());
 						source = searchCopy(rel.getSource());
 					}
