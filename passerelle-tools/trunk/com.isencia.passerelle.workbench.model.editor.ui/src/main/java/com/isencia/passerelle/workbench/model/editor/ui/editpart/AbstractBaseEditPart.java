@@ -63,12 +63,9 @@ abstract public class AbstractBaseEditPart extends
 	private static final Logger logger = LoggerFactory
 			.getLogger(AbstractBaseEditPart.class);
 
-	private AccessibleEditPart acc;
 	protected IPropertySource propertySource = null;
 
 	private IPropertyChangeListener expertUpdater;
-
-	abstract protected AccessibleEditPart createAccessible();
 
 	public void activate() {
 		
@@ -112,12 +109,6 @@ abstract public class AbstractBaseEditPart extends
 		super.deactivate();
 	}
 
-	protected AccessibleEditPart getAccessibleEditPart() {
-		if (acc == null)
-			acc = createAccessible();
-		return acc;
-	}
-
 	/**
 	 * Returns the model associated with this as a NamedObj.
 	 * 
@@ -149,11 +140,6 @@ abstract public class AbstractBaseEditPart extends
 	}
 
 	public Object getAdapter(Class key) {
-		/*
-		 * override the default behavior defined in AbstractEditPart which would
-		 * expect the model to be a property sourced. instead the editpart can
-		 * provide a property source
-		 */
 		if (IPropertySource.class == key) {
 			return getPropertySource();
 		}
@@ -188,7 +174,6 @@ abstract public class AbstractBaseEditPart extends
 						((INameable) getComponentFigure()).setName(name);
 						getFigure().repaint();
 					}
-					specificTreatment(source);
 				}
 			} else if (SetConstraintCommand.class.equals(type)) {
 				if (source == this.getModel() && source instanceof NamedObj) {
@@ -215,13 +200,8 @@ abstract public class AbstractBaseEditPart extends
 		}
 	}
 
-	protected void specificTreatment(Object source) {
-
-	}
-
 	protected String getName(Object source) {
-		String name = ((NamedObj) source).getDisplayName();
-		return name;
+		return ((NamedObj) source).getDisplayName();
 	}
 
 	@Override

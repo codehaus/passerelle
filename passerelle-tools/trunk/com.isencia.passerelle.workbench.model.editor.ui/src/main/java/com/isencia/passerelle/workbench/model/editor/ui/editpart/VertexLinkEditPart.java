@@ -21,27 +21,28 @@ import ptolemy.moml.Vertex;
 
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.RelationEndpointEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.VertexRelationDeletePolicy;
-import com.isencia.passerelle.workbench.model.ui.VertexRelation;
+import com.isencia.passerelle.workbench.model.ui.VertexLink;
 
 /**
  * Implements a Relation Editpart to represent a Wire like connection.
  * 
  */
-public class VertexRelationEditPart extends AbstractConnectionEditPart
+public class VertexLinkEditPart extends AbstractConnectionEditPart
 		implements ChangeListener {
 	public Relation getRelation() {
-		return ((VertexRelation)getModel()).getRelation();
-	}
-	public IOPort getPort() {
-		return ((VertexRelation)getModel()).getPort();
-	}
-	public Vertex getVertex() {
-		return ((VertexRelation)getModel()).getTargetVertex();
+		return ((VertexLink) getModel()).getRelation();
 	}
 
+	public IOPort getPort() {
+		return ((VertexLink) getModel()).getPort();
+	}
+
+	public Vertex getVertex() {
+		return ((VertexLink) getModel()).getTargetVertex();
+	}
 
 	private static Logger logger = LoggerFactory
-			.getLogger(VertexRelationEditPart.class);
+			.getLogger(VertexLinkEditPart.class);
 
 	public static final Color alive = new Color(Display.getDefault(), 0, 74,
 			168), dead = new Color(Display.getDefault(), 0, 0, 0);
@@ -82,8 +83,6 @@ public class VertexRelationEditPart extends AbstractConnectionEditPart
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.CONNECTION_ENDPOINTS_ROLE,
 				new RelationEndpointEditPolicy());
-		// //Note that the Connection is already added to the diagram and knows
-		// its Router.
 		installEditPolicy(EditPolicy.CONNECTION_ROLE,
 				new VertexRelationDeletePolicy());
 	}
@@ -95,22 +94,8 @@ public class VertexRelationEditPart extends AbstractConnectionEditPart
 	 */
 	protected IFigure createFigure() {
 		PolylineConnection connection = new PolylineConnection();
-		// Relation channel = getRelation();
 		ManhattanConnectionRouter connectionRouter = new ManhattanConnectionRouter();
 		connection.setConnectionRouter(connectionRouter);
-		// PolygonDecoration arrow = new PolygonDecoration();
-		// arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP);
-		// arrow.setScale(5, 2.5);
-		// connection.setTargetDecoration(arrow);
-		/*
-		 * List bendPoints = toBendPoints(channel.getBendPoints());
-		 * BendpointConnectionRouter router = new BendpointConnectionRouter();
-		 * router.setConstraint(connection, bendPoints);
-		 * connection.setConnectionRouter(router); PolygonDecoration arrow = new
-		 * PolygonDecoration();
-		 * arrow.setTemplate(PolygonDecoration.TRIANGLE_TIP); arrow.setScale(5,
-		 * 2.5); connection.setTargetDecoration(arrow);
-		 */
 		return connection;
 	}
 
@@ -119,14 +104,11 @@ public class VertexRelationEditPart extends AbstractConnectionEditPart
 			acc = new AccessibleGraphicalEditPart() {
 				public void getName(AccessibleEvent e) {
 					e.result = "Link";
-					// e.result = LogicMessages.Wire_LabelText;
 				}
 			};
 
 		return acc;
 	}
-
-	
 
 	/**
 	 * Returns the Figure associated with this, which draws the Wire.
@@ -143,10 +125,6 @@ public class VertexRelationEditPart extends AbstractConnectionEditPart
 	 * 
 	 */
 	protected void refreshVisuals() {
-		/*
-		 * if (getWire().getValue()) getWireFigure().setForegroundColor(alive);
-		 * else getWireFigure().setForegroundColor(dead);
-		 */
 	}
 
 	@Override

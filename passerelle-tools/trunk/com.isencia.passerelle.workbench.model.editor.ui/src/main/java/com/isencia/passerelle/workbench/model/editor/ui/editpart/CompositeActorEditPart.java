@@ -42,6 +42,7 @@ import ptolemy.kernel.Relation;
 import ptolemy.kernel.util.ChangeRequest;
 import ptolemy.kernel.util.NamedObj;
 import ptolemy.moml.Vertex;
+import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.WorkbenchUtility;
@@ -51,6 +52,8 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNode
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.CompositeActorEditPolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CompositeActorFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteItemFactory;
 import com.isencia.passerelle.workbench.model.ui.command.CreateComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
@@ -74,8 +77,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(ActorEditPart.class);
-	public final static ImageDescriptor IMAGE_DESCRIPTOR_COMPOSITEACTOR = Activator
-			.getImageDescriptor("icons/compound.gif");
 	public final static ImageDescriptor IMAGE_DESCRIPTOR_DRILLDOWN = Activator
 			.getImageDescriptor("icons/add.gif");
 
@@ -106,10 +107,11 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 					multiPageEditor.setText(index, WorkbenchUtility
 							.getPath(model));
 					multiPageEditor.setActiveEditor(editor);
+					index = index - 1;
 
 				}
 				multiPageEditor.setActiveEditor(multiPageEditor
-						.getEditor(index));
+						.getEditor(index + 1));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -201,13 +203,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 		return true;
 	}
 
-	protected AccessibleEditPart createAccessible() {
-		return new AccessibleGraphicalEditPart() {
-			public void getName(AccessibleEvent e) {
-			}
-		};
-	}
-
 	/**
 	 * Installs EditPolicies specific to this.
 	 */
@@ -230,7 +225,8 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 				createImage(IMAGE_DESCRIPTOR_DRILLDOWN));
 		drillDownImageFigure.setAlignment(PositionConstants.SOUTH);
 		drillDownImageFigure.setBorder(new MarginBorder(0, 0, 5, 0));
-
+		
+		// Implement drilldown in composite
 		Clickable button = new Clickable(drillDownImageFigure);
 		button.addMouseListener(new MouseListener() {
 
@@ -242,22 +238,22 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+				// Not action when mouse pressed
 
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+				// Not action when mouse released
 
 			}
-
 		});
 
 		Actor actorModel = getActorModel();
+		ImageDescriptor imageDescriptor = PaletteItemFactory.get().getIcon(getModel()
+				.getClass());
 		CompositeActorFigure actorFigure = new CompositeActorFigure(actorModel
-				.getDisplayName(),
-				createImage(IMAGE_DESCRIPTOR_COMPOSITEACTOR),
+				.getDisplayName(),getModel().getClass(), createImage(imageDescriptor),
 				new Clickable[] { button });
 		// Add TargetConnectionAnchors
 		List<TypedIOPort> inputPortList = actorModel.inputPortList();
@@ -330,30 +326,6 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 
 	/**
 	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	/*
-	 * public Object getAdapter(Class adapter) { if (adapter ==
-	 * SnapToHelper.class) { List snapStrategies = new ArrayList(); Boolean val
-	 * = (Boolean) getViewer().getProperty(
-	 * RulerProvider.PROPERTY_RULER_VISIBILITY); if (val != null &&
-	 * val.booleanValue()) snapStrategies.add(new SnapToGuides(this)); val =
-	 * (Boolean) getViewer().getProperty( SnapToGeometry.PROPERTY_SNAP_ENABLED);
-	 * if (val != null && val.booleanValue()) snapStrategies.add(new
-	 * SnapToGeometry(this)); val = (Boolean) getViewer().getProperty(
-	 * SnapToGrid.PROPERTY_GRID_ENABLED); if (val != null && val.booleanValue())
-	 * snapStrategies.add(new SnapToGrid(this));
-	 * 
-	 * if (snapStrategies.size() == 0) return null; if (snapStrategies.size() ==
-	 * 1) return snapStrategies.get(0);
-	 * 
-	 * SnapToHelper ss[] = new SnapToHelper[snapStrategies.size()]; for (int i =
-	 * 0; i < snapStrategies.size(); i++) ss[i] = (SnapToHelper)
-	 * snapStrategies.get(i); return new CompoundSnapToHelper(ss); } return
-	 * super.getAdapter(adapter); }
-	 * 
-	 * public DragTracker getDragTracker(Request req) { if (req instanceof
-	 * SelectionRequest && ((SelectionRequest) req).getLastButtonPressed() == 3)
-	 * return new DeselectAllTracker(this); return new MarqueeDragTracker(); }
 	 */
 	public Object getAdapter(Class key) {
 		if (key == AccessibleAnchorProvider.class)
@@ -514,9 +486,9 @@ public class CompositeActorEditPart extends ContainerEditPart implements
 			ConnectionEditPart connEditPart, boolean isSource) {
 		Relation relation = null;
 		Port port = null;
-		if (connEditPart instanceof VertexRelationEditPart) {
-			relation = ((VertexRelationEditPart) connEditPart).getRelation();
-			port = ((VertexRelationEditPart) connEditPart).getPort();
+		if (connEditPart instanceof VertexLinkEditPart) {
+			relation = ((VertexLinkEditPart) connEditPart).getRelation();
+			port = ((VertexLinkEditPart) connEditPart).getPort();
 
 		} else {
 			relation = (Relation) connEditPart.getModel();

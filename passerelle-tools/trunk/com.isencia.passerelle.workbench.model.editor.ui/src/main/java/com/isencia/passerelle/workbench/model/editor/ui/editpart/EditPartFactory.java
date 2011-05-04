@@ -26,7 +26,7 @@ import ptolemy.vergil.kernel.attributes.TextAttribute;
 import com.isencia.passerelle.actor.Sink;
 import com.isencia.passerelle.actor.Source;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMultiPageEditor;
-import com.isencia.passerelle.workbench.model.ui.VertexRelation;
+import com.isencia.passerelle.workbench.model.ui.VertexLink;
 
 public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 	
@@ -82,8 +82,8 @@ public class EditPartFactory implements org.eclipse.gef.EditPartFactory {
 				child = new PortEditPart(false);
 		} else if (model instanceof Relation) {
 				child = new RelationEditPart();
-		} else if (model instanceof VertexRelation) {
-			child = new VertexRelationEditPart();
+		} else if (model instanceof VertexLink) {
+			child = new VertexLinkEditPart();
 		} else if (model instanceof TypedCompositeActor) {
 			// TODO Check if this is the correct check to make the distinction
 			// between this and child Composites. Check also how to go more then

@@ -40,29 +40,11 @@ public class PortEditPart extends ActorEditPart {
 	}
 
 	@Override
-	protected AccessibleEditPart createAccessible() {
-		return new AccessibleGraphicalEditPart() {
-
-			public void getName(AccessibleEvent e) {
-				e.result = "hello";
-				// e.result =
-				// LogicMessages.LogicPlugin_Tool_CreationTool_LED_Label;
-			}
-
-			public void getValue(AccessibleControlEvent e) {
-				e.result = "1";
-				// e.result = Integer.toString(getLEDModel().getValue());
-			}
-
-		};
-	}
-
-	@Override
 	protected IFigure createFigure() {
 		if (isInput)
-			return new CompoundInputFigure(((IOPort) getModel()).getName());
+			return new CompoundInputFigure(((IOPort) getModel()).getName(),IOPort.class);
 		else
-			return new CompoundOutputFigure(((IOPort) getModel()).getName());
+			return new CompoundOutputFigure(((IOPort) getModel()).getName(),IOPort.class);
 	}
 
 	public CompoundIOFigure getComponentFigure() {

@@ -29,6 +29,7 @@ import ptolemy.moml.Vertex;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteItemFactory;
 
 /**
  * EditPart for components in the Tree.
@@ -85,14 +86,6 @@ public class OutlineEditPart extends
 	 * Creates and installs pertinent EditPolicies for this.
 	 */
 	protected void createEditPolicies() {
-		EditPolicy component;
-		// if (getModel() instanceof LED)
-		// component = new LEDEditPolicy();
-		// else
-		// component = new LogicElementEditPolicy();
-		// installEditPolicy(EditPolicy.COMPONENT_ROLE, component);
-		// installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new
-		// LogicTreeEditPolicy());
 	}
 
 	/**
@@ -146,19 +139,6 @@ public class OutlineEditPart extends
 		return children;
 	}
 
-	// public void propertyChange(PropertyChangeEvent change){
-	// if (change.getPropertyName().equals(LogicDiagram.CHILDREN)) {
-	// if (change.getOldValue() instanceof Integer)
-	// // new child
-	// addChild(createChild(change.getNewValue()),
-	// ((Integer)change.getOldValue()).intValue());
-	// else
-	// // remove child
-	// removeChild((EditPart)getViewer().getEditPartRegistry().get(change.getOldValue()));
-	// } else
-	// refreshVisuals();
-	// }
-
 	/**
 	 * Refreshes the visual properties of the TreeItem for this part.
 	 */
@@ -180,24 +160,8 @@ public class OutlineEditPart extends
 		} else if (model instanceof TypedAtomicActor) {
 			setWidgetImage(ActorEditPart.IMAGE_DESCRIPTOR_ACTOR, model);
 		} else if (model instanceof CompositeActor) {
-			setWidgetImage(
-					CompositeActorEditPart.IMAGE_DESCRIPTOR_COMPOSITEACTOR,
+			setWidgetImage(PaletteItemFactory.get().getIcon(model.getClass()),
 					model);
-		} else if (model instanceof Vertex) {
-			setWidgetImage(CommentEditPart.IMAGE_COMMENT, model);
-		} else if (model instanceof TextAttribute) {
-			setWidgetImage(CommentEditPart.IMAGE_COMMENT, model);
-		} else if (model instanceof TypedIOPort) {
-			if (((IOPort) model).isInput())
-				setWidgetImage(
-						PaletteBuilder
-								.getIcon("com.isencia.passerelle.actor.general.InputIOPort"),
-						model);
-			else
-				setWidgetImage(
-						PaletteBuilder
-								.getIcon("com.isencia.passerelle.actor.general.OutputIOPort"),
-						model);
 		}
 		// Set Text
 		if (model instanceof Parameter) {
@@ -214,12 +178,13 @@ public class OutlineEditPart extends
 	 */
 	@Override
 	public void valueChanged(Settable settable) {
-		getRoot().getViewer().getControl().getDisplay().asyncExec(new Runnable() {
-			@Override
-			public void run() {
-				refreshVisuals();
-			}
-		});
+		getRoot().getViewer().getControl().getDisplay().asyncExec(
+				new Runnable() {
+					@Override
+					public void run() {
+						refreshVisuals();
+					}
+				});
 	}
 
 	@Override
@@ -243,7 +208,6 @@ public class OutlineEditPart extends
 			setWidgetImage(createImage);
 			modelImages.put(obj.getClass().getName(), createImage);
 		} else {
-			// modelImages.get(obj.getClass().getName()).
 			setWidgetImage(modelImages.get(obj.getClass().getName()));
 		}
 	}

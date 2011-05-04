@@ -10,7 +10,6 @@ import org.eclipse.draw2d.FreeformLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MarginBorder;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.CompoundSnapToHelper;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.DragTracker;
@@ -27,7 +26,6 @@ import org.eclipse.gef.requests.SelectionRequest;
 import org.eclipse.gef.rulers.RulerProvider;
 import org.eclipse.gef.tools.DeselectAllTracker;
 import org.eclipse.gef.tools.MarqueeDragTracker;
-import org.eclipse.swt.accessibility.AccessibleEvent;
 
 import ptolemy.actor.CompositeActor;
 import ptolemy.kernel.util.ChangeRequest;
@@ -40,7 +38,8 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.DiagramXYLayo
  * hold the entire model. It is sort of a blank board where all other EditParts
  * get added.
  */
-public class DiagramEditPart extends ContainerEditPart implements LayerConstants {
+public class DiagramEditPart extends ContainerEditPart implements
+		LayerConstants {
 	public CompositeActor getActor() {
 		return actor;
 	}
@@ -48,7 +47,8 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 	private PasserelleModelMultiPageEditor multiPageEditorPart;
 	private CompositeActor actor;
 
-	public DiagramEditPart(PasserelleModelMultiPageEditor parent,CompositeActor actor) {
+	public DiagramEditPart(PasserelleModelMultiPageEditor parent,
+			CompositeActor actor) {
 		super(actor);
 		this.multiPageEditorPart = parent;
 		this.actor = actor;
@@ -56,14 +56,6 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 
 	public PasserelleModelMultiPageEditor getMultiPageEditorPart() {
 		return multiPageEditorPart;
-	}
-
-	protected AccessibleEditPart createAccessible() {
-		return new AccessibleGraphicalEditPart() {
-			public void getName(AccessibleEvent e) {
-				// e.result = LogicMessages.LogicDiagram_LabelText;
-			}
-		};
 	}
 
 	/**
@@ -91,7 +83,6 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 	 */
 	protected IFigure createFigure() {
 		Figure f = new FreeformLayer();
-		// f.setBorder(new GroupBoxBorder("Diagram"));
 		f.setLayoutManager(new FreeformLayout());
 		f.setBorder(new MarginBorder(5));
 		return f;
@@ -103,7 +94,6 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
-		refreshVisuals();
 		refreshChildren();
 	}
 
@@ -121,7 +111,8 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 					SnapToGeometry.PROPERTY_SNAP_ENABLED);
 			if (val != null && val.booleanValue())
 				snapStrategies.add(new SnapToGeometry(this));
-			val = (Boolean) getViewer().getProperty(SnapToGrid.PROPERTY_GRID_ENABLED);
+			val = (Boolean) getViewer().getProperty(
+					SnapToGrid.PROPERTY_GRID_ENABLED);
 			if (val != null && val.booleanValue())
 				snapStrategies.add(new SnapToGrid(this));
 
@@ -152,6 +143,7 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 	 */
 	public ConnectionAnchor getSourceConnectionAnchor(
 			ConnectionEditPart editPart) {
+		// Not source connection anchor for Diagram
 		return null;
 	}
 
@@ -161,6 +153,7 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 	 * @return ConnectionAnchor
 	 */
 	public ConnectionAnchor getSourceConnectionAnchor(int x, int y) {
+		// Not source connection anchor for Diagram
 		return null;
 	}
 
@@ -171,6 +164,7 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 	 */
 	public ConnectionAnchor getTargetConnectionAnchor(
 			ConnectionEditPart editPart) {
+		// Not target connection anchor for Diagram
 		return null;
 	}
 
@@ -180,31 +174,9 @@ public class DiagramEditPart extends ContainerEditPart implements LayerConstants
 	 * @return ConnectionAnchor
 	 */
 	public ConnectionAnchor getTargetConnectionAnchor(int x, int y) {
+		// Not target connection anchor for Diagram
 		return null;
 	}
 
-	public void refreshVisuals() {
-		// refresh();
-		refreshChildren();
-		// Animation.markBegin();
-		// ConnectionLayer cLayer = (ConnectionLayer)
-		// getLayer(CONNECTION_LAYER);
-		// if ((getViewer().getControl().getStyle() & SWT.MIRRORED) == 0)
-		// cLayer.setAntialias(SWT.ON);
-
-		// if
-		// (getLogicDiagram().getConnectionRouter().equals(LogicDiagram.ROUTER_MANUAL))
-		// {
-		// AutomaticRouter router = new FanRouter();
-		// router.setNextRouter(new BendpointConnectionRouter());
-		// cLayer.setConnectionRouter(router);
-		// } else if
-		// (getLogicDiagram().getConnectionRouter().equals(LogicDiagram.ROUTER_MANHATTAN))
-		// cLayer.setConnectionRouter(new ManhattanConnectionRouter());
-		// else
-		// cLayer.setConnectionRouter(new
-		// ShortestPathConnectionRouter(getFigure()));
-		// Animation.run(400);
-	}
 
 }
