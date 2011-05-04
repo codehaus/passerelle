@@ -33,7 +33,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNode
 import com.isencia.passerelle.workbench.model.editor.ui.figure.VertexFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
-import com.isencia.passerelle.workbench.model.ui.VertexRelation;
+import com.isencia.passerelle.workbench.model.ui.VertexLink;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
@@ -48,7 +48,7 @@ import com.isencia.passerelle.workbench.model.utils.ModelUtils;
  * @author Dirk Jacobs
  */
 public class VertexEditPart extends AbstractNodeEditPart {
-	public static Map<Vertex, Map<NamedObj, VertexRelation>> vertexRelationMap = new HashMap<Vertex, Map<NamedObj, VertexRelation>>();
+	public static Map<Vertex, Map<NamedObj, VertexLink>> vertexRelationMap = new HashMap<Vertex, Map<NamedObj, VertexLink>>();
 	public static Set<Vertex> vertexRelationSources = new HashSet<Vertex>();
 	public static Set<Vertex> vertexRelationTargets = new HashSet<Vertex>();
 	public static boolean isSource(Vertex source){
@@ -65,9 +65,6 @@ public class VertexEditPart extends AbstractNodeEditPart {
 		}
 		return vertexRelationTargets.contains(target);
 	}
-	public final static ImageDescriptor IMAGE_COMMENT = Activator
-			.getImageDescriptor("com.isencia.passerelle.actor",
-					"icons/vertex.gif");
 
 	public VertexEditPart() {
 		super();
@@ -75,7 +72,7 @@ public class VertexEditPart extends AbstractNodeEditPart {
 
 	@Override
 	protected IFigure createFigure() {
-		return new VertexFigure(((Vertex) getModel()).getName(), null);
+		return new VertexFigure(((Vertex) getModel()).getName(), Vertex.class,null);
 	}
 
 	@Override
@@ -128,10 +125,10 @@ public class VertexEditPart extends AbstractNodeEditPart {
 
 	public static Object getRelation(TypedIORelation relation, Object o,
 			Vertex vertex, boolean isSource) {
-		VertexRelation relationObject = null;
-		Map<NamedObj, VertexRelation> map = vertexRelationMap.get(vertex);
+		VertexLink relationObject = null;
+		Map<NamedObj, VertexLink> map = vertexRelationMap.get(vertex);
 		if (map == null) {
-			map = new HashMap<NamedObj, VertexRelation>();
+			map = new HashMap<NamedObj, VertexLink>();
 			vertexRelationMap.put(vertex, map);
 		}
 		if (map.containsKey(o)) {
@@ -139,11 +136,11 @@ public class VertexEditPart extends AbstractNodeEditPart {
 		} else {
 
 			if (o instanceof IOPort) {
-				relationObject = new VertexRelation((IOPort) o, vertex,
+				relationObject = new VertexLink((IOPort) o, vertex,
 						isSource);
 			} else {
 				if ((isSource && isSource((Vertex) o)) || (!isSource && isTarget(vertex)) ) 
-					relationObject = new VertexRelation((Vertex) o, vertex,
+					relationObject = new VertexLink((Vertex) o, vertex,
 							isSource);
 			}
 
@@ -168,16 +165,16 @@ public class VertexEditPart extends AbstractNodeEditPart {
 	private double[] getLocation(ConnectionEditPart connEditPart,boolean isSource) {
 		Object model = connEditPart.getModel();
 		double[] location = { 0, 0 };
-		if (model instanceof VertexRelation) {
-			VertexRelation relation = (VertexRelation) model;
+		if (model instanceof VertexLink) {
+			VertexLink relation = (VertexLink) model;
 			if (relation.getPort() != null) {
-				location = ModelUtils.getLocation(((VertexRelation) model)
+				location = ModelUtils.getLocation(((VertexLink) model)
 						.getPort().getContainer());
 			} else if (!isSource && relation.getTargetVertex() != null) {
-				location = ModelUtils.getLocation(((VertexRelation) model)
+				location = ModelUtils.getLocation(((VertexLink) model)
 						.getTargetVertex());
 			} else if (isSource && relation.getSourceVertex() != null) {
-				location = ModelUtils.getLocation(((VertexRelation) model)
+				location = ModelUtils.getLocation(((VertexLink) model)
 						.getSourceVertex());
 			}
 		}
@@ -191,23 +188,6 @@ public class VertexEditPart extends AbstractNodeEditPart {
 
 		return getVertexFigure().getOutputAnchor(getLocation(connEditPart,false),
 				ModelUtils.getLocation((Vertex) getModel()));
-	}
-
-	protected AccessibleEditPart createAccessible() {
-		return new AccessibleGraphicalEditPart() {
-
-			public void getName(AccessibleEvent e) {
-				e.result = "hello";
-				// e.result =
-				// LogicMessages.LogicPlugin_Tool_CreationTool_LED_Label;
-			}
-
-			public void getValue(AccessibleControlEvent e) {
-				e.result = "1";
-				// e.result = Integer.toString(getLEDModel().getValue());
-			}
-
-		};
 	}
 
 	protected void createEditPolicies() {

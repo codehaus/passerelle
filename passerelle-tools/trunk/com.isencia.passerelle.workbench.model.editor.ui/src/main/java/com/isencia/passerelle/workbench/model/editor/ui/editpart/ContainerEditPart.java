@@ -31,20 +31,10 @@ abstract public class ContainerEditPart extends AbstractBaseEditPart {
 		this.showChildren = showChildren;
 	}
 
-	protected AccessibleEditPart createAccessible() {
-		return new AccessibleGraphicalEditPart() {
-			public void getName(AccessibleEvent e) {
-				// e.result = getModelDiagram().toString();
-			}
-		};
-	}
-
 	/**
 	 * Installs the desired EditPolicies for this.
 	 */
 	protected void createEditPolicies() {
-		// installEditPolicy(EditPolicy.CONTAINER_ROLE, new
-		// LogicContainerEditPolicy());
 	}
 
 	/**

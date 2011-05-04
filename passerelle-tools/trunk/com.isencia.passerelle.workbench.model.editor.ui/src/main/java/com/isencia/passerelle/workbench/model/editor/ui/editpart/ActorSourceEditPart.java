@@ -12,7 +12,8 @@ public class ActorSourceEditPart extends ActorEditPart {
 	@Override
 	protected IFigure createFigure() {
 		ActorFigure createFigure = (ActorFigure) super.createFigure();
-		createFigure.setBackgroundColor(ACTOR_BACKGROUND_COLOR);
+		if (createFigure.getColor().equals(createFigure.getDefaultColor()))
+			createFigure.setBackgroundColor(ACTOR_BACKGROUND_COLOR);
 		return createFigure;
 	}
 

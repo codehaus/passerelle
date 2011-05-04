@@ -45,6 +45,7 @@ import com.isencia.passerelle.workbench.model.editor.ui.figure.ActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.PortFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.RectangularActorFigure;
 import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteItemFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
 import com.isencia.passerelle.workbench.model.ui.command.CreateConnectionCommand;
@@ -101,23 +102,6 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		}
 	}
 
-	protected AccessibleEditPart createAccessible() {
-		return new AccessibleGraphicalEditPart() {
-
-			public void getName(AccessibleEvent e) {
-				e.result = "hello";
-				// e.result =
-				// LogicMessages.LogicPlugin_Tool_CreationTool_LED_Label;
-			}
-
-			public void getValue(AccessibleControlEvent e) {
-				e.result = "1";
-				// e.result = Integer.toString(getLEDModel().getValue());
-			}
-
-		};
-	}
-
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 				new ComponentNodeDeletePolicy());
@@ -134,51 +118,11 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 */
 	protected IFigure createFigure() {
 		Actor actorModel = getActor();
-		ImageDescriptor imageDescriptor = PaletteBuilder.getIcon(actorModel
-				.getClass().getName());
+		ImageDescriptor imageDescriptor = PaletteItemFactory.get().getIcon(
+				actorModel.getClass());
 		if (imageDescriptor == null) {
 			imageDescriptor = IMAGE_DESCRIPTOR_ACTOR;
 		}
-//		ImageFigure drillDownImageFigure = new ImageFigure(
-//				createImage(IMAGE_DESCRIPTOR_PROPERTIES));
-//		drillDownImageFigure.setAlignment(PositionConstants.EAST);
-//		drillDownImageFigure.setBorder(new MarginBorder(0, 0, 0, 5));
-//
-//		Clickable button = new Clickable(drillDownImageFigure);
-		// button.addMouseListener(new MouseListener() {
-		//
-		// @Override
-		// public void mouseDoubleClicked(MouseEvent e) {
-		//
-		// Display display = Display.getDefault();
-		// FormDialog dialog = new FormDialog(display.getActiveShell());
-		// dialog.create();
-		//
-		// dialog.getShell().setSize(500, 500);
-		// IPropertyDescriptor[] descriptors = getPropertySource()
-		// .getPropertyDescriptors();
-		// for (IPropertyDescriptor descriptor : descriptors) {
-		// descriptor.getDisplayName();
-		// }
-		// dialog.open();
-		//
-		// }
-		//
-		// @Override
-		// public void mousePressed(MouseEvent arg0) {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		//
-		// @Override
-		// public void mouseReleased(MouseEvent arg0) {
-		// // TODO Auto-generated method stub
-		//
-		// }
-		//
-		// });
-//		ActorFigure actorFigure = new ActorFigure(actorModel.getDisplayName(),
-//				createImage(imageDescriptor), new Clickable[] { button });
 		ActorFigure actorFigure = getActorFigure(actorModel.getDisplayName(),
 				createImage(imageDescriptor), new Clickable[] {  });
 		// Add TargetConnectionAnchors
@@ -216,8 +160,9 @@ public class ActorEditPart extends AbstractNodeEditPart {
 	 * @param clickables
 	 * @return
 	 */
-	protected ActorFigure getActorFigure(String displayName, Image createImage, Clickable[] clickables) {
-		return new RectangularActorFigure(displayName, createImage, clickables);
+	protected ActorFigure getActorFigure(String displayName, Image createImage,
+			Clickable[] clickables) {
+		return new RectangularActorFigure(displayName,getModel().getClass(), createImage, clickables);
 	}
 
 	public Object getAdapter(Class key) {
@@ -340,8 +285,8 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		getLogger().trace(
 				"Get SourceConnectionAnchor based on ConnectionEditPart");
 		Port port = null;
-		if (connEditPart instanceof VertexRelationEditPart) {
-			port = ((VertexRelationEditPart) connEditPart).getPort();
+		if (connEditPart instanceof VertexLinkEditPart) {
+			port = ((VertexLinkEditPart) connEditPart).getPort();
 
 		} else {
 			Relation relation = (Relation) connEditPart.getModel();
@@ -378,8 +323,8 @@ public class ActorEditPart extends AbstractNodeEditPart {
 		getLogger().trace(
 				"Get TargetConnectionAnchor based on ConnectionEditPart");
 		Port port = null;
-		if (connEditPart instanceof VertexRelationEditPart) {
-			port = ((VertexRelationEditPart) connEditPart).getPort();
+		if (connEditPart instanceof VertexLinkEditPart) {
+			port = ((VertexLinkEditPart) connEditPart).getPort();
 
 		} else {
 

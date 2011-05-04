@@ -2,16 +2,10 @@ package com.isencia.passerelle.workbench.model.editor.ui.editpart;
 
 import org.eclipse.draw2d.ConnectionAnchor;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Label;
-import org.eclipse.gef.AccessibleEditPart;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
-import org.eclipse.gef.RequestConstants;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.accessibility.AccessibleControlEvent;
-import org.eclipse.swt.accessibility.AccessibleEvent;
 import org.eclipse.ui.views.properties.IPropertySource;
 
 import ptolemy.kernel.util.Attribute;
@@ -20,12 +14,12 @@ import ptolemy.kernel.util.NamedObj;
 import ptolemy.kernel.util.StringAttribute;
 import ptolemy.vergil.kernel.attributes.TextAttribute;
 
-import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 import com.isencia.passerelle.workbench.model.editor.ui.INameable;
 import com.isencia.passerelle.workbench.model.editor.ui.editpolicy.ComponentNodeDeletePolicy;
 import com.isencia.passerelle.workbench.model.editor.ui.figure.CommentFigure;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteBuilder;
+import com.isencia.passerelle.workbench.model.editor.ui.palette.PaletteItemFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.properties.CommentPropertySource;
-import com.isencia.passerelle.workbench.model.editor.ui.properties.EntityPropertySource;
 import com.isencia.passerelle.workbench.model.ui.command.ChangeActorPropertyCommand;
 import com.isencia.passerelle.workbench.model.ui.command.DeleteComponentCommand;
 import com.isencia.passerelle.workbench.model.ui.command.SetConstraintCommand;
@@ -33,14 +27,9 @@ import com.isencia.passerelle.workbench.model.utils.ModelChangeRequest;
 
 public class CommentEditPart extends AbstractNodeEditPart {
 
-	public final static ImageDescriptor IMAGE_COMMENT = Activator
-			.getImageDescriptor("com.isencia.passerelle.actor",
-					"icons/comment.png");
-
 	@Override
 	public void changeExecuted(ChangeRequest changerequest) {
 
-		
 		getLogger().debug("Change Executed");
 		Object source = changerequest.getSource();
 		if (changerequest instanceof ModelChangeRequest) {
@@ -73,28 +62,9 @@ public class CommentEditPart extends AbstractNodeEditPart {
 		}
 	}
 
-	protected AccessibleEditPart createAccessible() {
-		return new AccessibleGraphicalEditPart() {
-
-			public void getName(AccessibleEvent e) {
-				e.result = "hello";
-				// e.result =
-				// LogicMessages.LogicPlugin_Tool_CreationTool_LED_Label;
-			}
-
-			public void getValue(AccessibleControlEvent e) {
-				e.result = "1";
-				// e.result = Integer.toString(getLEDModel().getValue());
-			}
-
-		};
-	}
-
 	protected void createEditPolicies() {
 		installEditPolicy(EditPolicy.COMPONENT_ROLE,
 				new ComponentNodeDeletePolicy());
-//		installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE,
-//				new CommentDirectEditPolicy());
 	}
 
 	/**
@@ -108,7 +78,8 @@ public class CommentEditPart extends AbstractNodeEditPart {
 		if (attribute instanceof StringAttribute) {
 			name = ((StringAttribute) attribute).getExpression();
 		}
-		return new CommentFigure(name, createImage(IMAGE_COMMENT));
+		ImageDescriptor imageDescriptor = PaletteItemFactory.get().getIcon(TextAttribute.class);
+		return new CommentFigure(name, createImage(imageDescriptor));
 	}
 
 	public CommentFigure getCommentFigure() {
@@ -119,19 +90,14 @@ public class CommentEditPart extends AbstractNodeEditPart {
 		return (TextAttribute) getModel();
 	}
 
-	public void refreshVisuals() {
-		// getLEDFigure().setValue(getLEDModel().getValue());
-		super.refreshVisuals();
-	}
-
 	public void setSelected(int i) {
 		super.setSelected(i);
-		refreshVisuals();
+		super.refreshVisuals();
 	}
 
 	protected IPropertySource getPropertySource() {
 		if (propertySource == null) {
-			propertySource = new CommentPropertySource(getEntity(),getFigure());
+			propertySource = new CommentPropertySource(getEntity(), getFigure());
 		}
 		return propertySource;
 	}
@@ -145,36 +111,26 @@ public class CommentEditPart extends AbstractNodeEditPart {
 
 	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart arg0) {
-		// TODO Auto-generated method stub
+		// Not source connection anchor for Comment
 		return null;
 	}
 
 	@Override
 	public ConnectionAnchor getSourceConnectionAnchor(Request arg0) {
-		// TODO Auto-generated method stub
+		// Not source connection anchor for Comment
 		return null;
 	}
 
 	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart arg0) {
-		// TODO Auto-generated method stub
+		// Not target connection anchor for Comment
 		return null;
 	}
 
 	@Override
 	public ConnectionAnchor getTargetConnectionAnchor(Request arg0) {
-		// TODO Auto-generated method stub
+		// Not target connection anchor for Comment
 		return null;
 	}
 
-	private LogicLabelEditManager manager;
-
-	public void performRequest(Request request) {
-//		if (request.getType() == RequestConstants.REQ_DIRECT_EDIT) {
-//			if (manager == null)
-//				manager = new LogicLabelEditManager(this, TextCellEditor.class,
-//						new LabelCellEditorLocator());
-//			manager.show();
-//		}
-	}
 }
