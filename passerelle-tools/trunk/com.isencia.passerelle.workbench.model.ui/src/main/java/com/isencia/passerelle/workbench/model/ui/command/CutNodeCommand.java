@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.ui.actions.Clipboard;
 
-import com.isencia.passerelle.workbench.model.ui.RelationModel;
+import com.isencia.passerelle.workbench.model.ui.Link;
 
 import ptolemy.actor.Director;
 import ptolemy.actor.IOPort;
@@ -63,12 +63,12 @@ public class CutNodeCommand extends Command {
 		if (canExecute()) {
 			CompositeEntity container = null;
 			Iterator it = connectionList.keySet().iterator();
-			List<RelationModel> relations = new ArrayList<RelationModel>();
+			List<Link> relations = new ArrayList<Link>();
 			while (it.hasNext()) {
 				try {
 					NamedObj child = (NamedObj) it.next();
 					if (child instanceof IORelation) {
-						relations.add(new RelationModel(((IORelation) child)
+						relations.add(new Link(((IORelation) child)
 								.linkedDestinationPorts(), ((IORelation) child)
 								.linkedSourcePorts()));
 
