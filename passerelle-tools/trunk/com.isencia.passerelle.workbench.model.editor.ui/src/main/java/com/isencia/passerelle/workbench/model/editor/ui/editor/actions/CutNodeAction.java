@@ -20,8 +20,8 @@ import ptolemy.kernel.util.NamedObj;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.VertexRelationEditPart;
-import com.isencia.passerelle.workbench.model.ui.RelationModel;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.VertexLinkEditPart;
+import com.isencia.passerelle.workbench.model.ui.Link;
 import com.isencia.passerelle.workbench.model.ui.command.CutNodeCommand;
 
 public class CutNodeAction extends SelectionAction {
@@ -64,7 +64,7 @@ public class CutNodeAction extends SelectionAction {
 			if (!(o instanceof AbstractEditPart)) {
 				return null;
 			}
-			if (o instanceof AbstractBaseEditPart || o instanceof RelationEditPart || o  instanceof VertexRelationEditPart) {
+			if (o instanceof AbstractBaseEditPart || o instanceof RelationEditPart || o  instanceof VertexLinkEditPart) {
 				AbstractEditPart ep = (AbstractEditPart) o;
 
 				Object NamedObj = ep.getModel();

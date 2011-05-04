@@ -1,7 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.editor.actions;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
@@ -13,7 +12,9 @@ import com.isencia.passerelle.workbench.model.editor.ui.editor.PasserelleModelMu
 
 public class CloseEditorAction extends SelectionAction {
 	private PasserelleModelMultiPageEditor parent;
-	public CloseEditorAction(IEditorPart part,PasserelleModelMultiPageEditor parent) {
+
+	public CloseEditorAction(IEditorPart part,
+			PasserelleModelMultiPageEditor parent) {
 		super(part);
 		this.parent = parent;
 		setLazyEnablementCalculation(true);
@@ -44,12 +45,6 @@ public class CloseEditorAction extends SelectionAction {
 	@Override
 	public void run() {
 		parent.removePage(parent.getActivePage());
-	}
-
-	@Override
-	protected void setSelection(ISelection selection) {
-		// TODO Auto-generated method stub
-		super.setSelection(selection);
 	}
 
 }
