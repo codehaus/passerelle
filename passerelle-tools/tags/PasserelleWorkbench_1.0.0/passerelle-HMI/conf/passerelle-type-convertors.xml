@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<PropertiesBag name="com.isencia.passerelle.message.type.properties">
+   <type-converters>
+   	 <!-- An ordered list of type converters.
+   	 	The first converter that feels it is able to handle the incoming 
+   	 	data type will act on it, so be carefull! -->
+     <type-converter value="com.isencia.passerelle.message.type.ArrayConverter"/>
+     <type-converter value="com.isencia.passerelle.message.type.BooleanConverter"/>
+     <type-converter value="com.isencia.passerelle.message.type.IntegerConverter"/>
+     <type-converter value="com.isencia.passerelle.message.type.LongConverter"/>
+     <type-converter value="com.isencia.passerelle.message.type.DoubleConverter"/>
+     <type-converter value="com.isencia.passerelle.message.type.ComplexConverter"/>
+     <type-converter value="com.isencia.passerelle.message.type.StringConverter"/>
+   </type-converters>
+</PropertiesBag>

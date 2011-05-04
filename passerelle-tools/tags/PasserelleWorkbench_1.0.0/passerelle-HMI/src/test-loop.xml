@@ -1,0 +1,79 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE entity PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
+    "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="test-loop" class="ptolemy.actor.TypedCompositeActor">
+    <property name="_createdBy" class="ptolemy.kernel.attributes.VersionAttribute" value="4.0.1">
+    </property>
+    <property name="Passerelle Std" class="com.isencia.passerelle.domain.cap.Director">
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{55, 35}">
+        </property>
+    </property>
+    <property name="_windowProperties" class="ptolemy.actor.gui.WindowPropertiesAttribute" value="{bounds={322, 19, 815, 582}, maximized=false}">
+    </property>
+    <property name="_vergilSize" class="ptolemy.actor.gui.SizeAttribute" value="[600, 456]">
+    </property>
+    <property name="_vergilZoomFactor" class="ptolemy.data.expr.ExpertParameter" value="1.0">
+    </property>
+    <property name="_vergilCenter" class="ptolemy.data.expr.ExpertParameter" value="{300.0, 228.0}">
+    </property>
+    <entity name="Delay" class="com.isencia.passerelle.actor.flow.Delay">
+        <property name="time(s)" class="ptolemy.data.expr.Parameter" value="10">
+        </property>
+        <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+        </property>
+        <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+        </property>
+        <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{330.0, 75.0}">
+        </property>
+    </entity>
+    <entity name="Loop" class="com.isencia.passerelle.actor.flow.LoopController">
+        <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+        </property>
+        <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+        </property>
+        <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{195.0, 85.0}">
+        </property>
+    </entity>
+    <entity name="Console" class="com.isencia.passerelle.actor.general.Console">
+        <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+        </property>
+        <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+        </property>
+        <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{495.0, 200.0}">
+        </property>
+    </entity>
+    <entity name="Constant" class="com.isencia.passerelle.actor.general.Const">
+        <property name="value" class="ptolemy.data.expr.StringParameter" value="Hello again">
+        </property>
+        <property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory">
+        </property>
+        <property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory">
+        </property>
+        <property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory">
+        </property>
+        <property name="_location" class="ptolemy.kernel.util.Location" value="{70, 170}">
+        </property>
+    </entity>
+    <relation name="relation" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation2" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation3" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <relation name="relation4" class="ptolemy.actor.TypedIORelation">
+    </relation>
+    <link port="Delay.input" relation="relation2"/>
+    <link port="Delay.output" relation="relation3"/>
+    <link port="Loop.input" relation="relation"/>
+    <link port="Loop.handled" relation="relation4"/>
+    <link port="Loop.output" relation="relation2"/>
+    <link port="Console.hasFired" relation="relation4"/>
+    <link port="Console.input" relation="relation3"/>
+    <link port="Constant.output" relation="relation"/>
+</entity>

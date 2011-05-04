@@ -1,0 +1,33 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE plot PUBLIC "-//UC Berkeley//DTD MoML 1//EN"
+    "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="filters" class="ptolemy.moml.EntityLibrary">
+  <configure>
+    <?moml
+      <group>
+   <doc>Actors that perform message filtering on different criteria.</doc>
+   	<!-- custom Passerelle property to support SaveInLibrary for CompositeActors -->
+ 	<property name="_sourcePath" class="ptolemy.data.expr.FileParameter"
+ 		value="$CLASSPATH/passerelle/configs/filters.xml" />
+   
+<entity name="HeaderFilter" class="com.isencia.passerelle.actor.filter.HeaderFilter">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+</entity>
+<entity name="XPath Filter" class="com.isencia.passerelle.actor.filter.XPathFilter">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+</entity>
+<entity name="Regular Expression Filter" class="com.isencia.passerelle.actor.filter.RegexpFilter">
+ 	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+</entity>
+      </group>
+    ?>
+  </configure>
+</entity>
+
+

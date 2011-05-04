@@ -1,0 +1,35 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE plot PUBLIC "-//UC Berkeley//DTD MoML 1//EN" "http://ptolemy.eecs.berkeley.edu/xml/dtd/MoML_1.dtd">
+<entity name="flowcontrols" class="ptolemy.moml.EntityLibrary">
+  <configure>
+    <?moml
+      <group>
+ <doc>Actors that route messages or otherwise affect the flow of control.</doc>
+	<!-- custom Passerelle property to support SaveInLibrary for CompositeActors -->
+ 	<property name="_sourcePath" class="ptolemy.data.expr.FileParameter"
+ 		value="$CLASSPATH/passerelle/configs/flowcontrols.xml" />
+
+<entity name="Delay" class="com.isencia.passerelle.actor.flow.Delay">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+</entity>
+<entity name="Synchronizer" class="com.isencia.passerelle.actor.flow.Synchronizer">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+</entity>
+ <entity name="Loop" class="com.isencia.passerelle.actor.flow.LoopController">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+</entity>
+ <entity name="Switch" class="com.isencia.passerelle.actor.flow.Switch">
+	<property name="_controllerFactory" class="com.isencia.passerelle.actor.gui.PasserelleActorControllerFactory" />
+	<property name="_editorFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorFactory" />
+	<property name="_editorPaneFactory" class="com.isencia.passerelle.actor.gui.PasserelleEditorPaneFactory" />
+</entity>
+      </group>
+    ?>
+  </configure>
+</entity>

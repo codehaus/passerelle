@@ -1,0 +1,2 @@
+#Define any required Java system properties in here, e.g.
+#helloMsg=Hello
