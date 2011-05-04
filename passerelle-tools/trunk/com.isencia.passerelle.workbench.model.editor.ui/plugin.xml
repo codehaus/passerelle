@@ -92,12 +92,21 @@
    </extension>
    <extension
          point="org.eclipse.ui.views">
+         <view
+            icon="icons/tree.gif"
+            class="com.isencia.passerelle.workbench.model.editor.ui.views.ActorTreeView"
+            category="org.eclipse.birt.report.designer.ui.views.category"
+            name="Palette"
+            id="com.isencia.passerelle.workbench.model.editor.ui.views.ActorTreeView"/>  
       <view
             class="com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView"
             icon="icons/attributes.gif"
             id="com.isencia.passerelle.workbench.model.editor.ui.views.ActorAttributesView"
             name="Actor Attributes">
       </view>
+       <category
+            name="Palette View"
+            id="org.eclipse.birt.report.designer.ui.views.category"/>      
    </extension>
    <extension
          point="org.eclipse.ui.viewActions">
@@ -113,6 +122,16 @@
                style="push"
                toolbarPath="additions"
                tooltip="Delete the selected attribute">
+         </action>
+         <action
+               class="com.isencia.passerelle.workbench.model.editor.ui.editor.actions.HelpAttributeHandler"
+               icon="icons/help.gif"
+               id="com.isencia.passerelle.workbench.model.editor.ui.helpAttribute"
+               label="Help Attribute"
+               state="true"
+               style="push"
+               toolbarPath="additions"
+               tooltip="Help">
          </action>
       </viewContribution>
    </extension>
