@@ -64,9 +64,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IContributionItem viewList;
     private IAction preferencesAction;
     
-    // Help Actions
-    private IWorkbenchAction aboutAction;
-    
+	// Help Actions
+	private IWorkbenchAction showHelpAction; // NEW
+	private IWorkbenchAction searchHelpAction; // NEW
+	private IWorkbenchAction dynamicHelpAction; // NEW    
 
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
         super(configurer);
@@ -123,9 +124,15 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         preferencesAction = ActionFactory.PREFERENCES.create(window);
         register(preferencesAction);
         
-        // Help
-        aboutAction = ActionFactory.ABOUT.create(window);
-        register(aboutAction);
+		// Help
+		showHelpAction = ActionFactory.HELP_CONTENTS.create(window); // NEW
+		register(showHelpAction); // NEW
+
+		searchHelpAction = ActionFactory.HELP_SEARCH.create(window); // NEW
+		register(searchHelpAction); // NEW
+
+		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window); // NEW
+		register(dynamicHelpAction); // NEW
         
         // Remove unwanted actions
         ActionSetRegistry reg = WorkbenchPlugin.getDefault().getActionSetRegistry();
@@ -218,8 +225,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		windowMenu.add(new Separator());
 		windowMenu.add(preferencesAction);
         
-        // Help
-        helpMenu.add(aboutAction);
+		// Help
+//		helpMenu.add(showHelpAction); // NEW
+//		helpMenu.add(searchHelpAction); // NEW
+//		helpMenu.add(dynamicHelpAction); // NEW
         
     }
     
