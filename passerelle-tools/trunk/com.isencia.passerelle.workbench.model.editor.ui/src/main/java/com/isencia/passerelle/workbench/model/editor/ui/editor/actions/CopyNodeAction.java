@@ -15,7 +15,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.AbstractBaseEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.DiagramEditPart;
 import com.isencia.passerelle.workbench.model.editor.ui.editpart.RelationEditPart;
-import com.isencia.passerelle.workbench.model.editor.ui.editpart.VertexRelationEditPart;
+import com.isencia.passerelle.workbench.model.editor.ui.editpart.VertexLinkEditPart;
 import com.isencia.passerelle.workbench.model.ui.command.CopyNodeCommand;
 
 public class CopyNodeAction extends SelectionAction {
@@ -59,7 +59,7 @@ public class CopyNodeAction extends SelectionAction {
 			if (!(o instanceof AbstractEditPart)) {
 				return null;
 			}
-			if (o instanceof AbstractBaseEditPart || o instanceof RelationEditPart || o  instanceof VertexRelationEditPart) {
+			if (o instanceof AbstractBaseEditPart || o instanceof RelationEditPart || o  instanceof VertexLinkEditPart) {
 				AbstractEditPart ep = (AbstractEditPart) o;
 
 				Object NamedObj = ep.getModel();
