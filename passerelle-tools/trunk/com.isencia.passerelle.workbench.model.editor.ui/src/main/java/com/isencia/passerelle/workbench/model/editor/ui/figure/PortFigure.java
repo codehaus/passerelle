@@ -16,7 +16,6 @@ public class PortFigure extends RectangleFigure {
 		super();
 		this.width = width;
 		this.height = height;
-
 		setOpaque(false);
 		setName(name);
 		setSize(width,height);

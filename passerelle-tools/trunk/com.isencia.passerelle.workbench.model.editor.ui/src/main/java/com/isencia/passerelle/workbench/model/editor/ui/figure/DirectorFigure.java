@@ -17,15 +17,20 @@ import org.eclipse.swt.graphics.Image;
 
 public class DirectorFigure extends AbstractBaseFigure {
 	
+
 	public final static int DIRECTOR_WIDTH = 120;
 	public final static Dimension DIRECTOR_SIZE = new Dimension(DIRECTOR_WIDTH,DEFAULT_HEIGHT);
 	public final static Color DIRECTOR_BACKGROUND_COLOR = new Color(null,204,0,0);
 
     private Body body = null;
     
+	@Override
+	public Color getDefaultColor() {
+		return DIRECTOR_BACKGROUND_COLOR;
+	}
 
-    public DirectorFigure(String name, Image image) {
-    	super(name);
+    public DirectorFigure(String name,Class type, Image image) {
+    	super(name,type);
         body = new Body();
         body.initImage(image);
         add(body);
@@ -52,26 +57,16 @@ public class DirectorFigure extends AbstractBaseFigure {
         		add(imageFigure);
         	}
         }
-
-        public Image getImage() {
-        	if( imageFigure == null )
-        		return null;
-            return imageFigure.getImage();
-        }
        /*
          * (non-Javadoc)
          * 
          * @see org.eclipse.draw2d.IFigure#getPreferredSize(int, int)
          */
         public Dimension getPreferredSize(int wHint, int hHint) {
-            Dimension preferredSize = getParent().getSize().getCopy();
-            return preferredSize;
+            return getParent().getSize().getCopy();
         }
 
-        public void setImage(Image image) {
-            imageFigure.setImage(image);
-        }
-        
+       
         protected void fillShape(Graphics graphics) {
         	graphics.pushState();
         	graphics.setForegroundColor(ColorConstants.white);
@@ -110,13 +105,4 @@ public class DirectorFigure extends AbstractBaseFigure {
             body.setBackgroundColor(c);
         }
     }
-
-    public Color getBackgroundColor() {
-        if (body != null) {
-            return body.getBackgroundColor();
-        }
-        return super.getBackgroundColor();
-    }
-
-
 }

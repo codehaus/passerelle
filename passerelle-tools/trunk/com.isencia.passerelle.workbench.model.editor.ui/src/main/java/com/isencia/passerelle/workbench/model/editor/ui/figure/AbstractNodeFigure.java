@@ -21,11 +21,11 @@ public abstract class AbstractNodeFigure extends AbstractBaseFigure {
 	protected Vector<ConnectionAnchor> inputConnectionAnchors = new Vector<ConnectionAnchor>(2, 2);
 	protected Vector<ConnectionAnchor> outputConnectionAnchors = new Vector<ConnectionAnchor>(2, 2);
 	
-    public AbstractNodeFigure(String name) {
-    	super(name);
+    public AbstractNodeFigure(String name,Class type) {
+    	super(name,type);
     }
-    public AbstractNodeFigure(String name,boolean withLabel) {
-    	super(name,withLabel);
+    public AbstractNodeFigure(String name,boolean withLabel,Class type) {
+    	super(name,withLabel,type);
     }
 
 	public ConnectionAnchor connectionAnchorAt(Point p) {
