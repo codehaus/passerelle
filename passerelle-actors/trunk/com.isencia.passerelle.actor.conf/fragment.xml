@@ -7,7 +7,8 @@
             class="com.isencia.passerelle.actor.general.Const"
             group="com.isencia.passerelle.actor.actorgroup.general"
             id="be.isencia.passerelle.actor.general.const"
-            name="Const">
+            color="100,50,50"
+			name="Const">
       </actor>
       <actor
             class="com.isencia.passerelle.actor.general.Console"
@@ -25,6 +26,7 @@
       <actor
             class="com.isencia.passerelle.actor.filter.HeaderFilter"
             group="com.isencia.passerelle.actor.actorgroup.filter"
+            color="0,50,50"
             id="com.isencia.passerelle.actor.HeaderFilter"
             name="HeaderFilter">
       </actor>
@@ -62,27 +64,28 @@
       </actor>
       <actor
             class="ptolemy.actor.TypedIOPort"
-            group="com.isencia.passerelle.actor.actorgroup.general"
-            icon="icons/input.gif"
+            group="com.isencia.passerelle.actor.actorgroup.utilities"
+            icon="icons/input.png"
             id="Input"
             name="Input">
       </actor>
       <actor
             class="ptolemy.actor.TypedIOPort"
-            group="com.isencia.passerelle.actor.actorgroup.general"
-            icon="icons/output.gif"
+            group="com.isencia.passerelle.actor.actorgroup.utilities"
+            icon="icons/output.png"
             id="Output"
             name="Output">
       </actor>
       <actor
             class="com.isencia.passerelle.actor.io.FileReader"
-            group="com.isencia.passerelle.actor.actorgroup.general"
+            group="com.isencia.passerelle.actor.actorgroup.file"
+             color="0,50,150"
             id="FileReader"
             name="FileReader">
       </actor>
       <actor
             class="com.isencia.passerelle.actor.io.FileWriter"
-            group="com.isencia.passerelle.actor.actorgroup.general"
+            group="com.isencia.passerelle.actor.actorgroup.file"
             id="FileWriter"
             name="FileWriter">
       </actor>
@@ -94,8 +97,8 @@
       </actor>
       <actor
             class="ptolemy.moml.Vertex"
-            group="com.isencia.passerelle.actor.actorgroup.general"
-            icon="icons/vertex.gif"
+            group="com.isencia.passerelle.actor.actorgroup.utilities"
+            icon="icons/vertex.png"
             id="Vertex"
             name="Vertex">
       </actor>
@@ -110,22 +113,52 @@
    <extension
          point="com.isencia.passerelle.engine.actorGroups">
       <actorgroup
-            id="com.isencia.passerelle.actor.actorgroup.general"
-            name="General"
-            open="true">
+            id="com.isencia.passerelle.actor.actorgroup.passerelle"
+            priority="1000"
+            open="false"
+            name="Passerelle">
       </actorgroup>
       <actorgroup
+            icon="icons/utilities.png"
             id="com.isencia.passerelle.actor.actorgroup.utilities"
-            name="Utilities">
+            name="Utilities"
+            open="true"
+            parent="com.isencia.passerelle.actor.actorgroup.passerelle"
+            priority="1000">
+      </actorgroup>
+         
+      <actorgroup
+      		parent="com.isencia.passerelle.actor.actorgroup.passerelle"
+            id="com.isencia.passerelle.actor.actorgroup.general"
+            name="General" >
       </actorgroup>
       <actorgroup
+      		parent="com.isencia.passerelle.actor.actorgroup.general"
+            id="com.isencia.passerelle.actor.actorgroup.file"
+            name="File" >
+      </actorgroup>
+      <actorgroup
+      		parent="com.isencia.passerelle.actor.actorgroup.passerelle"
             id="com.isencia.passerelle.actor.actorgroup.flow"
             name="Flow Control">
       </actorgroup>
       <actorgroup
+      		parent="com.isencia.passerelle.actor.actorgroup.passerelle"
             id="com.isencia.passerelle.actor.actorgroup.filter"
             name="Filters">
       </actorgroup>
    </extension>
-
+<!--
+	<extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="passerelle.xml"
+            primary="true">
+      </toc>
+   </extension>
+    <extension
+          point="org.eclipse.help.index">
+       <index file="index.xml"></index>
+    </extension>
+    -->
 </fragment>
