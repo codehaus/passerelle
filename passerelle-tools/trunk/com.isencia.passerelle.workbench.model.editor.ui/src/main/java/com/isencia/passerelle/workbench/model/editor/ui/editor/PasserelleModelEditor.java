@@ -51,9 +51,6 @@ import org.eclipse.gef.ui.palette.PaletteCustomizer;
 import org.eclipse.gef.ui.palette.PaletteViewer;
 import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.palette.FlyoutPaletteComposite.FlyoutPreferences;
-import org.eclipse.gef.ui.palette.customize.PaletteDrawerFactory;
-import org.eclipse.gef.ui.palette.customize.PaletteSeparatorFactory;
-import org.eclipse.gef.ui.palette.customize.PaletteStackFactory;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.gef.ui.parts.GraphicalViewerKeyHandler;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
@@ -75,7 +72,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -99,7 +95,6 @@ import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CloseEdit
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CopyNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.CutNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.ExecutionFactory;
-import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.HelpAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.OpenFileAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.PasteNodeAction;
 import com.isencia.passerelle.workbench.model.editor.ui.editor.actions.RouterFactory;
@@ -575,7 +570,7 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 	private void customizePalette(EditDomain editDomain) {
 		if (editDomain != null) {
 			PaletteViewer paletteViewer = editDomain.getPaletteViewer();
-//			paletteViewer.setCustomizer(new PasserellePaletteCustomizer());
+			paletteViewer.setCustomizer(new PasserellePaletteCustomizer());
 			DropTarget dt = new DropTarget(paletteViewer.getControl(),
 					DND.DROP_MOVE);
 

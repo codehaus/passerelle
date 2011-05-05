@@ -1,5 +1,6 @@
 package com.isencia.passerelle.workbench.model.editor.ui.palette;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,9 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.draw2d.ColorConstants;
+import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
+import org.eclipse.gef.palette.PaletteContainer;
+import org.eclipse.gef.palette.PaletteEntry;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
 import org.osgi.framework.Bundle;
@@ -25,6 +30,33 @@ import ptolemy.kernel.util.NamedObj;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 
 public class PaletteItemFactory implements Serializable {
+	public static final String FAVORITE_GROUPS = "FavoriteGroups";
+	public static final String DEFAULT_FAVORITES_NAME = "Favorites";
+	private static PreferenceStore store;
+
+	public String[] getFavoriteGroupNames() {
+		String groups = getStore().getString(FAVORITE_GROUPS);
+		if (groups == null || groups.isEmpty()) {
+			return new String[] { DEFAULT_FAVORITES_NAME };
+		}
+		return groups.split(",");
+	}
+
+	public PreferenceStore getStore() {
+		if (store == null) {
+			store = new PreferenceStore();
+			final String workspacePath = ResourcesPlugin.getWorkspace()
+					.getRoot().getLocation().toOSString();
+			store.setFilename(workspacePath + "/.metadata/favorites.properties");
+			try {
+				store.load();
+			} catch (IOException e) {
+				return store;
+			}
+		}
+		return store;
+	}
+
 	List<PaletteGroup> paletteGroups;
 	private static PaletteItemFactory factory;
 	private static Map<String, String> actorBundleMap = new HashMap<String, String>();
@@ -39,6 +71,14 @@ public class PaletteItemFactory implements Serializable {
 
 	public Collection<PaletteGroup> getAllPaletteGroups() {
 		return groups.values();
+	}
+
+	public String[] getFavorites() {
+		PreferenceStore store = getStore();
+		if (store == null) {
+			return new String[0];
+		}
+		return store.preferenceNames();
 	}
 
 	public static PaletteItemFactory get() {
@@ -60,8 +100,9 @@ public class PaletteItemFactory implements Serializable {
 
 		return paletteItemMap.get(clazz);
 	}
+
 	public PaletteGroup getPaletteGroup(String id) {
-		
+
 		return groups.get(id);
 	}
 
@@ -94,6 +135,67 @@ public class PaletteItemFactory implements Serializable {
 			return itemDefinition.getIcon();
 		}
 		return Activator.getImageDescriptor("icons/ide.gif");
+	}
+
+	public CombinedTemplateCreationEntry createPaletteEntryFromPaletteDefinition(
+			Class type) {
+
+		return createPaletteEntryFromPaletteDefinition(getPaletteItem(type));
+	}
+
+	public CombinedTemplateCreationEntry createPaletteEntryFromPaletteDefinition(
+			PaletteItemDefinition def) {
+		CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
+				def.getName(), def.getName(), new ClassTypeFactory(def
+						.getClazz(), def.getName()), def.getIcon(), //$NON-NLS-1$
+				def.getIcon()//$NON-NLS-1$
+		);
+		return entry;
+	}
+
+	public boolean containsFavorite(PaletteContainer container, Class type) {
+		List children = container.getChildren();
+		for (Object child : children) {
+			if (child instanceof CombinedTemplateCreationEntry) {
+				CombinedTemplateCreationEntry entry = (CombinedTemplateCreationEntry) child;
+				ClassTypeFactory entryType = (ClassTypeFactory) entry
+						.getTemplate();
+				if (entryType.getObjectType().equals(type)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public void removeFavorite(String name) {
+		getStore().putValue(name, "");
+	}
+
+	public boolean addFavorite(String name, PaletteContainer container) {
+		Class type;
+		try {
+			type = Class.forName(name);
+
+			if (!containsFavorite(container, type)) {
+				CombinedTemplateCreationEntry createPaletteEntryFromPaletteDefinition = createPaletteEntryFromPaletteDefinition(PaletteItemFactory
+						.get().getPaletteItem(type));
+				container.add(createPaletteEntryFromPaletteDefinition);
+				PreferenceStore store = getStore();
+				if (store.getString(type.getName()) == null || store.getString(type.getName()).isEmpty()) {
+					store.putValue(type.getName(), DEFAULT_FAVORITES_NAME);
+					try {
+						store.save();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				return true;
+			}
+		} catch (ClassNotFoundException e1) {
+		}
+		return false;
+
 	}
 
 	public Color getColor(Class clazz) {
