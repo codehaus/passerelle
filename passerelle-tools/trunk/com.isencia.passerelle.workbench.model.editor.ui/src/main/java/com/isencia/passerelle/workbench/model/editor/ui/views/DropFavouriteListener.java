@@ -17,7 +17,8 @@ public class DropFavouriteListener extends DropTargetAdapter {
 	public void drop(DropTargetEvent event) {
 		Class type = (Class) config.getObjectType();
 
-		PaletteBuilder.addFavorite(type);
+		PaletteItemFactory paletteItemFactory = PaletteItemFactory.get();
+		paletteItemFactory.addFavorite(type.getName(),PaletteBuilder.getDefaultFavoriteGroup());
 
 	}
 

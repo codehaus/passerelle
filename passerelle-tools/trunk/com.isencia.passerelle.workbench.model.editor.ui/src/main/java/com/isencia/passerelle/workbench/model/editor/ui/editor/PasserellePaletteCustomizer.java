@@ -7,6 +7,7 @@ import java.util.List;
 import org.eclipse.gef.palette.PaletteDrawer;
 import org.eclipse.gef.palette.PaletteEntry;
 import org.eclipse.gef.ui.palette.PaletteCustomizer;
+import org.eclipse.gef.ui.palette.PaletteMessages;
 import org.eclipse.gef.ui.palette.customize.DrawerEntryPage;
 import org.eclipse.gef.ui.palette.customize.EntryPage;
 import org.eclipse.gef.ui.palette.customize.PaletteDrawerFactory;
@@ -23,36 +24,36 @@ public class PasserellePaletteCustomizer extends PaletteCustomizer {
 		List list = new ArrayList(4);
 		list.add(new PaletteSeparatorFactory());
 		list.add(new PaletteStackFactory());
-		list.add(new PaletteDrawerFactory(){
+		list.add(new PaletteDrawerFactory() {
 
 			@Override
 			protected PaletteEntry createNewEntry(Shell shell) {
-			
-				PaletteEntry createNewEntry = super.createNewEntry(shell);
-				PaletteBuilder.addFavoriteGroup(createNewEntry);
+
+				PaletteEntry createNewEntry = PaletteBuilder.createFavoriteContainer(PaletteMessages.NEW_DRAWER_LABEL);
+				PaletteBuilder.addFavoriteGroup(createNewEntry.getLabel(),
+						createNewEntry);
 				return createNewEntry;
 			}
-			
+
 		});
 		return list;
 	}
+
 	@Override
 	public void revertToSaved() {
 
 	}
-	public EntryPage getPropertiesPage(PaletteEntry entry) {
-		if (entry instanceof PaletteDrawer) {
-			return new DrawerEntryPage();
-		}
-		return new PasserelleEntryPage();
-	}
+
+//	public EntryPage getPropertiesPage(PaletteEntry entry) {
+//		if (entry instanceof PaletteDrawer) {
+//			return new DrawerEntryPage();
+//		}
+//		return new PasserelleEntryPage();
+//	}
+
 	@Override
 	public void save() {
-		try {
-			PaletteBuilder.synchFavorites();
-			PaletteBuilder.getStore().save();
-		} catch (IOException e) {
-		}
+		PaletteBuilder.synchFavorites();
 	}
 
 }

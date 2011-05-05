@@ -29,18 +29,18 @@ public class PasserelleEntryPage extends DefaultEntryPage {
 		panel.setTabList(tablist);
 	}
 
-	protected CCombo createGroupText(Composite panel, PaletteEntry entry) {
+	protected Combo createGroupText(Composite panel, PaletteEntry entry) {
 		PaletteContainer container = entry.getParent();
-		CCombo group = new CCombo(panel, SWT.SINGLE);
-		String[] favoriteGroupNames = PaletteBuilder.getFavoriteGroupNames();
+		Combo group = new Combo(panel, SWT.SINGLE);
+		String[] favoriteGroupNames = PaletteItemFactory.get()
+				.getFavoriteGroupNames();
 		group.setItems(favoriteGroupNames);
 		String label = getEntry().getParent().getLabel();
 		List groups = Arrays.asList(favoriteGroupNames);
 		String current = entry.getParent().getLabel();
-		if (groups.contains(current)){
+		if (groups.contains(current)) {
 			group.select(groups.indexOf(label));
 		}
-
 
 		group.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {

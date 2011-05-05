@@ -1,12 +1,12 @@
 package com.isencia.passerelle.workbench.model.editor.ui.palette;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.gef.palette.CombinedTemplateCreationEntry;
 import org.eclipse.gef.palette.ConnectionCreationToolEntry;
 import org.eclipse.gef.palette.MarqueeToolEntry;
@@ -18,7 +18,6 @@ import org.eclipse.gef.palette.PaletteStack;
 import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.part.EditorPart;
 import org.slf4j.Logger;
@@ -27,93 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.isencia.passerelle.workbench.model.editor.ui.Activator;
 
 public class PaletteBuilder {
-	private static PreferenceStore store;
-	private static List<String> favoriteGroupNames = new ArrayList<String>();
-	private static List<PaletteEntry> favoriteGroups = new ArrayList<PaletteEntry>();
-
-	public static String[] getFavoriteGroupNames() {
-		String[] names = new String[favoriteGroups.size()];
-		for (PaletteEntry en : favoriteGroups) {
-			names[favoriteGroups.indexOf(en)] = en.getLabel();
-		}
-		return names;
-	}
-
-	public static PaletteEntry getFavoriteGroup(String name) {
-		for (PaletteEntry en : favoriteGroups) {
-			if (en.getLabel().equals(name)) {
-				return en;
-			}
-		}
-		return null;
-	}
-
-	public static void addFavoriteGroup(PaletteEntry e) {
-		favoriteGroups.add(e);
-
-	}
-
-	public static boolean favoriteExists(Class type) {
-		for (Object o : favoritesContainer.getChildren()) {
-			if (o instanceof CombinedTemplateCreationEntry) {
-				CombinedTemplateCreationEntry entry = (CombinedTemplateCreationEntry) o;
-				ClassTypeFactory entryType = (ClassTypeFactory) entry
-						.getTemplate();
-				if (entryType.getObjectType().equals(type)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	public static void synchFavorites() {
-		for (String pref : store.preferenceNames()) {
-			store.putValue(pref, "dummy");
-		}
-		for (Object o : favoritesContainer.getChildren()) {
-			if (o instanceof CombinedTemplateCreationEntry) {
-				CombinedTemplateCreationEntry entry = (CombinedTemplateCreationEntry) o;
-				ClassTypeFactory entryType = (ClassTypeFactory) entry
-						.getTemplate();
-				store.putValue(((Class) entryType.getObjectType()).getName(),
-						"Favorites");
-				try {
-					store.save();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-			}
-		}
-	}
-
-	public static boolean addFavorite(Class type) {
-		if (!favoriteExists(type)) {
-			CombinedTemplateCreationEntry createPaletteEntryFromPaletteDefinition = createPaletteEntryFromPaletteDefinition(PaletteItemFactory
-					.get().getPaletteItem(type));
-			favoritesContainer.add(createPaletteEntryFromPaletteDefinition);
-			store.putValue(type.getName(), "Favorites");
-			try {
-				store.save();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return true;
-		}
-		return false;
-
-	}
-
-	public static PreferenceStore getStore() {
-		if (store == null) {
-			store = new PreferenceStore();
-			final String workspacePath = ResourcesPlugin.getWorkspace()
-					.getRoot().getLocation().toOSString();
-			store.setFilename(workspacePath + "/.metadata/favorites.xml");
-		}
-		return store;
-	}
 
 	private static final String ACTORGROUP_UTILITIES = "com.isencia.passerelle.actor.actorgroup.utilities";
 	private static Logger logger = LoggerFactory
@@ -137,14 +49,15 @@ public class PaletteBuilder {
 			PaletteGroup group) {
 
 		List categories = new ArrayList();
-
+		PaletteItemFactory factory = PaletteItemFactory.get();
 		categories.add(createControlGroup(root));
 		try {
 			PaletteContainer paletteContainer = createPaletteContainer(group
 					.getName(), group.getIcon(), true);
 			logger.trace("Created category " + paletteContainer.getLabel());
 			for (PaletteItemDefinition def : group.getPaletteItems()) {
-				CombinedTemplateCreationEntry entry = createPaletteEntryFromPaletteDefinition(def);
+				CombinedTemplateCreationEntry entry = factory
+						.createPaletteEntryFromPaletteDefinition(def);
 				paletteContainer.add(entry);
 
 			}
@@ -153,44 +66,85 @@ public class PaletteBuilder {
 		} catch (Exception e) {
 			logger.error("Error creating Palette Categories", e);
 		}
-		favoritesContainer = createPaletteContainer("Favorites", Activator
-				.getImageDescriptor("icons/favourites.gif"), true);
-
-		try {
-			store = getStore();
-			store.load();
-		} catch (IOException e) {
+		String[] favoriteGroups = factory.getFavoriteGroupNames();
+		for (String favoriteGroup : favoriteGroups) {
+			PaletteContainer createPaletteContainer = createFavoriteContainer(favoriteGroup);
+			favoritesContainers.put(favoriteGroup, createPaletteContainer);
+			categories.add(createPaletteContainer);
 		}
-		for (String name : store.preferenceNames()) {
-			// String type = store.getString(name);
-			try {
-				if (!store.getString(name).equals("dummy")) {
-					PaletteItemDefinition def = PaletteItemFactory.get()
-							.getPaletteItem(Class.forName(name));
-					favoritesContainer
-							.add(createPaletteEntryFromPaletteDefinition(def));
-				}
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		for (String name : factory.getFavorites()) {
+			if (!"FavoriteGroups".equals(name)) {
+				PaletteEntry container = favoritesContainers.get(factory
+						.getStore().getString(name));
+				if (container instanceof PaletteContainer)
+					factory.addFavorite(name, (PaletteContainer) container);
 			}
 		}
 
-		categories.add(favoritesContainer);
 		return categories;
 	}
 
-	public static CombinedTemplateCreationEntry createPaletteEntryFromPaletteDefinition(
-			PaletteItemDefinition def) {
-		CombinedTemplateCreationEntry entry = new CombinedTemplateCreationEntry(
-				def.getName(), def.getName(), new ClassTypeFactory(def
-						.getClazz(), def.getName()), def.getIcon(), //$NON-NLS-1$
-				def.getIcon()//$NON-NLS-1$
-		);
-		return entry;
+	public static PaletteContainer createFavoriteContainer(String favoriteGroup) {
+		PaletteContainer createPaletteContainer = createPaletteContainer(
+				favoriteGroup, Activator
+						.getImageDescriptor("icons/favourites.gif"), true);
+		return createPaletteContainer;
 	}
 
-	static public PaletteContainer favoritesContainer;
+	public static void synchFavorites() {
+		PaletteItemFactory factory = PaletteItemFactory.get();
+		for (String pref : factory.getFavorites()) {
+			factory.removeFavorite(pref);
+		}
+		StringBuffer containers = new StringBuffer();
+		for (Map.Entry<String, PaletteEntry> e : favoritesContainers.entrySet()) {
+
+			if (e.getValue() instanceof PaletteContainer) {
+				PaletteContainer favoritesContainer = (PaletteContainer) e
+						.getValue();
+				containers.append(favoritesContainer.getLabel());
+				containers.append(",");
+				for (Object o : favoritesContainer.getChildren()) {
+					if (o instanceof CombinedTemplateCreationEntry) {
+						CombinedTemplateCreationEntry entry = (CombinedTemplateCreationEntry) o;
+						ClassTypeFactory entryType = (ClassTypeFactory) entry
+								.getTemplate();
+						factory.getStore().putValue(
+								((Class) entryType.getObjectType()).getName(),
+								favoritesContainer.getLabel());
+
+					}
+				}
+			}
+		}
+		factory.getStore().putValue(PaletteItemFactory.FAVORITE_GROUPS,
+				containers.toString());
+		try {
+			factory.getStore().save();
+		} catch (IOException ex) {
+		}
+
+	}
+
+	public static PaletteContainer getDefaultFavoriteGroup() {
+		PaletteEntry entry = favoritesContainers
+				.get(PaletteItemFactory.DEFAULT_FAVORITES_NAME);
+		if (entry instanceof PaletteContainer) {
+			return (PaletteContainer) entry;
+		}
+		return createFavoriteContainer(PaletteItemFactory.DEFAULT_FAVORITES_NAME);
+	}
+
+	public static PaletteEntry getFavoriteGroup(String name) {
+		return favoritesContainers.get(name);
+	}
+
+	public static void addFavoriteGroup(String name, PaletteEntry e) {
+		favoritesContainers.put(name, e);
+
+	}
+
+	static public HashMap<String, PaletteEntry> favoritesContainers = new HashMap<String, PaletteEntry>();
 
 	static private PaletteContainer createControlGroup(PaletteRoot root) {
 
