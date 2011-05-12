@@ -46,7 +46,7 @@ public class ModelRunner implements IApplication {
 	public Object start(IApplicationContext applicationContextMightBeNull) throws Exception {
 		
 		String model = System.getProperty("model");
-		runModel(model, true);
+		runModel(model, false);
 		return  IApplication.EXIT_OK;
 	}
 
@@ -66,7 +66,7 @@ public class ModelRunner implements IApplication {
 	 * Sometimes can be called 
 	 * @param modelPath
 	 */
-	public void runModel(final String modelPath, final boolean separateVM) throws Exception {
+	public void runModel(final String modelPath, final boolean doSystemExit) throws Exception {
 		
 		if (!Platform.isRunning()) throw new Exception("ModelRunner is designed to be used with an eclipse application!");
 		
@@ -176,7 +176,7 @@ public class ModelRunner implements IApplication {
 			final long time = end-start;
 	        logger.info("Model completed in "+(time/(60*1000))+"m "+((time/1000)%60)+"s "+(time%1000)+"ms");
 						
-			if (separateVM) {
+			if (doSystemExit) {
 				// We have to do this in case daemons are started.
 				// We must exit this vm once the model is finished.
 				logger.info("Passerelle shut down.");
