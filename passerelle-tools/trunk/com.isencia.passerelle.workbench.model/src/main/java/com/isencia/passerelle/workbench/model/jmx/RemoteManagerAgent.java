@@ -14,8 +14,11 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.eclipse.core.runtime.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.isencia.passerelle.workbench.model.activator.Activator;
 
 import ptolemy.actor.Manager;
 
@@ -44,7 +47,11 @@ public class RemoteManagerAgent {
 	public RemoteManagerAgent(final Manager manager) throws Exception {
 		this.remoteManager = new RemoteManager(manager);
 		final int port     = Integer.parseInt(System.getProperty("com.isencia.jmx.service.port"));
-		this.serverUrl     = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+port+"/workflow");
+		
+		String hostName = System.getProperty("org.dawb.workbench.jmx.host.name");
+		if (hostName==null) hostName = "localhost";
+
+		this.serverUrl     = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://"+hostName+":"+port+"/workflow");
 	}
 	
 	/**
@@ -73,6 +80,10 @@ public class RemoteManagerAgent {
 
 		} catch(Exception e) {
 			logger.error("Cannot connect manager agent to provide rmi access to ptolomy manager", e);
+			com.isencia.passerelle.workbench.model.activator.Activator.getDefault().getLog().log(new Status(Status.ERROR, 
+					Activator.PLUGIN_ID, 
+                    "The connection of the workflow service has failed to "+serverUrl+". No workflows can be run!",
+                    e));
 			throw e;
 		}
 	}
@@ -132,8 +143,10 @@ public class RemoteManagerAgent {
 			
 			waited+=100;
 			try {
+				String hostName = System.getProperty("org.dawb.workbench.jmx.host.name");
+				if (hostName==null) hostName = "localhost";
 				final int     port          = Integer.parseInt(System.getProperty("com.isencia.jmx.service.port"));
-				JMXServiceURL serverUrl     = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:"+port+"/workflow");
+				JMXServiceURL serverUrl     = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://"+hostName+":"+port+"/workflow");
 				JMXConnector  conn = JMXConnectorFactory.connect(serverUrl);
 				server             = conn.getMBeanServerConnection();
                 if (server == null) throw new NullPointerException("MBeanServerConnection is null");
