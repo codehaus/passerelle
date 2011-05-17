@@ -330,10 +330,10 @@ public class PasserelleModelEditor extends GraphicalEditorWithFlyoutPalette
 			for (Image image : part.getImages())
 				image.dispose();
 		}
-		model.removeAllEntities();
-		model.removeAllPorts();
-		model.removeAllRelations();
-		model = null;
+//		model.removeAllEntities();
+//		model.removeAllPorts();
+//		model.removeAllRelations();
+//		model = null;
 
 		super.dispose();
 	}
