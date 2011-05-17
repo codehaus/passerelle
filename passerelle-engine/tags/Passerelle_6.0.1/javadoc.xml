@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="javadoc">
+	<target name="javadoc">
+		<echo message="(re)building actor docs" />
+		<delete dir="doc"/>
+		<javadoc access="public" 
+			destdir="doc/codeDoc" 
+			classpath="C:\ProgramFiles\eclipse\plugins\javax.servlet_2.4.0.v200706111738.jar;lib/commons-math-1.1.jar;lib/commons-collections-3.2.jar;../diva/batik-swing.jar;lib/xalan-2.4.1.jar;../org.apache.log4j;../org.jdom;../diva/batik-gvt.jar;../ptolemy.core/target/classes;C:\ProgramFiles\eclipse\plugins\org.junit_3.8.2.v200706111738\junit.jar;lib/jmxtools-1.2.1.jar;C:\ProgramFiles\eclipse\plugins\org.eclipse.osgi_3.3.2.R33x_v20080105.jar;../com.microstar/target/classes;../mail;../org.apache.commons.logging;../be.isencia.passerelle.commons/target/classes;../be.isencia.passerelle.ume/target/classes;../diva/target/classes;../ptolemy.domains.and.actors/target/classes;lib/xercesImpl-2.2.1.jar;lib/jmxri-1.2.1.jar;../activation;lib/commons-beanutils-1.7.0.jar;lib/xml-apis-1.0.b2.jar;lib/xstream-1.2.2.jar;lib/quartz-1.5.1.jar;../ptolemy.gui/target/classes;../diva/xml-apis-ext.jar" 
+			packagenames="be.isencia.passerelle.actor.*" 
+			sourcepath="src">
+		</javadoc>
+		<javadoc access="public" 
+			additionalparam="-d doc/codedoc " 
+			classpath="C:\ProgramFiles\eclipse\plugins\javax.servlet_2.4.0.v200706111738.jar;lib/commons-math-1.1.jar;lib/commons-collections-3.2.jar;../diva/batik-swing.jar;lib/xalan-2.4.1.jar;../org.apache.log4j;../org.jdom;../diva/batik-gvt.jar;../ptolemy.core/target/classes;C:\ProgramFiles\eclipse\plugins\org.junit_3.8.2.v200706111738\junit.jar;lib/jmxtools-1.2.1.jar;C:\ProgramFiles\eclipse\plugins\org.eclipse.osgi_3.3.2.R33x_v20080105.jar;../com.microstar/target/classes;../mail;../org.apache.commons.logging;../be.isencia.passerelle.commons/target/classes;../be.isencia.passerelle.ume/target/classes;../diva/target/classes;../ptolemy.domains.and.actors/target/classes;lib/xercesImpl-2.2.1.jar;lib/jmxri-1.2.1.jar;../activation;lib/commons-beanutils-1.7.0.jar;lib/xml-apis-1.0.b2.jar;lib/xstream-1.2.2.jar;lib/quartz-1.5.1.jar;../ptolemy.gui/target/classes;../diva/xml-apis-ext.jar" 
+			packagenames="be.isencia.passerelle.actor.*" 
+			sourcepath="src">
+			<doclet name="doc.doclets.PtDoclet" 
+				path="../com.isencia.passerelle.doc.generator/target/classes;../ptolemy.core/target/classes;" />
+		</javadoc>
+	</target>
+</project>
